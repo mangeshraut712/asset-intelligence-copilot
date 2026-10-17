@@ -95,3 +95,5 @@ Deterministic core: no model, $0. Optional LLM routing uses one small tool-call 
 Embedding retrieval over reports, LLM-written prose on top of tool JSON, richer statement parsing for arbitrary feedback, per-chat context for follow-ups.
 
 License: MIT
+
+**CI:** the workflow is in `docs/ci-workflow.yml`. Copy it to `.github/workflows/ci.yml`; pushing it needs a token with the `workflow` scope.
