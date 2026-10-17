@@ -59,23 +59,32 @@ class Copilot:
 
     # ---------------- entry ----------------
     def ask(self, question, user="U-201", chat="default"):
+        """Rule router first. It is authoritative when it matches confidently; the LLM is only consulted
+        (to pick the tool / rewrite the question) when the router falls back. AIC_LLM=force sends every question
+        through the LLM (used to evaluate the LLM path); AIC_LLM=0 disables it."""
         user = T.user_id(self.c, user)
-        res = None
-        if os.environ.get("AIC_LLM", "1") != "0" and llm_available():
-            try: res = llm_route(self, question, user, chat)
-            except Exception as e: res = None; print("LLM failed, falling back:", e)
-        if res is None: res = self.route(question, user, chat)
+        mode = os.environ.get("AIC_LLM", "auto")
+        self.confident = True
+        res = None if mode == "force" else self.route(question, user, chat)
+        if (res is None or not self.confident) and mode != "0" and llm_available():
+            try:
+                self.confident = True
+                alt = llm_route(self, question, user, chat)
+                if self.confident or res is None: res = alt
+            except Exception as e:
+                print("LLM failed, using rule router:", str(e)[:200])
+        if res is None: self.confident = True; res = self.route(question, user, chat)
+        res.setdefault("engine", "rules")
         v = asked_visual(question)
         if v and not res.get("visual") and res.get("alt_visual"): res["visual"] = res["alt_visual"]
         res.pop("alt_visual", None)
         if v and res.get("visual") and res["visual"]["type"] != v: res["visual"] = convert_visual(res["visual"], v)
         self.remember(user, chat, question, res["text"], res.get("wells", []))
-        res["user"] = user_name(self.c, user); res["engine"] = res.get("engine", "rules")
+        res["user"] = user_name(self.c, user)
         return res
-
     def route(self, q, user, chat):
         c = self.c; ql = q.lower(); wells = [w.upper() for w in WELL_RE.findall(q)]; area = area_from(c, q)
-        is_q = q.strip().endswith("?") or re.match(r"^(is|are|was|were|which|what|how|show|list|when|who|why|did|does|do|give|find|can)\b", ql)
+        is_q = q.strip().endswith("?") or re.match(r"^(is|are|was|were|which|what|how|show|list|when|who|why|did|does|do|give|find|can|could|plot|compare|chart|graph|map|draw|display|tell|summari[sz]e|rank|count|get|list|break ?down|where|who)\b", ql)
         # --- feedback / statements ---
         if not is_q:
             if re.search(r"all (t\d{3}) wells", ql): return self.type_rule(q, user)
@@ -88,6 +97,8 @@ class Copilot:
             if "cost" in ql or "spent" in ql: return self.costs(ws, q, pre)
             wells = ws
         if "heatmap" in ql or ("by" in ql and "month" in ql and ("area" in ql or "block" in ql)): return self.heatmap(q)
+        if not wells and not area and not re.search(r"\b(which|list|show|how many|count)\b", ql) and re.search(r"how long do|how soon|threshold|limit|\brules?\b|\bsop\b|manual|deadline|how (long|soon|many hours)|protocol|what does|define|definition", ql):
+            return self.docs(q)
         if re.search(r"root.cause|\brca\b", ql): return self.rca(q, area, wells)
         if re.search(r"contain", ql): return self.containment(q, area)
         if re.search(r"report(ed)? to the regulator|reportable|needed a report|regulator report", ql): return self.reportable(q, area)
@@ -95,14 +106,15 @@ class Copilot:
         if wells and re.search(r"real oil|was the .*spill|really (a )?spill", ql): return self.spill_dispute(wells[0], q)
         if re.search(r"planned|scheduled downtime|shut.?in planned", ql) and wells: return self.planned(wells[0])
         if "cost" in ql and wells: return self.costs(wells, q)
+        if wells and re.search(r"repair|maintenance|problem|issue|fail|broke|flowline|pump jack|rod string|downhole|separator|gearbox|history", ql) and not re.search(r"spill|temperature", ql):
+            return self.repairs(q, wells[0])
         if re.search(r"down(time)?|days .*down|not producing.*(longest|most)", ql) and re.search(r"how many days|longest|most|downtime|days", ql):
             return self.downtime(q, wells, area)
-        if not wells and not area and re.search(r"threshold|limit|\brules?\b|\bsop\b|manual|deadline|how (long|soon|many hours)|protocol|what does|define|definition", ql):
-            return self.docs(q)
         if "spill" in ql: return self.spills(q, wells, area)
         if re.search(r"temperature|line chart|trend", ql) and wells: return self.temps(q, wells[0])
         if area and re.search(r"producing|down|running|stopped", ql): return self.area_status(area)
         if wells: return self.status(wells[0])
+        self.confident = False
         h = T.search_docs(q)
         return {"text": "I couldn't map this to a data tool. Relevant passages from the manuals/SOPs:\n\n" + "\n\n".join(f"**{x['doc']}**: {x['text']}" for x in h["hits"]),
                 "visual": None, "citations": h["citations"], "wells": []}
@@ -178,7 +190,8 @@ class Copilot:
                     txt.append(f"- {fmt(e['date'])} ({e['inspection_id']}): wellhead {e['wellhead']} °C vs air {e['ambient']} °C, only {e['delta']} °C warmer. Cause: {e['cause']}.")
                     rows.append({"Well": x["asset_id"], "Date": fmt(e["date"]), "Delta °C": e["delta"], "Cause": e["cause"], "Inspection": e["inspection_id"]})
             return {"text": "\n".join(txt) + "\n\nDowntime = 7 days per non-producing weekly inspection (Dataset Guide).", "visual": None,
-                    "alt_visual": {"type": "table", "columns": ["Well", "Date", "Delta °C", "Cause", "Inspection"], "rows": rows},
+                    "alt_visual": {"type": "bar", "x": [x["asset_id"] for x in r], "series": [{"name": "Downtime (days)", "data": [x["days"] for x in r]}]} if len(r) > 1 and asked_visual(q) != "table" else
+                                  {"type": "table", "columns": ["Well", "Date", "Delta °C", "Cause", "Inspection"], "rows": rows},
                     "citations": [e["inspection_id"] for x in r for e in x["events"]] + ["Dataset Guide (downtime)", "well-type manual"], "wells": wells}
         m = re.search(r"\b(\d+|three|five|ten)\b (?:wells|assets)", ql); n = int({"three": "3", "five": "5", "ten": "10"}.get(m.group(1), m.group(1))) if m else 5
         r = T.downtime_ranking(area, *p, n=n)
@@ -198,7 +211,7 @@ class Copilot:
 
     def compliance(self, w):
         r = T.compliance(w)
-        txt = [f"**{w}: {len(r['breaches'])} rule breaches in the last 12 months**" + (f", USD {r['fines_open']:,.0f} in fines still open." if r["fines_open"] else ".")]
+        txt = [f"**{w}: {len(r['breaches'])} rule breach(es) in the last 12 months**" + (f", USD {r['fines_open']:,.0f} in fines still open." if r["fines_open"] else ".")]
         txt += [f"- **{b['rule']}** ({b.get('spill', '')}): {b['detail']}" for b in r["breaches"]]
         txt.append("\n**Still open / pending:**"); txt += [f"- {o['rule']}: {o['detail']}" for o in r["open"]]
         txt.append("\n**Met:**"); txt += [f"- {m['rule']}: {m['detail']}" for m in r["met"]]
@@ -258,10 +271,29 @@ class Copilot:
         txt = (f"**Yes, downtime is planned for {w}:**\n" + "\n".join("- " + i for i in items)) if items else f"No planned downtime is recorded for {w}."
         return {"text": txt, "visual": None, "citations": [f"memory_well_facts#{f['id']}" for f in facts] + [n["note_id"] for n in notes] + [m["maintenance_id"] for m in mnt], "wells": [w]}
 
+    def repairs(self, q, w):
+        p = period_from(q) or ((TODAY - dt.timedelta(days=90), TODAY) if re.search(r"lately|recent", q.lower()) else window(months=12))
+        kind = next((k for k in ["pump_jack", "flowline", "rod_string", "downhole_pump", "separator", "wellhead"] if k.replace("_", " ") in q.lower()), None)
+        a = [w, str(p[0]), str(p[1])]; sql = "SELECT * FROM maintenance WHERE asset_id=? AND date(started_at)>=? AND date(started_at)<=?"
+        if kind: sql += " AND equipment_kind=?"; a.append(kind)
+        rows = [dict(r) for r in self.c.execute(sql + " ORDER BY started_at", a)]
+        corr = [r for r in rows if r["maintenance_type"] == "corrective"]
+        txt = f"**{w}: {len(rows)} repair jobs{' on the ' + kind.replace('_', ' ') if kind else ''} from {fmt(p[0])} to {fmt(p[1])}** ({len(corr)} corrective, USD {sum(r['cost_total'] or 0 for r in rows):,.0f})."
+        rca = T.rca_check(asset_ids=[w], equipment_kind=kind)["wells"]
+        for o in rca: txt += f"\n\nRoot-cause analysis due on {o['equipment_kind']}: {o['repairs']} corrective repairs in 12 months ({o['rule_source']})."
+        tr = [{"Repair": r["maintenance_id"], "Started": fmt(r["started_at"]), "Type": r["maintenance_type"], "Equipment": r["equipment_kind"], "Issue": r["issue"], "Cost USD": r["cost_total"], "Contained (h)": r["contained_hours"] or ""} for r in rows]
+        return {"text": txt, "visual": {"type": "table", "columns": list(tr[0].keys()) if tr else [], "rows": tr}, "citations": [r["maintenance_id"] for r in rows] + (["T200 manual §10"] if rca else []), "wells": [w]}
+
     def docs(self, q):
         h = T.search_docs(q, k=3)
         rules = [dict(r) for r in self.c.execute("SELECT * FROM rules")]
-        txt = "From the manuals and SOPs:\n\n" + "\n\n".join(f"**{x['doc']}**\n> " + x["text"].replace("\n", "\n> ") for x in h["hits"])
+        ql = q.lower(); keymap = [(r"report", ["spill.reportable_bbl", "SR-01.hours"]), (r"contain", ["SR-02.hours"]), (r"verif|clean", ["SR-03.days"]),
+            (r"produc|temperature|warm", ["T200.producing_delta_c", "T350.producing_delta_c"]), (r"root|rca", ["T200.rca_repairs", "T350.rca_repairs"]), (r"notice|violation|nov", ["RC-04.days"])]
+        rd = {r["key"]: r for r in rules}
+        keys = [k for pat, ks in keymap if re.search(pat, ql) for k in ks if k in rd]
+        lead = ("**Answer:** " + "; ".join(f"{k} = {rd[k]['value']:g} ({rd[k]['source']})" for k in keys) + "\n\n") if keys else ""
+        if keys: rules = [rd[k] for k in keys] + [r for r in rules if r["key"] not in keys]
+        txt = lead + "From the manuals and SOPs:\n\n" + "\n\n".join(f"**{x['doc']}**\n> " + x["text"].replace("\n", "\n> ") for x in h["hits"])
         return {"text": txt, "visual": {"type": "table", "columns": ["Rule", "Value", "Source"], "rows": [{"Rule": r["key"], "Value": r["value"], "Source": r["source"]} for r in rules]},
                 "citations": h["citations"], "wells": []}
 
@@ -364,16 +396,40 @@ def llm_available():
 
 INTENTS = ["status", "area_status", "temps", "spills", "downtime", "heatmap", "compliance", "containment", "reportable", "rca", "costs", "spill_dispute", "planned", "feedback", "memory_recall", "docs"]
 
-def llm_route(cp, q, user, chat):
-    """LLM picks the tool (function call); deterministic tools compute numbers; LLM may then rewrite the prose, keeping the facts and citations."""
+CACHE_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "llm_cache.json")
+
+def _cache():
+    try: return json.load(open(CACHE_PATH))
+    except Exception: return {}
+
+def llm_pick(q):
+    """One tool-call per *new* question; results cached on disk so reruns cost no requests.
+    Tries a chain of free models; any error -> caller falls back to the rule router."""
+    cache = _cache(); key = q.strip().lower()
+    if key in cache: return cache[key]
     from openai import OpenAI
-    key, base, model = llm_config(); cl = OpenAI(api_key=key, base_url=base)
+    k, base, model = llm_config(); cl = OpenAI(api_key=k, base_url=base, max_retries=0)
+    models = [model] + [m for m in os.environ.get("AIC_LLM_FALLBACKS", "google/gemma-4-26b-a4b-it:free,nvidia/nemotron-3-super-120b-a12b:free").split(",") if m and base and "openrouter" in base]
     tool = {"type": "function", "function": {"name": "route", "description": "Pick the copilot tool for the question.",
-            "parameters": {"type": "object", "properties": {"intent": {"type": "string", "enum": INTENTS}, "rewritten_question": {"type": "string", "description": "Question rewritten with explicit well IDs (WELL-0001), area names (Northeast Block 7) and period words (last 4 months / in 2025) the deterministic router understands."}}, "required": ["intent", "rewritten_question"]}}}
-    sysmsg = "You route oil-field operator questions to deterministic tools. Never compute numbers yourself."
-    r = cl.chat.completions.create(model=model, messages=[{"role": "system", "content": sysmsg}, {"role": "user", "content": q}], tools=[tool], tool_choice="required", timeout=30)
-    args = json.loads(r.choices[0].message.tool_calls[0].function.arguments)
-    rq = args.get("rewritten_question") or q
-    if args.get("intent") == "feedback": rq = q  # statements must be stored verbatim
-    res = cp.route(rq, user, chat); res["engine"] = f"llm:{model} -> {args.get('intent')}"
+            "parameters": {"type": "object", "properties": {"intent": {"type": "string", "enum": INTENTS}, "rewritten_question": {"type": "string", "description": "The question rewritten in plain words for a keyword router: keep exact well IDs (WELL-0001), write areas as 'Northeast Block 7' / 'Southwest Block 23', write periods as 'last N months', 'last N days' or 'in 2025', and keep any requested visual (table, bar chart, line chart, map, heatmap)."}}, "required": ["intent", "rewritten_question"]}}}
+    sysmsg = ("You route oil-field operator questions to deterministic tools. Never compute numbers. Intents: status (one well now), area_status (wells not producing in an area), "
+              "temps (temperature over time), spills, downtime, heatmap, compliance (rules broken), containment (spill containment time), reportable (spills needing regulator report), "
+              "rca (root-cause analysis), costs (repair cost), spill_dispute (was a spill real), repairs (repair/maintenance history of a well), planned (planned downtime), feedback (user states a fact/correction), memory_recall, docs (manual/SOP rule). "
+              f"Today is {TODAY}. Area IDs: SW-23=Southwest Block 23, SW-24=Southwest Block 24, NE-7=Northeast Block 7, NE-8=Northeast Block 8.")
+    err = None
+    for m in models:
+        try:
+            r = cl.chat.completions.create(model=m, messages=[{"role": "system", "content": sysmsg}, {"role": "user", "content": q}], tools=[tool], tool_choice="required", timeout=float(os.environ.get('AIC_LLM_TIMEOUT', 20)))
+            tc = r.choices[0].message.tool_calls
+            args = json.loads(tc[0].function.arguments) if tc else {}
+            if args.get("intent"):
+                args["model"] = m; cache[key] = args
+                json.dump(cache, open(CACHE_PATH, "w"), indent=1); return args
+        except Exception as e: err = e
+    raise RuntimeError(f"all LLM models failed: {err}")
+
+def llm_route(cp, q, user, chat):
+    args = llm_pick(q)
+    rq = q if args.get("intent") == "feedback" else (args.get("rewritten_question") or q)
+    res = cp.route(rq, user, chat); res["engine"] = f"llm:{args.get('model')} -> {args.get('intent')}"
     return res

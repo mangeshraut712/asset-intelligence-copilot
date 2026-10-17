@@ -4,7 +4,7 @@ FlytBase challenge · AI Hackers Collective × Hacktoberfest 2026 Hack Day.
 
 A chat copilot for oil-field operators. It answers plain-English questions about wells with **grounded numbers, citations to record IDs and documents, and a generated visual** (status card, table, line chart, bar chart, map, heatmap). It remembers shared facts about wells, keeps each user's conversations private, learns from corrections at the right scope, and says so when people disagree with the data or with each other.
 
-**Example-question score: 27/27 checks pass (all 18 scenarios)** — see `results/examples.md`.
+**Example-question score: 27/27 checks (all 18 scenarios) in both rule-only and LLM-forced mode**: see `results/examples_rules.md` and `results/examples_llm.md`. Novel questions: `results/novel_auto.md`. Design write-up: `docs/writeup.md`.
 
 ## Architecture
 
@@ -57,7 +57,7 @@ python tests/test_tools.py                                 # deterministic tool 
 python -m eval.run_questions eval/examples.json --fresh    # 18 examples → results/examples.{md,json} + score
 ```
 
-Optional LLM (OpenAI-compatible tool calling; numbers always come from the tools): set one of `OPENROUTER_API_KEY`, `OPENAI_API_KEY`, `XAI_API_KEY`, `GROQ_API_KEY`, `GEMINI_API_KEY` (or `AIC_LLM_BASE=http://localhost:11434/v1` for Ollama), optionally `AIC_LLM_MODEL`, and `pip install openai`. Without a key the rule-based router is used; `AIC_LLM=0` forces it.
+Optional LLM (OpenAI-compatible tool calling; numbers always come from the tools): set one of `OPENROUTER_API_KEY`, `OPENAI_API_KEY`, `XAI_API_KEY`, `GROQ_API_KEY`, `GEMINI_API_KEY` (or `AIC_LLM_BASE=http://localhost:11434/v1` for Ollama), optionally `AIC_LLM_MODEL`, and `pip install openai`. Routing policy (`AIC_LLM`): `auto` (default) means the rule router is authoritative when it matches confidently and the LLM is only asked when it is unsure; `force` sends every question through the LLM; `0` means rules only. LLM picks are cached in `data/llm_cache.json`, a free-model fallback chain is tried (`AIC_LLM_FALLBACKS`), the timeout is `AIC_LLM_TIMEOUT` (20 s), and any error falls back to the rule router, so rate limits cannot block a run.
 
 ## Loading the test dataset
 

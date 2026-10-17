@@ -1,0 +1,14 @@
+[
+ {"id":"N1","q":"Is WELL-0151 running at the moment?"},
+ {"id":"N2","q":"Which wells in SW-23 are down right now?"},
+ {"id":"N3","q":"Plot the temperature history of WELL-0121 over the last 8 weeks."},
+ {"id":"N4","q":"How much oil did Southwest Block 24 spill in 2025? Give me a table."},
+ {"id":"N5","q":"Which 5 wells in Southwest Block 23 had the most downtime in 2025?"},
+ {"id":"N6","q":"Where were the spills in Northeast Block 7 over the last 60 days?"},
+ {"id":"N7","q":"What compliance problems does WELL-0100 have?"},
+ {"id":"N8","q":"Which spills in Northeast Block 7 in the last 90 days took longer than allowed to contain?"},
+ {"id":"N9","q":"What did repairs on WELL-0001 cost in 2025?"},
+ {"id":"N10","q":"Which wells need an RCA on the flowline across the field?"},
+ {"id":"N11","q":"How long do we have to report a reportable spill?"},
+ {"id":"N12","q":"Compare downtime of WELL-0001, WELL-0005 and WELL-0121 in 2026 as a bar chart."}
+]
