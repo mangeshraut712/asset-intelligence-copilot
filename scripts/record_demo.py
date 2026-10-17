@@ -8,7 +8,7 @@ os.makedirs(OUT, exist_ok=True); CUES = []; T0 = [0.0]
 
 OVERLAY_JS = """
 () => { if (document.getElementById('cap')) return;
- const c=document.createElement('div');c.id='cap';c.style.cssText='position:fixed;left:50%;bottom:74px;transform:translateX(-50%);max-width:1100px;background:rgba(0,0,0,.78);color:#fff;font:600 19px/1.35 Inter,system-ui,sans-serif;padding:10px 18px;border-radius:10px;z-index:99999;text-align:center;pointer-events:none;display:none';document.body.appendChild(c);
+ const c=document.createElement('div');c.id='cap';c.style.cssText='position:fixed;left:50%;bottom:118px;transform:translateX(-50%);max-width:1100px;background:rgba(0,0,0,.78);color:#fff;font:600 19px/1.35 Inter,system-ui,sans-serif;padding:10px 18px;border-radius:10px;z-index:99999;text-align:center;pointer-events:none;display:none';document.body.appendChild(c);
  const s=document.createElement('div');s.id='slide';s.style.cssText='position:fixed;inset:0;z-index:99998;display:none;background:radial-gradient(circle at 30% 20%,#1f2937,#0b0f14);color:#e7ebef;font-family:Inter,system-ui,sans-serif;padding:60px 80px;box-sizing:border-box';document.body.appendChild(s);}"""
 
 async def cap(pg, text, secs):
@@ -20,13 +20,13 @@ async def slide(pg, html):
     await pg.evaluate("h=>{const s=document.getElementById('slide');s.innerHTML=h;s.style.display=h?'block':'none'}", html)
 
 async def ask(pg, q, wait_gemma=0):
-    n = await pg.locator(".msg.bot").count()
+    n = await pg.locator(".turn .a").count()
     await pg.click("#q"); await pg.keyboard.type(q, delay=18); await pg.click("form button.pri")
-    await pg.wait_for_function(f"document.querySelectorAll('.msg.bot').length>{n} && document.querySelectorAll('.msg.bot')[{n}].querySelector('.badge')", timeout=120000)
+    await pg.wait_for_function(f"document.querySelectorAll('.turn .a').length>{n} && document.querySelectorAll('.turn .a')[{n}].querySelector('.badge')", timeout=120000)
     if wait_gemma:
-        try: await pg.wait_for_function(f"(()=>{{const g=document.querySelectorAll('.msg.bot')[{n}].querySelector('.gem');return !g||!/writing/.test(g.textContent)}})()", timeout=wait_gemma * 1000)
+        try: await pg.wait_for_function(f"(()=>{{const g=document.querySelectorAll('.turn .a')[{n}].querySelector('.gem');return !g||!/writing/.test(g.textContent)}})()", timeout=wait_gemma * 1000)
         except Exception: pass
-    return pg.locator(".msg.bot").nth(n)
+    return pg.locator(".turn .a").nth(n)
 
 INTRO = """<div style="height:100%;display:flex;flex-direction:column;justify-content:center"><div style="font-size:20px;color:#f5a524;font-weight:700;letter-spacing:.08em">FLYTBASE CHALLENGE · AHC × HACKTOBERFEST 2026</div>
 <div style="font-size:64px;font-weight:800;margin:14px 0">Asset Intelligence Copilot</div><div style="font-size:26px;color:#aab4be">Ask an oil field anything. Get the answer, the evidence and the right chart.</div>
@@ -59,14 +59,16 @@ async def main():
         await cap(pg, "Open-weight Gemma 4 plans when the rules aren't sure, writes summaries, and reads inspection photos.", 7)
         await cap(pg, "Memory is scoped with provenance, and the copilot is honest when people disagree with the data.", 6)
         await slide(pg, "")
-        await cap(pg, "This is the app. On the right, a proactive field briefing: breaches, open fines, long downtime, stale status.", 7)
+        await cap(pg, "This is the app: a clean chat with suggested questions, chat history and a user picker.", 5)
+        await pg.click("#nav-brief"); await pg.wait_for_timeout(600)
+        await cap(pg, "The field briefing is computed proactively: breaches, open fines, long downtime, stale status.", 6)
         await pg.locator("#cards details").first.click(); await cap(pg, "Every alert cites the record it came from.", 4)
-        await pg.locator("#cards details").first.click()
+        await pg.locator("#cards details").first.click(); await pg.click("#nav-chat"); await pg.wait_for_timeout(400)
         await cap(pg, "Let's run one question end to end, as Michael Turner, a production supervisor.", 4)
         m = await ask(pg, "Which rules has WELL-0001 broken in the last 12 months, and what is still open?", wait_gemma=20)
         await cap(pg, "Four breaches, all from the 11 June spill: SR-01 reported after 41 hours, SR-03 and RC-04 overdue.", 7)
         await cap(pg, "SR-02: contained after about 7 hours. That fact only exists in the repair report. Let's open it.", 5)
-        await m.locator(".cite", has_text="MNT-0001-029").first.click(); await pg.wait_for_timeout(1200)
+        await m.evaluate("e=>e.querySelectorAll('.cite[hidden]').forEach(x=>x.hidden=false)"); await m.locator(".cite", has_text="MNT-0001-029").first.click(); await pg.wait_for_timeout(1200)
         await cap(pg, "The evidence drawer shows the raw record and highlights the exact sentence in the report.", 7)
         await pg.click("#drawer button")
         await m.locator("details.trace summary").click(); await m.locator("details.trace").scroll_into_view_if_needed()
@@ -90,10 +92,10 @@ async def main():
         await ask(pg, "WELL-0175 is running fine.")
         await cap(pg, "Tyler says WELL-0175 is running. The latest inspection says otherwise, so it's flagged as a data conflict.", 7)
         await cap(pg, "Both statements stay on record; his is marked unconfirmed and it asks him to confirm.", 5)
-        await pg.click("text=Describe sample inspection photo")
+        await pg.click("text=Sample photo")
         try: await pg.wait_for_function("[...document.querySelectorAll('.badge')].some(b=>/vision/i.test(b.textContent))", timeout=60000)
         except Exception: pass
-        await pg.locator(".msg.bot").last.scroll_into_view_if_needed()
+        await pg.locator(".turn .a").last.scroll_into_view_if_needed()
         await cap(pg, "Gemma 4 is multimodal: it reads an inspection photo, and its notes stay advisory next to the records.", 7)
         await slide(pg, OUTRO)
         await cap(pg, "For the final hour, one command loads the test data, answers every question and fills in my results page.", 7)

@@ -20,6 +20,19 @@ Docs: [system design (page 1)](docs/writeup.md) · [results template (page 2)](d
 * **Multimodal:** upload an inspection photo (📷) and Gemma 4 describes the equipment, any staining and the % of pad, alongside the well's records. This is advisory only and never overrides data. A sample photo is included.
 * Numbers never come from the model. Every LLM failure falls back to the deterministic router, and planner picks are cached, so rate limits can't block a run.
 
+## Interface
+A product-style chat UI written in hand-built CSS with no build step: a collapsible sidebar (new chat, per-user chat history, field briefing, memory, user picker), a centred 760 px conversation column, and a sticky auto-growing composer with photo attach.
+* Every visual sits in a consistent card with Chart/Table switch, copy-as-CSV and expand. Citations are pills that open the evidence sheet (a right sheet on desktop, a bottom sheet on mobile).
+* Each answer has a collapsible "How I got this" trace and follow-up chips.
+* Light and dark themes follow the system setting. Keyboard: Enter / Shift+Enter / Esc.
+* Checked with Playwright at 1440×900, 1280×800, 768×1024 and 390×844: no console errors, no horizontal overflow, CLS < 0.02.
+
+| Desktop (light) | Desktop (dark) |
+|---|---|
+| ![](docs/screenshots/desktop-light.png) | ![](docs/screenshots/desktop-dark.png) |
+| **Evidence drawer** | **Mobile (390×844)** |
+| ![](docs/screenshots/evidence-drawer.png) | <img src="docs/screenshots/mobile.png" width="260"> |
+
 ## Architecture
 
 ```

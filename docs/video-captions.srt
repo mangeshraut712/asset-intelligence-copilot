@@ -1,21 +1,21 @@
 1
-00:00:02,501 --> 00:00:08,501
+00:00:02,502 --> 00:00:08,502
 Hi, I'm Mangesh. Operators lose hours digging through inspections, repair reports and SOPs.
 
 2
-00:00:08,504 --> 00:00:14,504
+00:00:08,507 --> 00:00:14,507
 I built a copilot that answers in seconds, with the evidence and the right visual.
 
 3
-00:00:14,513 --> 00:00:21,513
+00:00:14,518 --> 00:00:21,518
 The core idea: the language model never does arithmetic. A loader puts every dataset into SQLite.
 
 4
-00:00:21,524 --> 00:00:28,524
+00:00:21,530 --> 00:00:28,530
 It extracts the rules from the manuals and SOPs, even containment times hidden in free-text repair reports.
 
 5
-00:00:28,529 --> 00:00:35,529
+00:00:28,534 --> 00:00:35,534
 Deterministic, tested tools compute every number, and one composable query covers unseen questions.
 
 6
@@ -23,86 +23,90 @@ Deterministic, tested tools compute every number, and one composable query cover
 Open-weight Gemma 4 plans when the rules aren't sure, writes summaries, and reads inspection photos.
 
 7
-00:00:42,545 --> 00:00:48,545
+00:00:42,542 --> 00:00:48,542
 Memory is scoped with provenance, and the copilot is honest when people disagree with the data.
 
 8
-00:00:48,554 --> 00:00:55,554
-This is the app. On the right, a proactive field briefing: breaches, open fines, long downtime, stale status.
+00:00:48,550 --> 00:00:53,550
+This is the app: a clean chat with suggested questions, chat history and a user picker.
 
 9
-00:00:55,630 --> 00:00:59,630
-Every alert cites the record it came from.
+00:00:54,241 --> 00:01:00,241
+The field briefing is computed proactively: breaches, open fines, long downtime, stale status.
 
 10
-00:00:59,659 --> 00:01:03,659
-Let's run one question end to end, as Michael Turner, a production supervisor.
+00:01:00,286 --> 00:01:04,286
+Every alert cites the record it came from.
 
 11
-00:01:25,272 --> 00:01:32,272
-Four breaches, all from the 11 June spill: SR-01 reported after 41 hours, SR-03 and RC-04 overdue.
+00:01:04,747 --> 00:01:08,747
+Let's run one question end to end, as Michael Turner, a production supervisor.
 
 12
-00:01:32,280 --> 00:01:37,280
-SR-02: contained after about 7 hours. That fact only exists in the repair report. Let's open it.
+00:01:30,554 --> 00:01:37,554
+Four breaches, all from the 11 June spill: SR-01 reported after 41 hours, SR-03 and RC-04 overdue.
 
 13
-00:01:38,514 --> 00:01:45,514
-The evidence drawer shows the raw record and highlights the exact sentence in the report.
+00:01:37,559 --> 00:01:42,559
+SR-02: contained after about 7 hours. That fact only exists in the repair report. Let's open it.
 
 14
-00:01:45,605 --> 00:01:52,605
-'How I got this' shows the tool that ran and each rule with the document it came from.
+00:01:43,814 --> 00:01:50,814
+The evidence drawer shows the raw record and highlights the exact sentence in the report.
 
 15
-00:01:52,637 --> 00:01:58,637
-Gemma 4 adds a plain-language summary. It's rejected if it invents any number.
+00:01:50,955 --> 00:01:57,955
+'How I got this' shows the tool that ran and each rule with the document it came from.
 
 16
-00:02:00,681 --> 00:02:06,681
-A bar chart when you compare wells: WELL-0121 at 49 days, then WELL-0138 and WELL-0107 at 42.
+00:01:58,004 --> 00:02:04,004
+Gemma 4 adds a plain-language summary. It's rejected if it invents any number.
 
 17
-00:02:06,689 --> 00:02:10,689
-Now feedback. The AI estimated a spill at 4.5 barrels; the crew measured 5.4.
+00:02:06,118 --> 00:02:12,118
+A bar chart when you compare wells: WELL-0121 at 49 days, then WELL-0138 and WELL-0107 at 42.
 
 18
-00:02:12,636 --> 00:02:18,636
-It keeps the AI's estimate, records who corrected it and why, and re-checks the SOP rules.
+00:02:12,134 --> 00:02:16,134
+Now feedback. The AI estimated a spill at 4.5 barrels; the crew measured 5.4.
 
 19
-00:02:18,641 --> 00:02:24,641
-At 5.4 barrels the spill is reportable, no notice was filed, so it flags a possible SR-01 breach.
+00:02:18,185 --> 00:02:24,185
+It keeps the AI's estimate, records who corrected it and why, and re-checks the SOP rules.
 
 20
-00:02:25,259 --> 00:02:28,259
-Switch to Laura Simmons, the HSE officer. The correction reaches her too.
+00:02:24,188 --> 00:02:30,188
+At 5.4 barrels the spill is reportable, no notice was filed, so it flags a possible SR-01 breach.
 
 21
-00:02:30,091 --> 00:02:36,091
-WELL-0151 is now listed because of Michael's correction, and the missing notice is flagged as overdue.
+00:02:30,804 --> 00:02:33,804
+Switch to Laura Simmons, the HSE officer. The correction reaches her too.
 
 22
-00:02:38,370 --> 00:02:44,370
-Private memory: Jessica has no such conversation, so it never borrows Michael's history.
+00:02:35,584 --> 00:02:41,584
+WELL-0151 is now listed because of Michael's correction, and the missing notice is flagged as overdue.
 
 23
-00:02:45,602 --> 00:02:52,602
-Tyler says WELL-0175 is running. The latest inspection says otherwise, so it's flagged as a data conflict.
+00:02:43,801 --> 00:02:49,801
+Private memory: Jessica has no such conversation, so it never borrows Michael's history.
 
 24
-00:02:52,608 --> 00:02:57,608
-Both statements stay on record; his is marked unconfirmed and it asks him to confirm.
+00:02:51,017 --> 00:02:58,017
+Tyler says WELL-0175 is running. The latest inspection says otherwise, so it's flagged as a data conflict.
 
 25
-00:03:25,951 --> 00:03:32,951
-Gemma 4 is multimodal: it reads an inspection photo, and its notes stay advisory next to the records.
+00:02:58,021 --> 00:03:03,021
+Both statements stay on record; his is marked unconfirmed and it asks him to confirm.
 
 26
-00:03:32,960 --> 00:03:39,960
-For the final hour, one command loads the test data, answers every question and fills in my results page.
+00:03:31,135 --> 00:03:38,135
+Gemma 4 is multimodal: it reads an inspection photo, and its notes stay advisory next to the records.
 
 27
-00:03:39,981 --> 00:03:46,981
+00:03:38,148 --> 00:03:45,148
+For the final hour, one command loads the test data, answers every question and fills in my results page.
+
+28
+00:03:45,167 --> 00:03:52,167
 Deterministic tools, rules from documents, scoped memory with provenance, and honesty. Thanks for watching.
 

@@ -1,113 +1,451 @@
-<!doctype html><html data-theme="dark"><head><meta charset="utf-8"><title>Asset Intelligence Copilot</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Asset Intelligence Copilot</title>
+<script>(()=>{const t=localStorage.theme||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=t})()</script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
-:root{--r:10px}
-[data-theme=dark]{--bg:#0b0f14;--panel:#121820;--panel2:#0e1319;--line:#232c37;--fg:#e7ebef;--mut:#8994a0;--acc:#f5a524;--acc2:#3fa9f5;--ok:#22c55e;--bad:#ef4444;--warn:#eab308}
-[data-theme=light]{--bg:#f5f6f8;--panel:#ffffff;--panel2:#f0f2f5;--line:#dde2e8;--fg:#18202a;--mut:#5d6873;--acc:#d97706;--acc2:#0b78c2;--ok:#15803d;--bad:#dc2626;--warn:#a16207}
-*{box-sizing:border-box}body{margin:0;font:14px/1.55 Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--fg);display:grid;grid-template-columns:260px 1fr 340px;height:100vh;overflow:hidden}
-aside,#brief{background:var(--panel);overflow:auto;padding:16px}aside{border-right:1px solid var(--line)}#brief{border-left:1px solid var(--line)}
-main{display:flex;flex-direction:column;min-width:0}header{display:flex;align-items:center;gap:10px;padding:12px 24px;border-bottom:1px solid var(--line);background:var(--panel)}
-.logo{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,var(--acc),#f97316);display:grid;place-items:center;font-weight:800;color:#111}
-h1{font-size:15px;margin:0}h3{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);margin:18px 0 8px}
-.mut{color:var(--mut);font-size:12px}.sp{flex:1}
-select,textarea{width:100%;background:var(--panel2);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:8px;font:inherit}
-button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:var(--panel2);color:var(--fg);padding:7px 12px}button.pri{background:var(--acc);border-color:var(--acc);color:#111;font-weight:600}
-#log{flex:1;overflow:auto;padding:24px}.msg{max-width:960px;margin:0 auto 16px}.uq{display:flex;justify-content:flex-end}.uq div{background:var(--acc2);color:#fff;padding:9px 14px;border-radius:14px 14px 2px 14px;max-width:75%}
-.who{font-size:11px;color:var(--mut);text-align:right;margin-bottom:3px}
-.bot{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px}.bot p{margin:.4em 0}
-.badge{display:inline-block;font-size:11px;font-weight:600;border-radius:999px;padding:1px 9px;margin-right:6px;border:1px solid}
-.b-high{color:var(--ok);border-color:var(--ok)}.b-medium{color:var(--acc2);border-color:var(--acc2)}.b-low{color:var(--warn);border-color:var(--warn)}.b-conflict{color:var(--bad);border-color:var(--bad)}
-.cites{margin-top:10px;font-size:12px;color:var(--mut)}.cite{display:inline-block;background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:0 6px;margin:2px;cursor:pointer;color:var(--fg)}.cite:hover{border-color:var(--acc)}
-table{border-collapse:collapse;width:100%;margin-top:10px;font-size:13px}td,th{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}th{color:var(--mut);font-weight:600;font-size:12px}
-.card{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}.card div{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px}.card b{display:block;font-size:18px}
-.ok{color:var(--ok)}.bad{color:var(--bad)}.map{height:360px;margin-top:10px;border-radius:8px}
-details.trace{margin-top:10px;border-top:1px dashed var(--line);padding-top:8px;font-size:12px}details.trace summary{cursor:pointer;color:var(--acc2)}details.trace li{margin:3px 0}code{background:var(--panel2);padding:0 4px;border-radius:4px;font-size:12px}
-.chips{margin-top:10px}.chip{display:inline-block;font-size:12px;border:1px solid var(--line);border-radius:999px;padding:3px 10px;margin:3px 4px 0 0;cursor:pointer;color:var(--mut)}.chip:hover{color:var(--fg);border-color:var(--acc)}
-.steps{font-size:12px;color:var(--mut)}.steps div:before{content:"◌ ";color:var(--acc)}.steps div.done:before{content:"✓ ";color:var(--ok)}
-form{display:flex;gap:8px;padding:12px 24px;border-top:1px solid var(--line);background:var(--panel)}form textarea{height:46px;resize:none}
-.ex{display:block;font-size:12px;color:var(--mut);cursor:pointer;margin:5px 0;line-height:1.35}.ex:hover{color:var(--fg)}
-.bc{background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--mut);border-radius:8px;padding:10px;margin-bottom:10px}.bc.high{border-left-color:var(--bad)}.bc.med{border-left-color:var(--warn)}.bc.low{border-left-color:var(--acc2)}
-.bc summary{cursor:pointer;display:flex;justify-content:space-between;font-weight:600;font-size:13px}.bc .n{font-size:18px}.bc li{font-size:12px;margin:4px 0;color:var(--mut)}
-#drawer{position:fixed;top:0;right:0;width:520px;max-width:95vw;height:100vh;background:var(--panel);border-left:1px solid var(--line);box-shadow:-10px 0 30px rgba(0,0,0,.3);transform:translateX(100%);transition:.2s;z-index:1000;display:flex;flex-direction:column}
-#drawer.open{transform:none}#drawer .hd{display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line)}#drawer .bd{overflow:auto;padding:16px;font-size:13px}
-#drawer pre{white-space:pre-wrap;font-size:12px;background:var(--panel2);padding:10px;border-radius:8px}mark{background:rgba(245,165,36,.35);color:inherit;padding:0 2px}
-.gem{margin-top:10px;border:1px solid var(--line);border-left:3px solid #8b5cf6;border-radius:8px;padding:8px 10px;font-size:13px;background:var(--panel2)}.gem b{color:#8b5cf6}
-.memo{font-size:11px;color:var(--mut);white-space:pre-wrap}
-</style></head><body>
-<aside>
- <div class="mut">Acting as</div><select id="user"></select>
- <div style="margin-top:10px;display:flex;gap:6px"><button onclick="newChat()">＋ New chat</button></div>
- <h3>Try</h3><div id="exs"></div>
- <h3>Gemma 4 vision</h3><a class="ex" onclick="sampleVision()">📷 Describe sample inspection photo (WELL-0151)</a>
- <h3>Memory</h3><div class="memo" id="mem"></div>
+:root{--font:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--mono:ui-monospace,SFMono-Regular,Menlo,monospace;--r-sm:8px;--r:12px;--r-lg:16px;--side:272px;--col:760px}
+[data-theme=light]{--bg:#fff;--bg2:#fafafa;--bg3:#f4f4f5;--line:#e4e4e7;--line2:#d4d4d8;--fg:#09090b;--fg2:#3f3f46;--mut:#71717a;--acc:#2563eb;--acc-fg:#fff;--acc-soft:#eff6ff;--ok:#16a34a;--bad:#dc2626;--warn:#b45309;--purple:#7c3aed;--shadow:0 1px 2px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.06);--ubub:#f4f4f5;--heat:220,38,38}
+[data-theme=dark]{--bg:#09090b;--bg2:#111113;--bg3:#18181b;--line:#27272a;--line2:#3f3f46;--fg:#fafafa;--fg2:#d4d4d8;--mut:#a1a1aa;--acc:#3b82f6;--acc-fg:#fff;--acc-soft:rgba(59,130,246,.12);--ok:#22c55e;--bad:#f87171;--warn:#fbbf24;--purple:#a78bfa;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);--ubub:#27272a;--heat:248,113,113}
+*{box-sizing:border-box}html,body{height:100%;margin:0}
+body{font:15px/1.6 var(--font);background:var(--bg);color:var(--fg);-webkit-font-smoothing:antialiased;overflow:hidden}
+button,select,textarea,input{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0;padding:0}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:6px}
+svg.i{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.app{display:grid;grid-template-columns:var(--side) minmax(0,1fr);height:100dvh;transition:grid-template-columns .2s ease}
+.app.collapsed{grid-template-columns:0 minmax(0,1fr)}
+/* sidebar */
+.side{background:var(--bg2);border-right:1px solid var(--line);display:flex;flex-direction:column;min-width:0;overflow:hidden;padding-top:env(safe-area-inset-top)}
+.collapsed .side{border-right:0}
+.side-in{width:var(--side);display:flex;flex-direction:column;height:100%}
+.brand{display:flex;align-items:center;gap:10px;height:56px;padding:0 12px 0 16px}
+.logo{width:28px;height:28px;border-radius:8px;background:var(--fg);color:var(--bg);display:grid;place-items:center;flex:none}
+.logo svg{width:16px;height:16px}
+.brand b{font-size:14px;font-weight:600;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+.ibtn{width:36px;height:36px;display:inline-grid;place-items:center;border-radius:var(--r-sm);color:var(--mut);flex:none}
+.ibtn:hover{background:var(--bg3);color:var(--fg)}
+.nav{padding:4px 8px;display:flex;flex-direction:column;gap:2px}
+.nitem{display:flex;align-items:center;gap:10px;height:36px;padding:0 10px;border-radius:var(--r-sm);color:var(--fg2);font-size:14px;width:100%;text-align:left}
+.nitem:hover{background:var(--bg3)}.nitem.on{background:var(--bg3);color:var(--fg);font-weight:500}
+.nitem .cnt{margin-left:auto;font-size:12px;color:var(--mut);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:0 7px;line-height:18px}
+.slabel{font-size:12px;font-weight:500;color:var(--mut);padding:16px 18px 6px}
+.hist{flex:1;overflow-y:auto;padding:0 8px 8px}
+.hitem{display:block;width:100%;text-align:left;font-size:14px;color:var(--fg2);padding:7px 10px;border-radius:var(--r-sm);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hitem:hover{background:var(--bg3)}.hitem.on{background:var(--bg3);color:var(--fg)}
+.hempty{font-size:13px;color:var(--mut);padding:6px 10px}
+.side-foot{border-top:1px solid var(--line);padding:12px;padding-bottom:calc(12px + env(safe-area-inset-bottom))}
+.userpick{position:relative;display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:var(--r-sm)}
+.userpick:hover{background:var(--bg3)}
+.avatar{width:32px;height:32px;border-radius:999px;background:var(--acc);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:600;flex:none}
+.userpick .who{min-width:0;flex:1;line-height:1.3}.userpick .who b{display:block;font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.userpick .who span{font-size:12px;color:var(--mut)}
+.userpick select{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
+.scrim{display:none}
+/* main */
+.main{display:flex;flex-direction:column;min-width:0;height:100dvh;position:relative}
+.top{height:56px;display:flex;align-items:center;gap:8px;padding:0 12px;padding-top:env(safe-area-inset-top);flex:none;border-bottom:1px solid transparent}
+.top.scrolled{border-bottom-color:var(--line)}
+.top .title{font-size:14px;font-weight:500;display:flex;align-items:center;gap:8px;min-width:0}
+.top .title span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--mut);border:1px solid var(--line);border-radius:999px;padding:2px 10px;white-space:nowrap}
+.pill .dot{width:6px;height:6px;border-radius:9px;background:var(--ok)}
+.sp{flex:1}
+.view{flex:1;overflow-y:auto;overflow-x:hidden;scroll-behavior:smooth;overscroll-behavior:contain}
+.view[hidden]{display:none}
+.col{max-width:var(--col);margin:0 auto;padding:0 24px}
+#log{padding:24px 0 32px}
+/* empty state */
+.empty{min-height:calc(100dvh - 220px);display:flex;flex-direction:column;justify-content:center;padding:32px 0}
+.empty h2{font-size:28px;line-height:1.25;font-weight:600;letter-spacing:-.02em;margin:0 0 8px}
+.empty p{color:var(--mut);margin:0 0 32px}
+.sugg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.scard{text-align:left;border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;background:var(--bg);display:flex;flex-direction:column;gap:4px;transition:border-color .15s,background .15s;min-height:88px}
+.scard:hover{background:var(--bg2);border-color:var(--line2)}
+.scard .k{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--fg)}
+.scard .k svg{width:16px;height:16px;color:var(--acc)}
+.scard .d{font-size:13px;color:var(--mut);line-height:1.45}
+/* messages */
+.turn{margin:0 0 32px}
+.u{display:flex;justify-content:flex-end;margin-bottom:24px}
+.u .bub{background:var(--ubub);border-radius:20px;padding:10px 16px;max-width:min(85%,560px);white-space:pre-wrap;overflow-wrap:anywhere}
+.u .bub img{display:block;max-width:240px;width:100%;border-radius:12px;margin-top:8px}
+.a{min-width:0}
+.meta{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px;font-size:12px;color:var(--mut)}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;border-radius:999px;padding:2px 10px;background:var(--bg3);color:var(--fg2)}
+.badge:before{content:"";width:6px;height:6px;border-radius:9px;background:currentColor}
+.b-high{color:var(--ok);background:color-mix(in srgb,var(--ok) 12%,transparent)}
+.b-medium{color:var(--acc);background:var(--acc-soft)}
+.b-low{color:var(--warn);background:color-mix(in srgb,var(--warn) 12%,transparent)}
+.b-conflict{color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,transparent)}
+.prose{overflow-wrap:anywhere}.prose>:first-child{margin-top:0}.prose p{margin:0 0 12px}.prose ul,.prose ol{padding-left:22px;margin:0 0 12px}.prose li{margin:4px 0}.prose strong{font-weight:600}
+.prose code,code{font-family:var(--mono);font-size:.85em;background:var(--bg3);padding:1px 5px;border-radius:5px}
+.prose table{display:block;overflow-x:auto}
+/* visual card */
+.vcard{border:1px solid var(--line);border-radius:var(--r-lg);background:var(--bg);margin:16px 0;overflow:hidden;box-shadow:var(--shadow)}
+.vhd{display:flex;align-items:center;gap:8px;height:48px;padding:0 8px 0 16px;border-bottom:1px solid var(--line)}
+.vhd .t{font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px;min-width:0;flex:1}
+.vhd .t span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vhd .t svg{width:16px;height:16px;color:var(--mut)}
+.seg{display:inline-flex;background:var(--bg3);border-radius:8px;padding:2px}
+.seg button{font-size:12px;padding:3px 10px;border-radius:6px;color:var(--mut)}
+.seg button.on{background:var(--bg);color:var(--fg);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.vbtn{width:32px;height:32px;display:grid;place-items:center;border-radius:8px;color:var(--mut)}
+.vbtn:hover{background:var(--bg3);color:var(--fg)}.vbtn svg{width:16px;height:16px}
+.vbd{padding:16px;min-width:0}
+.vbd.flush{padding:0}
+.tscroll{overflow:auto;max-height:420px}
+table.dt{border-collapse:separate;border-spacing:0;width:100%;font-size:13px;line-height:1.45}
+table.dt th,table.dt td{padding:9px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);white-space:nowrap}
+table.dt td.wrap{white-space:normal;min-width:220px;max-width:420px}
+table.dt th{position:sticky;top:0;background:var(--bg2);color:var(--mut);font-weight:500;font-size:12px;z-index:1}
+table.dt tr:last-child td{border-bottom:0}
+table.dt tbody tr:hover td{background:var(--bg2)}
+table.dt td.num,table.dt th.num{text-align:right;font-variant-numeric:tabular-nums}
+.chartbox{position:relative;height:300px;width:100%}
+.mapbox{height:340px;width:100%;z-index:0}
+.stat{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line)}
+.stat>div{background:var(--bg);padding:14px 16px;min-width:0}
+.stat .l{font-size:12px;color:var(--mut)}.stat b{display:block;font-size:18px;font-weight:600;letter-spacing:-.01em;margin:2px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.stat .s{font-size:12px;color:var(--mut);overflow-wrap:anywhere}
+.ok{color:var(--ok)}.bad{color:var(--bad)}
+.heat td.h{text-align:center;font-weight:500;font-variant-numeric:tabular-nums;min-width:44px}
+.vcard.full{position:fixed;inset:16px;z-index:60;margin:0;display:flex;flex-direction:column}
+.vcard.full .vbd{flex:1;overflow:auto}.vcard.full .chartbox,.vcard.full .mapbox{height:100%;min-height:300px}.vcard.full .tscroll{max-height:none}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:55;display:none}.overlay.on{display:block}
+/* citations */
+.cites{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:12px}
+.cites .lbl{font-size:12px;color:var(--mut);margin-right:2px}
+.cite{display:inline-flex;align-items:center;font:500 11px/1 var(--mono);color:var(--fg2);background:var(--bg3);border:1px solid var(--line);border-radius:999px;padding:4px 8px;cursor:pointer;white-space:nowrap;vertical-align:baseline;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.cite:hover{border-color:var(--acc);color:var(--acc)}
+.more{font-size:12px;color:var(--acc)}
+/* gemma */
+.gem{margin:12px 0 0;border:1px solid color-mix(in srgb,var(--purple) 30%,var(--line));background:color-mix(in srgb,var(--purple) 6%,transparent);border-radius:var(--r);padding:12px 14px;font-size:14px}
+.gem .h{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:var(--purple);margin-bottom:4px}.gem .h svg{width:14px;height:14px}
+.gem .n{color:var(--mut);font-weight:400}
+/* trace */
+details.trace{margin-top:12px;border:1px solid var(--line);border-radius:var(--r);font-size:13px}
+details.trace summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;padding:10px 14px;color:var(--fg2);font-weight:500;user-select:none}
+details.trace summary::-webkit-details-marker{display:none}
+details.trace summary svg{width:16px;height:16px;color:var(--mut)}details.trace summary .chev{margin-left:auto;transition:transform .15s}details.trace[open] summary .chev{transform:rotate(180deg)}
+details.trace .tb{padding:0 14px 12px;border-top:1px solid var(--line)}
+.steps-l{list-style:none;padding:0;margin:12px 0 0;counter-reset:s}
+.steps-l li{position:relative;padding:0 0 10px 28px;counter-increment:s;overflow-wrap:anywhere}
+.steps-l li:before{content:counter(s);position:absolute;left:0;top:1px;width:18px;height:18px;border-radius:9px;background:var(--bg3);font-size:11px;display:grid;place-items:center;color:var(--mut)}
+.trace h4{font-size:12px;font-weight:500;color:var(--mut);margin:8px 0 4px}.trace ul{margin:0;padding-left:18px}
+.trace .foot{color:var(--mut);font-size:12px;margin-top:8px}
+/* chips */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.chip{font-size:13px;border:1px solid var(--line);border-radius:999px;padding:6px 12px;color:var(--fg2);text-align:left;display:inline-flex;align-items:center;gap:6px;max-width:100%}
+.chip:hover{background:var(--bg2);border-color:var(--line2)}.chip svg{width:14px;height:14px;color:var(--mut)}
+/* progress */
+.prog{display:flex;flex-direction:column;gap:8px}
+.shim{height:12px;border-radius:6px;background:linear-gradient(90deg,var(--bg3) 0%,var(--line) 50%,var(--bg3) 100%);background-size:200% 100%;animation:sh 1.2s linear infinite}
+@keyframes sh{to{background-position:-200% 0}}
+.stp{font-size:13px;color:var(--mut);display:flex;align-items:center;gap:8px}
+.stp:before{content:"";width:14px;height:14px;border-radius:9px;border:2px solid var(--line2);flex:none}
+.stp.run:before{border-color:var(--acc);border-right-color:transparent;animation:spin .7s linear infinite}
+.stp.done{color:var(--fg2)}.stp.done:before{background:var(--ok);border-color:var(--ok);box-shadow:inset 0 0 0 2px var(--bg)}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* composer */
+.composer{flex:none;padding:0 0 calc(12px + env(safe-area-inset-bottom));background:linear-gradient(to bottom,transparent,var(--bg) 24px)}
+.box{border:1px solid var(--line2);border-radius:24px;background:var(--bg);box-shadow:var(--shadow);display:flex;align-items:flex-end;gap:4px;padding:8px}
+.box:focus-within{border-color:var(--mut)}
+.box textarea{flex:1;border:0;outline:0;resize:none;background:transparent;padding:7px 6px;max-height:200px;line-height:1.5;min-height:38px;font-size:15px}
+.box textarea::placeholder{color:var(--mut)}
+.send{width:36px;height:36px;border-radius:999px;background:var(--fg);color:var(--bg);display:grid;place-items:center;flex:none}
+.send:disabled{opacity:.3;cursor:default}
+.hint{text-align:center;font-size:12px;color:var(--mut);margin-top:8px}
+/* briefing & memory views */
+.ph{padding:32px 0 8px}.ph h2{font-size:24px;font-weight:600;letter-spacing:-.02em;margin:0}.ph p{color:var(--mut);margin:4px 0 0;font-size:14px}
+.bcards{display:flex;flex-direction:column;gap:12px;padding:16px 0 48px}
+details.bc{border:1px solid var(--line);border-radius:var(--r);background:var(--bg)}
+details.bc summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:14px 16px}
+details.bc summary::-webkit-details-marker{display:none}
+details.bc .sev{width:8px;height:8px;border-radius:9px;background:var(--mut);flex:none}
+details.bc.high .sev{background:var(--bad)}details.bc.med .sev{background:var(--warn)}details.bc.low .sev{background:var(--acc)}
+details.bc .tt{flex:1;font-weight:500;font-size:14px;min-width:0}
+details.bc .n{font-size:18px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+details.bc .n small{font-size:12px;color:var(--mut);font-weight:400;margin-left:6px}
+details.bc ul{list-style:none;margin:0;padding:4px 16px 12px;border-top:1px solid var(--line)}
+details.bc li{font-size:13px;color:var(--fg2);padding:8px 0;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+details.bc li:last-child{border-bottom:0}
+.memsec{padding:16px 0}.memsec h3{font-size:13px;font-weight:500;color:var(--mut);margin:0 0 8px}
+.memi{border:1px solid var(--line);border-radius:var(--r);padding:10px 14px;margin-bottom:8px;font-size:14px;overflow-wrap:anywhere}
+.memi .s{font-size:12px;color:var(--mut);margin-top:2px}
+/* drawer / sheet */
+.sheet{position:fixed;top:0;right:0;bottom:0;width:min(560px,100vw);background:var(--bg);border-left:1px solid var(--line);box-shadow:-8px 0 32px rgba(0,0,0,.18);transform:translateX(100%);transition:transform .22s ease;z-index:70;display:flex;flex-direction:column;visibility:hidden}
+.sheet.open{transform:none;visibility:visible}
+.sheet .hd{display:flex;align-items:center;gap:8px;height:56px;padding:0 8px 0 20px;border-bottom:1px solid var(--line);flex:none}
+.sheet .hd b{font:600 14px var(--mono);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sheet .grab{display:none}
+.sheet .bd{overflow:auto;padding:20px;font-size:14px;flex:1;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
+.sheet h3{font-size:13px;font-weight:500;color:var(--mut);margin:20px 0 8px}
+.kv{border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.kv div{display:grid;grid-template-columns:150px minmax(0,1fr);gap:12px;padding:8px 14px;border-bottom:1px solid var(--line);font-size:13px}
+.kv div:last-child{border-bottom:0}.kv dt{color:var(--mut)}.kv dd{margin:0;overflow-wrap:anywhere}
+.sheet pre{white-space:pre-wrap;overflow-wrap:anywhere;font:12.5px/1.6 var(--mono);background:var(--bg2);border:1px solid var(--line);padding:14px;border-radius:var(--r);margin:0}
+mark{background:color-mix(in srgb,#facc15 45%,transparent);color:inherit;border-radius:3px;padding:0 2px}
+.dscrim{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:65;opacity:0;pointer-events:none;transition:opacity .2s}.dscrim.on{opacity:1;pointer-events:auto}
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:var(--fg);color:var(--bg);font-size:13px;padding:8px 14px;border-radius:999px;z-index:90;opacity:0;transition:opacity .2s;pointer-events:none}.toast.on{opacity:1}
+.leaflet-container{font:12px var(--font);background:var(--bg3)}
+/* responsive */
+@media (max-width:900px){
+ .app,.app.collapsed{grid-template-columns:minmax(0,1fr)}
+ .side{position:fixed;top:0;bottom:0;left:0;width:min(var(--side),86vw);z-index:80;transform:translateX(-100%);transition:transform .22s ease;box-shadow:var(--shadow);visibility:hidden}
+ .side-in{width:100%}
+ .app.mopen .side{transform:none;visibility:visible}
+ .scrim{display:block;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:75;opacity:0;pointer-events:none;transition:opacity .2s}
+ .app.mopen .scrim{opacity:1;pointer-events:auto}
+}
+@media (max-width:640px){
+ .col{padding:0 16px}
+ .empty h2{font-size:24px}.sugg{grid-template-columns:1fr}.scard{min-height:0}
+ .stat{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .chartbox{height:260px}.mapbox{height:300px}
+ .top .pill{display:none}
+ .sheet{top:auto;left:0;width:100%;height:82dvh;border-left:0;border-top:1px solid var(--line);border-radius:20px 20px 0 0;transform:translateY(100%)}
+ .sheet .grab{display:block;width:40px;height:4px;border-radius:4px;background:var(--line2);margin:8px auto 0}
+ .kv div{grid-template-columns:110px minmax(0,1fr)}
+ .vcard.full{inset:0;border-radius:0}
+ .hint{display:none}
+ .box textarea{font-size:16px}
+}
+</style></head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+ <symbol id="i-panel" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></symbol>
+ <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+ <symbol id="i-edit" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></symbol>
+ <symbol id="i-msg" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+ <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></symbol>
+ <symbol id="i-brain" viewBox="0 0 24 24"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/></symbol>
+ <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+ <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
+ <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></symbol>
+ <symbol id="i-clip" viewBox="0 0 24 24"><path d="m21.4 11.1-9.2 9.2a6 6 0 0 1-8.5-8.5l9.2-9.2a4 4 0 0 1 5.7 5.7l-9.2 9.2a2 2 0 0 1-2.8-2.8l8.5-8.5"/></symbol>
+ <symbol id="i-img" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></symbol>
+ <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+ <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
+ <symbol id="i-max" viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></symbol>
+ <symbol id="i-table" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></symbol>
+ <symbol id="i-bar" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M8 17v-5M13 17V8M18 17v-9"/></symbol>
+ <symbol id="i-line" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></symbol>
+ <symbol id="i-map" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol>
+ <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></symbol>
+ <symbol id="i-gauge" viewBox="0 0 24 24"><path d="m12 14 4-4"/><path d="M3.3 19a10 10 0 1 1 17.4 0"/></symbol>
+ <symbol id="i-route" viewBox="0 0 24 24"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></symbol>
+ <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+ <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3l1.9 5.8L20 11l-6.1 2.2L12 19l-1.9-5.8L4 11l6.1-2.2Z"/></symbol>
+ <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></symbol>
+ <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5S5 13 5 15a7 7 0 0 0 7 7z"/></symbol>
+ <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></symbol>
+ <symbol id="i-activity" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></symbol>
+ <symbol id="i-chev" viewBox="0 0 24 24"><path d="m7 15 5 5 5-5M7 9l5-5 5 5"/></symbol>
+</svg>
+<div class="app" id="app">
+ <aside class="side" id="side" aria-label="Sidebar">
+  <div class="side-in">
+   <div class="brand"><div class="logo"><svg class="i"><use href="#i-activity"/></svg></div><b>Asset Copilot</b>
+    <button class="ibtn" onclick="toggleSide()" aria-label="Collapse sidebar" title="Collapse sidebar"><svg class="i"><use href="#i-panel"/></svg></button></div>
+   <nav class="nav">
+    <button class="nitem" id="newchat" onclick="newChat()"><svg class="i"><use href="#i-edit"/></svg>New chat</button>
+    <button class="nitem on" id="nav-chat" onclick="show('chat')"><svg class="i"><use href="#i-msg"/></svg>Chat</button>
+    <button class="nitem" id="nav-brief" onclick="show('brief')"><svg class="i"><use href="#i-bell"/></svg>Field briefing<span class="cnt" id="bcount">·</span></button>
+    <button class="nitem" id="nav-mem" onclick="show('mem')"><svg class="i"><use href="#i-brain"/></svg>Memory</button>
+    <button class="nitem" onclick="sampleVision()"><svg class="i"><use href="#i-img"/></svg>Sample photo · Gemma vision</button>
+   </nav>
+   <div class="slabel">Recent</div>
+   <div class="hist" id="hist"></div>
+   <div class="side-foot">
+    <label class="userpick" title="Switch user"><div class="avatar" id="av">··</div><div class="who"><b id="uname">Loading…</b><span id="urole">&nbsp;</span></div><svg class="i" style="color:var(--mut)"><use href="#i-chev"/></svg>
+     <select id="user" aria-label="Acting as user"></select></label>
+   </div>
+  </div>
+ </aside>
+ <div class="scrim" onclick="toggleSide(false)"></div>
+ <div class="main">
+  <header class="top" id="top">
+   <button class="ibtn" id="sidebtn" onclick="toggleSide()" aria-label="Toggle sidebar" title="Toggle sidebar"><svg class="i"><use href="#i-panel"/></svg></button>
+   <div class="title"><span id="vtitle">Asset Intelligence Copilot</span></div>
+   <div class="sp"></div>
+   <span class="pill" id="st"><span class="dot"></span>Loading…</span>
+   <button class="ibtn" onclick="toggleTheme()" aria-label="Toggle theme" title="Toggle theme"><svg class="i"><use id="themeicon" href="#i-moon"/></svg></button>
+  </header>
+  <div class="view" id="v-chat"><div class="col"><div id="log" aria-live="polite"></div></div></div>
+  <div class="view" id="v-brief" hidden><div class="col"><div class="ph"><h2>Field briefing</h2><p id="asof">Loading…</p></div><div class="bcards" id="cards"></div></div></div>
+  <div class="view" id="v-mem" hidden><div class="col"><div class="ph"><h2>Memory</h2><p>Shared facts and corrections apply to everyone. Conversations are private to <b id="memwho"></b>.</p></div><div id="mem"></div></div></div>
+  <div class="composer" id="composer"><div class="col">
+   <form class="box" id="form" onsubmit="send(event)">
+    <input type="file" id="img" accept="image/*" hidden onchange="vision(this.files[0]);this.value=''">
+    <button type="button" class="ibtn" onclick="$('img').click()" aria-label="Attach inspection photo" title="Attach inspection photo (Gemma 4 vision)"><svg class="i"><use href="#i-clip"/></svg></button>
+    <textarea id="q" rows="1" placeholder="Ask about wells, spills, downtime, compliance…" aria-label="Message"></textarea>
+    <button class="send pri" id="sendbtn" aria-label="Send" disabled><svg class="i"><use href="#i-up"/></svg></button>
+   </form>
+   <div class="hint">Numbers come from deterministic tools with cited records. Enter to send · Shift+Enter for new line.</div>
+  </div></div>
+ </div>
+</div>
+<div class="overlay" id="ov" onclick="unexpand()"></div>
+<div class="dscrim" id="dscrim" onclick="closeDrawer()"></div>
+<aside class="sheet" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dt">
+ <div class="grab"></div>
+ <div class="hd"><b id="dt">Evidence</b><button class="ibtn" onclick="closeDrawer()" aria-label="Close evidence"><svg class="i"><use href="#i-x"/></svg></button></div>
+ <div class="bd" id="db"></div>
 </aside>
-<main>
- <header><div class="logo">AI</div><div><h1>Asset Intelligence Copilot</h1><div class="mut" id="st">loading…</div></div><div class="sp"></div>
-  <button onclick="toggleTheme()" title="Theme">◐ Theme</button></header>
- <div id="log"></div>
- <form onsubmit="send(event)"><input type="file" id="img" accept="image/*" style="display:none" onchange="vision(this.files[0])"><button type="button" title="Gemma 4 vision: describe an inspection photo" onclick="$('img').click()">📷</button><textarea id="q" placeholder="Ask about wells, spills, downtime, compliance… or correct the data (Enter to send)"></textarea><button class="pri">Ask</button></form>
-</main>
-<section id="brief"><h3 style="margin-top:0">Field briefing <span class="mut" id="asof"></span></h3><div id="cards" class="mut">loading…</div></section>
-<div id="drawer"><div class="hd"><b id="dt">Evidence</b><div class="sp"></div><button onclick="$('drawer').classList.remove('open')">✕</button></div><div class="bd" id="db"></div></div>
+<div class="toast" id="toast"></div>
 <script>
-const EX=["Is WELL-0001 producing oil right now? When was it last inspected, and by whom?","Which wells in Northeast Block 8 are not producing oil right now, and why? Show them in a table.","Show a line chart of WELL-0001's wellhead temperature against air temperature for the last 13 weeks, and mark when it was not producing oil.","Which 3 wells in Northeast Block 7 had the most downtime in the last 4 months? Show a bar chart.","Show on a map every well in Northeast Block 8 with a real spill in the last 90 days.","Show a heatmap of 2026 spills by geographic area and month.","Which rules has WELL-0001 broken in the last 12 months, and what is still open?","Was the 20 Aug spill at WELL-0101 real oil?","Show downtime by area this summer as a bar chart."];
-let chat='c'+Date.now();const $=id=>document.getElementById(id);const esc=s=>String(s??'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
-function toggleTheme(){const h=document.documentElement;h.dataset.theme=h.dataset.theme=='dark'?'light':'dark';localStorage.theme=h.dataset.theme}
-if(localStorage.theme)document.documentElement.dataset.theme=localStorage.theme;
-function newChat(){chat='c'+Date.now();$('log').innerHTML='<div class="msg mut" style="text-align:center">New conversation as <b>'+esc($('user').selectedOptions[0]?.textContent||'')+'</b>. Private history is per user; well facts and corrections are shared.</div>'}
-EX.forEach(e=>{const a=document.createElement('a');a.className='ex';a.textContent=e;a.onclick=()=>ask(e);$('exs').appendChild(a)});
-fetch('/api/users').then(r=>r.json()).then(us=>{us.forEach(u=>{const o=document.createElement('option');o.value=u.user_id;o.textContent=`${u.name} — ${u.role.replace(/_/g,' ')}`;if(u.user_id=='U-201')o.selected=1;$('user').appendChild(o)});$('user').onchange=()=>{newChat();mem()};newChat()});
-fetch('/api/status').then(r=>r.json()).then(s=>$('st').textContent=`${s.wells} wells · ${s.llm?'rules + LLM planner ('+s.model+')':'deterministic rule router'}`);
-function mem(){fetch('/api/memory?user='+$('user').value).then(r=>r.json()).then(m=>{$('mem').textContent=[...m.shared_facts.map(f=>`● fact ${f.asset_id}: ${f.text} [${f.status}]`),...m.corrections.map(c=>`● correction ${c.inspection_id} ${c.field}: ${c.original_value} → ${c.corrected_value}`),...m.type_rules.map(t=>`● rule all ${t.well_type}: ${t.rule_key} = ${t.value}`),...m.conversations.slice(0,5).map(c=>`○ you asked: ${c.question.slice(0,60)}`)].join('\n')||'(empty)'})}
-mem();
-function briefing(){fetch('/api/briefing').then(r=>r.json()).then(b=>{$('asof').textContent='as of '+b.as_of;$('cards').innerHTML=b.cards.map(c=>`<details class="bc ${c.severity}"><summary><span>${esc(c.title)}</span><span class="n">${c.count}${c.total?' · USD '+c.total.toLocaleString():''}</span></summary><ul style="padding-left:16px">${c.items.slice(0,30).map(i=>`<li>${esc(i.text)} ${i.cite.map(x=>`<span class="cite" onclick="ev('${x}')">${x}</span>`).join('')}</li>`).join('')}</ul></details>`).join('')})}
-briefing();
-async function ev(ref){$('drawer').classList.add('open');$('dt').textContent=ref;$('db').innerHTML='loading…';const e=await (await fetch('/api/evidence?ref='+encodeURIComponent(ref))).json();
- let h='';if(e.kind)h+=`<div class="mut">${esc(e.kind)}${e.document?' · '+esc(e.document):''}</div>`;
- if(e.record)h+=`<table>${Object.entries(e.record).filter(([k,v])=>v!==null&&v!=='').map(([k,v])=>`<tr><th>${esc(k)}</th><td>${esc(v)}</td></tr>`).join('')}</table>`;
- if(e.corrections&&e.corrections.length)h+=`<h3>Corrections & notes on this record</h3><pre>${esc(JSON.stringify(e.corrections,null,1))}</pre>`;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ic=(n,c='i')=>`<svg class="${c}"><use href="#i-${n}"/></svg>`;
+const SUGG=[
+ {i:'gauge',k:'Well status',q:'Is WELL-0001 producing oil right now? When was it last inspected, and by whom?'},
+ {i:'table',k:'Not producing',q:'Which wells in Northeast Block 8 are not producing oil right now, and why? Show them in a table.'},
+ {i:'drop',k:'Spill map',q:'Show on a map every well in Northeast Block 8 with a real spill in the last 90 days.'},
+ {i:'shield',k:'Compliance',q:'Which rules has WELL-0001 broken in the last 12 months, and what is still open?'}];
+const EX=[...SUGG.map(s=>s.q),'Show a line chart of WELL-0001\'s wellhead temperature against air temperature for the last 13 weeks, and mark when it was not producing oil.','Which 3 wells in Northeast Block 7 had the most downtime in the last 4 months? Show a bar chart.','Show a heatmap of 2026 spills by geographic area and month.','Was the 20 Aug spill at WELL-0101 real oil?','Show downtime by area this summer as a bar chart.'];
+let USERS=[],LLM=false,chat=null,busy=false;
+const isMobile=()=>matchMedia('(max-width:900px)').matches;
+/* theme */
+function setThemeIcon(){$('themeicon').setAttribute('href',document.documentElement.dataset.theme=='dark'?'#i-sun':'#i-moon')}
+function toggleTheme(){const h=document.documentElement;h.dataset.theme=h.dataset.theme=='dark'?'light':'dark';localStorage.theme=h.dataset.theme;setThemeIcon();rethemeCharts()}
+setThemeIcon();
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',e=>{if(!localStorage.theme){document.documentElement.dataset.theme=e.matches?'dark':'light';setThemeIcon();rethemeCharts()}});
+/* sidebar */
+function toggleSide(force){const a=$('app');if(isMobile()){a.classList.toggle('mopen',force);}else{a.classList.toggle('collapsed',force===undefined?undefined:!force);setTimeout(resizeAll,220)}}
+function show(v){['chat','brief','mem'].forEach(x=>{$('v-'+x).hidden=x!=v;$('nav-'+x).classList.toggle('on',x==v)});$('composer').style.display=v=='chat'?'':'none';
+ $('vtitle').textContent=v=='brief'?'Field briefing':v=='mem'?'Memory':(chat&&chat.title)||'Asset Intelligence Copilot';
+ if(v=='brief')briefing();if(v=='mem')mem();if(isMobile())toggleSide(false);if(v=='chat')setTimeout(resizeAll,0)}
+['v-chat','v-brief','v-mem'].forEach(id=>$(id).addEventListener('scroll',e=>$('top').classList.toggle('scrolled',e.target.scrollTop>4)));
+/* users */
+const initials=n=>n.split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();
+const curUser=()=>USERS.find(u=>u.user_id==$('user').value)||{name:'',role:''};
+function paintUser(){const u=curUser();$('uname').textContent=u.name;$('urole').textContent=u.role.replace(/_/g,' ');$('av').textContent=initials(u.name||'?');$('memwho').textContent=u.name}
+fetch('/api/users').then(r=>r.json()).then(us=>{USERS=us;us.forEach(u=>{const o=document.createElement('option');o.value=u.user_id;o.textContent=`${u.name} — ${u.role.replace(/_/g,' ')}`;$('user').appendChild(o)});
+ $('user').value=localStorage.user&&us.some(u=>u.user_id==localStorage.user)?localStorage.user:'U-201';paintUser();
+ $('user').onchange=()=>{localStorage.user=$('user').value;paintUser();newChat();mem()};newChat();mem()});
+fetch('/api/status').then(r=>r.json()).then(s=>{LLM=s.llm;const m=(s.model||'').replace(/^google\//,'').replace(/:free$/,'');$('st').innerHTML=`<span class="dot"></span>${s.wells} wells · ${s.llm?'Rules + '+esc(m):'Deterministic router'}`;$('st').title=s.llm?'Rule router first; Gemma 4 plans when rules are not confident and phrases summaries':'Deterministic rule router'});
+/* chats (client-side history, per user) */
+const store=()=>JSON.parse(localStorage['chats_'+$('user').value]||'[]');
+const save=cs=>{try{localStorage['chats_'+$('user').value]=JSON.stringify(cs.slice(0,30))}catch(e){}};
+function renderHist(){const cs=store();$('hist').innerHTML=cs.length?cs.map(c=>`<button class="hitem${chat&&c.id==chat.id?' on':''}" data-id="${c.id}" title="${esc(c.title)}">${esc(c.title)}</button>`).join(''):'<div class="hempty">No conversations yet</div>';
+ $('hist').querySelectorAll('.hitem').forEach(b=>b.onclick=()=>openChat(b.dataset.id))}
+function newChat(){chat={id:'c'+Date.now(),title:'',items:[]};emptyState();renderHist();show('chat');$('q').focus({preventScroll:true})}
+function emptyState(){const u=curUser(),h=new Date().getHours(),g=h<12?'Good morning':h<18?'Good afternoon':'Good evening';
+ $('log').innerHTML=`<div class="empty"><h2>${g}${u.name?', '+esc(u.name.split(' ')[0]):''}</h2><p>Ask about wells, spills, downtime and compliance. Every number is cited.</p><div class="sugg">${SUGG.map(s=>`<button class="scard" data-q="${esc(s.q)}"><span class="k">${ic(s.i)}${esc(s.k)}</span><span class="d">${esc(s.q)}</span></button>`).join('')}</div></div>`;
+ $('log').querySelectorAll('.scard').forEach(b=>b.onclick=()=>ask(b.dataset.q))}
+function openChat(id){const c=store().find(x=>x.id==id);if(!c)return;chat=c;$('log').innerHTML='';c.items.forEach(it=>{const t=addTurn(it.q,it.img);if(it.vision)paintVision(t,it.r);else paintAnswer(t,it.q,it.r,it.g)});renderHist();show('chat');scrollEnd(true)}
+function persist(item){if(!chat.title)chat.title=item.q.slice(0,60);chat.items.push(item);const cs=store().filter(c=>c.id!=chat.id);cs.unshift(chat);save(cs);renderHist();$('vtitle').textContent=chat.title}
+/* composer */
+const q=$('q');
+function grow(){q.style.height='auto';q.style.height=Math.min(q.scrollHeight,200)+'px';$('sendbtn').disabled=!q.value.trim()||busy}
+q.addEventListener('input',grow);
+q.addEventListener('keydown',e=>{if(e.key=='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();send(e)}});
+function send(e){e&&e.preventDefault();const t=q.value.trim();if(!t||busy)return;q.value='';grow();ask(t)}
+document.addEventListener('keydown',e=>{if(e.key=='Escape'){if($('drawer').classList.contains('open'))closeDrawer();else if(document.querySelector('.vcard.full'))unexpand();else if($('app').classList.contains('mopen'))toggleSide(false)}});
+function scrollEnd(instant){const v=$('v-chat');v.style.scrollBehavior=instant?'auto':'';v.scrollTop=v.scrollHeight}
+/* turns */
+function addTurn(text,img){if($('log').querySelector('.empty'))$('log').innerHTML='';const t=document.createElement('div');t.className='turn msg';
+ t.innerHTML=`<div class="u"><div class="bub">${esc(text)}${img?`<img src="${img}" alt="Uploaded photo">`:''}</div></div><div class="a bot"></div>`;$('log').appendChild(t);return t.querySelector('.a')}
+const STEPS=['Parsing entities, metric and time window','Selecting deterministic tool','Querying records and applying corrections','Checking rules from manuals and SOPs','Composing answer and visual'];
+function progress(a,steps){a.innerHTML=`<div class="prog"><div class="steps">${steps.map(s=>`<div class="stp">${esc(s)}</div>`).join('')}</div><div class="shim" style="width:92%"></div><div class="shim" style="width:76%"></div><div class="shim" style="width:54%"></div></div>`;
+ const d=a.querySelectorAll('.stp');let i=0;d[0].classList.add('run');return setInterval(()=>{if(i<d.length-1){d[i].className='stp done';i++;d[i].classList.add('run')}},380)}
+async function ask(text){if(busy)return;busy=true;grow();show('chat');const a=addTurn(text);const tick=progress(a,STEPS);scrollEnd();
+ let r;try{const res=await fetch('/api/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:text,user:$('user').value,chat:chat.id})});r=await res.json();if(!res.ok)throw new Error(r.detail||res.status)}
+ catch(err){clearInterval(tick);a.innerHTML=`<div class="meta"><span class="badge b-low">Error</span></div><div class="prose"><p>${esc(err.message||err)}</p></div>`;busy=false;grow();return}
+ clearInterval(tick);const item={q:text,r};persist(item);paintAnswer(a,text,r,null,item);scrollTo(a);busy=false;grow();
+ mem();if(/correct|rule|fact|recorded/i.test(r.text||''))briefing()}
+function scrollTo(a){const v=$('v-chat');const top=a.parentElement.offsetTop-16;v.scrollTop=Math.max(0,top)}
+const CONF={high:'High confidence',medium:'LLM-planned',low:'Low confidence',conflict:'Data conflict'};
+function paintAnswer(a,text,r,g,item){
+ a.innerHTML=`<div class="meta">${r.confidence?`<span class="badge b-${r.confidence}">${CONF[r.confidence]||esc(r.confidence)}</span>`:''}<span>${esc(r.engine||'')}</span></div><div class="prose">${marked.parse(r.text||'')}</div>`;
+ if(r.visual)renderVisual(a,r.visual);
+ const cites=[...new Set(r.citations||[])];
+ if(cites.length){const c=document.createElement('div');c.className='cites';const N=12;
+  c.innerHTML=`<span class="lbl">Sources · ${cites.length}</span>`+cites.map((x,i)=>`<button class="cite"${i>=N?' hidden':''}>${esc(x)}</button>`).join('')+(cites.length>N?`<button class="more">+${cites.length-N} more</button>`:'');
+  a.appendChild(c);const m=c.querySelector('.more');if(m)m.onclick=()=>{c.querySelectorAll('.cite[hidden]').forEach(x=>x.hidden=false);m.remove()}}
+ const t=r.trace||{};const steps=t.steps||[];
+ if(steps.length||(t.rules||[]).length){a.insertAdjacentHTML('beforeend',`<details class="trace"><summary>${ic('route')}How I got this<svg class="i chev"><use href="#i-down"/></svg></summary><div class="tb"><ol class="steps-l">${steps.map(s=>`<li>Tool <code>${esc(s.tool)}</code>${s.args?' <code>'+esc(JSON.stringify(s.args))+'</code>':''}${s.result?' → '+esc(s.result):''}</li>`).join('')}</ol>${(t.rules||[]).length?`<h4>Rules applied (parsed from documents)</h4><ul>${t.rules.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}<div class="foot">Router: ${esc(t.engine||r.engine||'')} · ${t.citations??cites.length} distinct records cited · numbers computed by deterministic tools, never by the LLM.</div></div></details>`)}
+ if((r.followups||[]).length){a.insertAdjacentHTML('beforeend',`<div class="chips">${r.followups.map(f=>`<button class="chip">${ic('arrow')}<span>${esc(f)}</span></button>`).join('')}</div>`);a.querySelectorAll('.chip').forEach(c=>c.onclick=()=>ask(c.textContent))}
+ if(g)paintGem(a,g);else if(LLM&&item)gemma(a,text,r,item)}
+function gemSlot(a){let s=a.querySelector('.gem');if(!s){s=document.createElement('div');s.className='gem';const ref=a.querySelector('.cites')||a.querySelector('details.trace')||a.querySelector('.chips');ref?ref.before(s):a.appendChild(s)}return s}
+function paintGem(a,p){const s=gemSlot(a);if(p.ok&&p.summary)s.innerHTML=`<div class="h">${ic('spark')}Gemma 4 summary <span class="n">· ${esc(p.model)} · numbers verified against tool output</span></div><div>${esc(p.summary)}</div>`;
+ else if(p.rejected_numbers&&p.rejected_numbers.length)s.innerHTML=`<div class="h">${ic('spark')}Gemma 4 <span class="n">· summary rejected: it introduced numbers not in the tool output (${esc(p.rejected_numbers.join(', '))})</span></div>`;else s.remove()}
+function gemma(a,text,r,item){const s=gemSlot(a);s.innerHTML=`<div class="h">${ic('spark')}Gemma 4 <span class="n">· writing a plain-language summary…</span></div><div class="shim" style="width:80%;margin-top:6px"></div>`;
+ fetch('/api/phrase',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:text,text:r.text})}).then(x=>x.json()).then(p=>{paintGem(a,p);item.g=p;const cs=store();const c=cs.find(x=>x.id==chat.id);if(c){const it=c.items.find(x=>x.q==item.q&&!x.g);if(it){it.g=p;save(cs)}}}).catch(()=>s.remove())}
+/* vision */
+async function sampleVision(){if(isMobile())toggleSide(false);const bl=await (await fetch('/samples/inspection-WELL-0151.jpg')).blob();vision(new File([bl],'inspection-WELL-0151.jpg',{type:'image/jpeg'}),'WELL-0151')}
+function toDataURL(f){return new Promise(res=>{const rd=new FileReader();rd.onload=()=>res(rd.result);rd.readAsDataURL(f)})}
+async function vision(f,well){if(!f||busy)return;busy=true;grow();show('chat');well=well||((q.value.match(/WELL-\d{4}/i)||[''])[0]).toUpperCase();const url=await toDataURL(f);
+ const label=`Describe inspection photo ${f.name}${well?' · '+well:''}`;const a=addTurn(label,url);const tick=progress(a,['Sending photo to Gemma 4 (multimodal)','Looking up the well\'s records']);scrollEnd();
+ let r;try{const fd=new FormData();fd.append('file',f);fd.append('well',well||'');fd.append('user',$('user').value);r=await (await fetch('/api/vision',{method:'POST',body:fd})).json()}catch(e){r={ok:false,reason:String(e)}}
+ clearInterval(tick);paintVision(a,r);persist({q:label,img:url.length<400000?url:null,r,vision:true});busy=false;grow();scrollTo(a)}
+function paintVision(a,r){a.innerHTML=r.ok?`<div class="meta"><span class="badge b-medium">Gemma 4 vision · advisory</span><span>${esc(r.model)}</span></div><div class="prose">${marked.parse(r.description||'')}</div>${r.context?`<div class="gem" style="border-color:var(--line);background:var(--bg2)"><div class="h" style="color:var(--mut)">Records</div>${esc(r.context)}</div>`:''}<p style="font-size:13px;color:var(--mut);margin:12px 0 0">Photo analysis is advisory: it never overrides inspection records. Use a correction (“The spill was X bbl…”) to change data.</p>`:`<div class="meta"><span class="badge b-low">Vision unavailable</span></div><div class="prose"><p>${esc(r.reason||'')}</p></div>`}
+/* visuals */
+const CHARTS=new Set();const MAPS=new Set();
+const cssv=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const VT={table:['table','Table'],card:['gauge','Well status'],line:['line','Trend'],bar:['bar','Comparison'],map:['map','Map'],heatmap:['grid','Heatmap']};
+const REF=/((?:INS|MNT|REG|CTX)-\d{4}-\d{3,4})/g;
+function asTable(v){if(v.type=='table')return{columns:v.columns,rows:v.rows};
+ if(v.type=='line'||v.type=='bar')return{columns:['Label',...v.series.map(s=>s.name)],rows:v.x.map((x,i)=>Object.fromEntries([['Label',x],...v.series.map(s=>[s.name,s.data[i]])]))};
+ if(v.type=='map')return{columns:['Label','Lat','Lon'],rows:v.points.map(p=>({Label:p.label,Lat:p.lat,Lon:p.lon}))};
+ if(v.type=='heatmap')return{columns:['Row',...v.x,'Total'],rows:v.y.map((y,i)=>Object.fromEntries([['Row',y],...v.x.map((x,j)=>[x,v.z[i][j]]),['Total',v.z[i].reduce((a,b)=>a+b,0)]]))};
+ if(v.type=='card')return{columns:['Field','Value'],rows:Object.entries(v.data).map(([k,x])=>({Field:k,Value:x}))};return{columns:[],rows:[]}}
+function tableHTML(t){const num=c=>t.rows.length&&t.rows.every(r=>r[c]===null||r[c]===''||typeof r[c]=='number');const long=c=>t.rows.some(r=>String(r[c]??'').length>48);
+ return `<div class="tscroll"><table class="dt"><thead><tr>${t.columns.map(c=>`<th class="${num(c)?'num':''}">${esc(c)}</th>`).join('')}</tr></thead><tbody>${t.rows.slice(0,300).map(r=>`<tr>${t.columns.map(c=>{const s=r[c]??'';const v=typeof s=='number'?s.toLocaleString():esc(s).replace(REF,'<button class="cite">$1</button>');return `<td class="${num(c)?'num':''}${long(c)?' wrap':''}">${v}</td>`}).join('')}</tr>`).join('')}</tbody></table></div>`}
+function toCSV(t){const e=x=>{x=String(x??'');return /[",\n]/.test(x)?'"'+x.replace(/"/g,'""')+'"':x};return [t.columns.map(e).join(','),...t.rows.map(r=>t.columns.map(c=>e(r[c])).join(','))].join('\n')}
+function renderVisual(a,v){const [icn,ttl]=VT[v.type]||['table','Result'];const card=document.createElement('div');card.className='vcard';card.dataset.type=v.type;
+ const alt=v.type!='table';
+ card.innerHTML=`<div class="vhd"><div class="t">${ic(icn)}<span>${esc(v.title||ttl)}</span></div>${alt?`<div class="seg" role="tablist"><button class="on" data-m="viz" role="tab" aria-selected="true">${v.type=='card'?'Card':v.type=='map'?'Map':'Chart'}</button><button data-m="tab" role="tab" aria-selected="false">Table</button></div>`:''}<button class="vbtn" data-act="copy" title="Copy as CSV" aria-label="Copy as CSV">${ic('copy')}</button><button class="vbtn" data-act="max" title="Expand" aria-label="Expand">${ic('max')}</button></div><div class="vbd"></div>`;
+ const pos=a.querySelector('.prose');pos.after(card);const bd=card.querySelector('.vbd');
+ const paint=m=>{bd.innerHTML='';bd.classList.remove('flush');if(m=='tab'||v.type=='table'){bd.classList.add('flush');bd.innerHTML=tableHTML(asTable(v))}else drawViz(bd,v)};
+ paint('viz');
+ card.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>{card.querySelectorAll('.seg button').forEach(x=>{x.classList.toggle('on',x==b);x.setAttribute('aria-selected',x==b)});paint(b.dataset.m)});
+ card.querySelector('[data-act=copy]').onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(toCSV(asTable(v))).then(()=>toast('Copied as CSV'),()=>toast('Copy failed'))};
+ card.querySelector('[data-act=max]').onclick=()=>card.classList.contains('full')?unexpand():expand(card)}
+function expand(c){c.classList.add('full');$('ov').classList.add('on');c.querySelector('[data-act=max]').innerHTML=ic('x');setTimeout(resizeAll,30)}
+function unexpand(){document.querySelectorAll('.vcard.full').forEach(c=>{c.classList.remove('full');c.querySelector('[data-act=max]').innerHTML=ic('max')});$('ov').classList.remove('on');setTimeout(resizeAll,30)}
+function chartOpts(v){const fg=cssv('--mut'),grid=cssv('--line');return{responsive:true,maintainAspectRatio:false,animation:{duration:250},interaction:{mode:'index',intersect:false},
+ plugins:{legend:{position:'bottom',labels:{color:fg,boxWidth:10,boxHeight:10,usePointStyle:true,padding:16,font:{family:cssv('--font'),size:12}}},tooltip:{backgroundColor:cssv('--fg'),titleColor:cssv('--bg'),bodyColor:cssv('--bg'),padding:10,cornerRadius:8}},
+ scales:{x:{ticks:{color:fg,maxRotation:0,autoSkip:true,autoSkipPadding:12,font:{size:11}},grid:{display:false},border:{color:grid}},y:{beginAtZero:v.type=='bar',ticks:{color:fg,font:{size:11}},grid:{color:grid},border:{display:false}}}}}
+function drawViz(bd,v){
+ if(v.type=='card'){const s=v.data;bd.classList.add('flush');bd.innerHTML=`<div class="stat"><div><div class="l">Status</div><b class="${s.producing?'ok':'bad'}">${s.producing?'Producing':'Not producing'}</b><div class="s">${esc(s.asset_id)} · ${esc(s.area)}</div></div><div><div class="l">Wellhead − air</div><b>${esc(s.delta_c)} °C</b><div class="s">Limit ${esc(s.threshold_c)} °C (${esc(s.well_type)} manual)</div></div><div><div class="l">Last inspection</div><b>${esc(String(s.inspected_at||'').slice(0,10))}</b><div class="s">${esc(s.inspector)} · ${esc(s.method)}</div></div><div><div class="l">Recorded status</div><b class="${s.recorded_status_stale?'bad':''}">${esc(s.recorded_status)}</b><div class="s">${s.recorded_status_stale?'Out of date':'Matches data'}</div></div></div>`}
+ else if(v.type=='line'||v.type=='bar'){const box=document.createElement('div');box.className='chartbox';const cv=document.createElement('canvas');cv.setAttribute('role','img');cv.setAttribute('aria-label',(VT[v.type]||[])[1]+' chart');box.appendChild(cv);bd.appendChild(box);
+  const cols=[cssv('--acc'),'#a1a1aa','#8b5cf6','#10b981'];const ds=v.series.map((s,i)=>({label:s.name,data:s.data,borderColor:cols[i%4],backgroundColor:v.type=='bar'?cols[i%4]:cols[i%4],tension:.3,borderWidth:2,pointRadius:v.type=='line'?2:0,borderRadius:6,maxBarThickness:48}));
+  if(v.marks)ds.push({label:v.mark_label,type:'scatter',data:v.x.map((x,i)=>v.marks.includes(x)?{x,y:v.series[0].data[i]}:null).filter(Boolean),backgroundColor:cssv('--bad'),borderColor:cssv('--bad'),pointRadius:6,pointStyle:'circle'});
+  const ch=new Chart(cv,{type:v.type,data:{labels:v.x,datasets:ds},options:chartOpts(v)});ch.$v=v;CHARTS.add(ch)}
+ else if(v.type=='map'){bd.classList.add('flush');const m=document.createElement('div');m.className='mapbox';bd.appendChild(m);requestAnimationFrame(()=>{const mp=L.map(m,{scrollWheelZoom:false,attributionControl:true});
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:18}).addTo(mp);
+  const ps=v.points.map(p=>L.circleMarker([p.lat,p.lon],{radius:8,color:'#fff',weight:2,fillColor:cssv('--bad'),fillOpacity:.95}).addTo(mp).bindTooltip(p.label,{permanent:v.points.length<=6,direction:'right',offset:[8,0]}));
+  if(ps.length)mp.fitBounds(L.featureGroup(ps).getBounds().pad(0.35),{maxZoom:13});else mp.setView([32,-102.3],10);m._map=mp;MAPS.add(mp)})}
+ else if(v.type=='heatmap'){bd.classList.add('flush');const mx=Math.max(1,...v.z.flat());const rgb=cssv('--heat');
+  bd.innerHTML=`<div class="tscroll"><table class="dt heat"><thead><tr><th>Area</th>${v.x.map(x=>`<th class="num">${esc(x)}</th>`).join('')}<th class="num">Total</th></tr></thead><tbody>${v.y.map((y,i)=>`<tr><td>${esc(y)}</td>${v.z[i].map(z=>{const o=z/mx;return `<td class="h" style="background:rgba(${rgb},${(o*.8).toFixed(2)});color:${o>.55?'#fff':'inherit'}">${z||'<span style="opacity:.35">0</span>'}</td>`}).join('')}<td class="num"><b>${v.z[i].reduce((a,b)=>a+b,0)}</b></td></tr>`).join('')}</tbody></table></div>`}}
+function resizeAll(){CHARTS.forEach(c=>{if(!c.canvas.isConnected)CHARTS.delete(c);else c.resize()});MAPS.forEach(m=>{if(!m.getContainer().isConnected)MAPS.delete(m);else m.invalidateSize()})}
+function rethemeCharts(){CHARTS.forEach(c=>{if(!c.canvas.isConnected){CHARTS.delete(c);return}c.options=chartOpts(c.$v);c.data.datasets.forEach((d,i)=>{if(i==0&&d.type!='scatter'){d.borderColor=d.backgroundColor=cssv('--acc')}});c.update('none')})}
+addEventListener('resize',()=>{clearTimeout(window._rz);window._rz=setTimeout(resizeAll,120)});
+/* evidence drawer */
+document.addEventListener('click',e=>{const c=e.target.closest('.cite');if(c){e.preventDefault();ev(c.textContent.trim())}});
+let lastFocus=null;
+async function ev(ref){lastFocus=document.activeElement;$('drawer').classList.add('open');$('dscrim').classList.add('on');$('dt').textContent=ref;$('db').innerHTML='<div class="prog"><div class="shim" style="width:60%"></div><div class="shim"></div><div class="shim" style="width:80%"></div></div>';$('drawer').querySelector('.hd button').focus({preventScroll:true});
+ let e;try{e=await (await fetch('/api/evidence?ref='+encodeURIComponent(ref))).json()}catch(x){$('db').textContent='Could not load evidence.';return}
+ let h='';if(e.kind)h+=`<div class="meta"><span class="badge">${esc(e.kind)}</span>${e.document?`<span>${esc(e.document)}</span>`:''}</div>`;
+ if(e.record)h+=`<dl class="kv">${Object.entries(e.record).filter(([k,v])=>v!==null&&v!=='').map(([k,v])=>`<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>`;
+ if(e.corrections&&e.corrections.length)h+=`<h3>Corrections and notes on this record</h3><pre>${esc(JSON.stringify(e.corrections,null,1))}</pre>`;
  if(e.text){let t=esc(e.text);(e.highlight||[]).forEach(l=>{const x=esc(l);if(x.trim())t=t.split(x).join('<mark>'+x+'</mark>')});h+=`<h3>${e.document?'Source document':'Text'}</h3><pre id="doc">${t}</pre>`}
- $('db').innerHTML=h;const m=$('db').querySelector('mark');if(m)m.scrollIntoView({block:'center'})}
-$('q').addEventListener('keydown',e=>{if(e.key=='Enter'&&!e.shiftKey){e.preventDefault();send(e)}});
-function send(e){e.preventDefault();const q=$('q').value.trim();if(q){$('q').value='';ask(q)}}
-async function ask(q){
- const name=$('user').selectedOptions[0].textContent.split(' — ')[0];
- $('log').insertAdjacentHTML('beforeend',`<div class="msg"><div class="who">${esc(name)}</div><div class="uq"><div>${esc(q)}</div></div></div>`);
- const b=document.createElement('div');b.className='msg bot';const steps=['Parsing entities, metric and time window','Selecting deterministic tool','Querying records & applying corrections','Checking rules from manuals/SOPs','Composing answer & visual'];
- b.innerHTML='<div class="steps">'+steps.map(s=>`<div>${s}</div>`).join('')+'</div>';$('log').appendChild(b);$('log').scrollTop=1e9;
- let i=0;const tick=setInterval(()=>{const d=b.querySelectorAll('.steps div');if(d[i])d[i].className='done';i++},350);
- let r;try{r=await (await fetch('/api/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q,user:$('user').value,chat})})).json()}catch(err){clearInterval(tick);b.textContent='Error: '+err;return}
- clearInterval(tick);
- const conf={high:'High confidence',medium:'LLM-planned',low:'Low confidence',conflict:'Data conflict'}[r.confidence]||'';
- b.innerHTML=`<div><span class="badge b-${r.confidence}">${conf}</span><span class="mut">${esc(r.engine)}</span></div>`+marked.parse(r.text);
- if(r.visual)render(b,r.visual);
- const cites=[...new Set(r.citations)];b.insertAdjacentHTML('beforeend',`<div class="cites">Sources (${cites.length}): ${cites.slice(0,40).map(c=>`<span class="cite" onclick="ev(this.textContent)">${esc(c)}</span>`).join('')}${cites.length>40?' …':''}</div>`);
- const t=r.trace||{};b.insertAdjacentHTML('beforeend',`<details class="trace"><summary>How I got this</summary><ol>${(t.steps||[]).map(s=>`<li>Tool <code>${esc(s.tool)}</code> ${s.args?'<code>'+esc(JSON.stringify(s.args))+'</code>':''} ${s.result?'→ '+esc(s.result):''}</li>`).join('')}</ol>${(t.rules||[]).length?'<div><b>Rules applied (parsed from documents):</b><ul>'+t.rules.map(x=>`<li>${esc(x)}</li>`).join('')+'</ul></div>':''}<div class="mut">Router: ${esc(t.engine)} · ${t.citations} distinct records/documents cited · numbers computed by deterministic tools, never by the LLM.</div></details>`);
- if(r.followups&&r.followups.length)b.insertAdjacentHTML('beforeend',`<div class="chips">${r.followups.map(f=>`<span class="chip">${esc(f)}</span>`).join('')}</div>`);
- b.querySelectorAll('.chip').forEach(c=>c.onclick=()=>ask(c.textContent));
- $('log').scrollTop=1e9;mem();if(/correct|rule|fact|recorded/i.test(r.text))briefing();
- if(LLM){const g=document.createElement('div');g.className='gem';g.innerHTML='<b>✨ Gemma 4</b> <span class="mut">writing a plain-language summary…</span>';b.querySelector('.cites').before(g);
-  fetch('/api/phrase',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q,text:r.text})}).then(x=>x.json()).then(p=>{
-   if(p.ok&&p.summary)g.innerHTML=`<b>✨ Gemma 4 summary</b> <span class="mut">(${esc(p.model)}; numbers verified against the tool output)</span><div>${esc(p.summary)}</div>`;
-   else if(p.rejected_numbers&&p.rejected_numbers.length)g.innerHTML=`<b>✨ Gemma 4</b> <span class="mut">summary rejected: it introduced numbers not in the tool output (${esc(p.rejected_numbers.join(', '))})</span>`;else g.remove()}).catch(()=>g.remove())}}
-let LLM=false;fetch('/api/status').then(r=>r.json()).then(s=>LLM=s.llm);
-async function sampleVision(){const bl=await (await fetch('/samples/inspection-WELL-0151.jpg')).blob();vision(new File([bl],'inspection-WELL-0151.jpg',{type:'image/jpeg'}),'WELL-0151')}
-async function vision(f,well){if(!f)return;well=well||(($('q').value.match(/WELL-\d{4}/i)||[''])[0]);const url=URL.createObjectURL(f);
- $('log').insertAdjacentHTML('beforeend',`<div class="msg"><div class="who">${esc($('user').selectedOptions[0].textContent.split(' — ')[0])}</div><div class="uq"><div>📷 ${esc(f.name)}${well?' · '+esc(well):''}<br><img src="${url}" style="max-width:260px;border-radius:8px;margin-top:6px"></div></div></div>`);
- const b=document.createElement('div');b.className='msg bot';b.innerHTML='<div class="steps"><div>Sending photo to Gemma 4 (multimodal)…</div></div>';$('log').appendChild(b);$('log').scrollTop=1e9;
- const fd=new FormData();fd.append('file',f);fd.append('well',well||'');fd.append('user',$('user').value);
- const r=await (await fetch('/api/vision',{method:'POST',body:fd})).json();
- b.innerHTML=r.ok?`<div><span class="badge b-medium">Gemma 4 vision · advisory</span><span class="mut">${esc(r.model)}</span></div>${marked.parse(r.description||'')}${r.context?`<div class="mut">Records: ${esc(r.context)}</div>`:''}<div class="mut">Photo analysis is advisory: it never overrides inspection records. Use a correction ("The spill was X bbl…") to change data.</div>`:`<span class="badge b-low">Vision unavailable</span> ${esc(r.reason||'')}`;$('log').scrollTop=1e9}
-const C=()=>getComputedStyle(document.documentElement);
-function render(el,v){const d=document.createElement('div');el.appendChild(d);const fg=C().getPropertyValue('--mut'),acc=C().getPropertyValue('--acc'),acc2=C().getPropertyValue('--acc2');
- if(v.type=='table'){d.style.overflowX='auto';d.innerHTML=`<table><tr>${v.columns.map(c=>`<th>${esc(c)}</th>`).join('')}</tr>${v.rows.slice(0,200).map(r=>`<tr>${v.columns.map(c=>{const s=String(r[c]??'');return `<td>${esc(s).replace(/((?:INS|MNT|REG|CTX)-\d{4}-\d{3,4})/g,'<span class="cite" onclick="ev(\'$1\')">$1</span>')}</td>`}).join('')}</tr>`).join('')}</table>`}
- else if(v.type=='card'){const s=v.data;d.innerHTML=`<div class="card"><div>Status<b class="${s.producing?'ok':'bad'}">${s.producing?'Producing':'Not producing'}</b><span class="mut">${esc(s.asset_id)} · ${esc(s.area)}</span></div><div>Wellhead − air<b>${s.delta_c} °C</b><span class="mut">limit ${s.threshold_c} °C (${s.well_type} manual)</span></div><div>Last inspection<b>${s.inspected_at.slice(0,10)}</b><span class="mut">${esc(s.inspector)} · ${s.method}</span></div><div>Recorded status<b class="${s.recorded_status_stale?'bad':''}">${s.recorded_status}</b><span class="mut">${s.recorded_status_stale?'out of date':'matches data'}</span></div></div>`}
- else if(v.type=='line'||v.type=='bar'){const cv=document.createElement('canvas');cv.style.maxHeight='340px';d.appendChild(cv);const cols=[acc,acc2,'#a78bfa','#34d399'];const ds=v.series.map((s,i)=>({label:s.name,data:s.data,borderColor:cols[i%4],backgroundColor:cols[i%4],tension:.25,borderRadius:4}));
-  if(v.marks)ds.push({label:v.mark_label,type:'scatter',data:v.x.map((x,i)=>v.marks.includes(x)?{x,y:v.series[0].data[i]}:null).filter(Boolean),backgroundColor:'#ef4444',pointRadius:7});
-  new Chart(cv,{type:v.type,data:{labels:v.x,datasets:ds},options:{plugins:{legend:{labels:{color:fg}}},scales:{x:{ticks:{color:fg},grid:{color:'rgba(128,128,128,.12)'}},y:{ticks:{color:fg},grid:{color:'rgba(128,128,128,.12)'}}}}})}
- else if(v.type=='map'){d.className='map';setTimeout(()=>{const mp=L.map(d);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(mp);const ps=v.points.map(p=>L.marker([p.lat,p.lon]).addTo(mp).bindTooltip(p.label,{permanent:v.points.length<=6,direction:'right'}));if(ps.length)mp.fitBounds(L.featureGroup(ps).getBounds().pad(0.3));else mp.setView([32,-102.3],10)},0)}
- else if(v.type=='heatmap'){const mx=Math.max(1,...v.z.flat());d.style.overflowX='auto';d.innerHTML=`<table><tr><th></th>${v.x.map(x=>`<th style="text-align:center">${x}</th>`).join('')}<th>Total</th></tr>${v.y.map((y,i)=>`<tr><th>${esc(y)}</th>${v.z[i].map(z=>`<td style="background:rgba(239,68,68,${(z/mx*.85).toFixed(2)});text-align:center;font-weight:600">${z}</td>`).join('')}<td><b>${v.z[i].reduce((a,b)=>a+b,0)}</b></td></tr>`).join('')}</table>`}}
-</script></body></html>
+ if(!h)h=`<p style="color:var(--mut)">${esc(e.error||'No details for this reference.')}</p>`;
+ $('db').innerHTML=h;const m=$('db').querySelector('mark');if(m){const bd=$('db');bd.scrollTop=m.offsetTop-bd.clientHeight/3}else $('db').scrollTop=0}
+function closeDrawer(){$('drawer').classList.remove('open');$('dscrim').classList.remove('on');if(lastFocus&&lastFocus.focus)lastFocus.focus({preventScroll:true})}
+/* briefing & memory */
+function briefing(){fetch('/api/briefing').then(r=>r.json()).then(b=>{$('asof').textContent='Computed from records as of '+b.as_of+' · every alert cites its source';const n=b.cards.reduce((a,c)=>a+(c.count||0),0);$('bcount').textContent=n;
+ $('cards').innerHTML=b.cards.map(c=>`<details class="bc ${c.severity}"><summary><span class="sev"></span><span class="tt">${esc(c.title)}</span><span class="n">${c.count}${c.total?`<small>USD ${c.total.toLocaleString()}</small>`:''}</span><svg class="i" style="color:var(--mut)"><use href="#i-down"/></svg></summary><ul>${c.items.slice(0,30).map(i=>`<li><span>${esc(i.text)}</span>${i.cite.map(x=>`<button class="cite">${esc(x)}</button>`).join('')}</li>`).join('')||'<li>None</li>'}</ul></details>`).join('')})}
+function mem(){if(!$('user').value)return;fetch('/api/memory?user='+$('user').value).then(r=>r.json()).then(m=>{const sec=(t,items)=>`<div class="memsec"><h3>${t} · ${items.length}</h3>${items.join('')||'<div class="memi" style="color:var(--mut)">Nothing yet</div>'}</div>`;
+ $('mem').innerHTML=sec('Shared well facts',m.shared_facts.map(f=>`<div class="memi"><b>${esc(f.asset_id)}</b> · ${esc(f.text)}<div class="s">${esc(f.status)}</div></div>`))+sec('Corrections (per inspection)',m.corrections.map(c=>`<div class="memi"><b>${esc(c.inspection_id)}</b> ${esc(c.field)}: ${esc(c.original_value)} → ${esc(c.corrected_value)}</div>`))+sec('Rules (per well type)',m.type_rules.map(t=>`<div class="memi">All <b>${esc(t.well_type)}</b> wells: ${esc(t.rule_key)} = ${esc(t.value)}</div>`))+sec('Your recent questions (private)',m.conversations.slice(0,10).map(c=>`<div class="memi">${esc(c.question)}</div>`))})}
+briefing();
+function toast(t){const e=$('toast');e.textContent=t;e.classList.add('on');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('on'),1600)}
+const ph=()=>q.placeholder=innerWidth<520?'Ask about your wells…':'Ask about wells, spills, downtime, compliance…';ph();addEventListener('resize',ph);
+</script>
+</body></html>
