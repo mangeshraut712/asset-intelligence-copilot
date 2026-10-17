@@ -2,11 +2,15 @@
 Usage: python scripts/final_run.py --data <test-data-dir> [--data <more>] --questions final_questions.txt [--sample ../dataset/sample-data] [--today 2026-10-17] [--no-llm]
 Questions: .txt (one per line; optional 'User Name: question' prefix) or .json list of {id,q,user,chat,day}."""
 import argparse, json, os, re, subprocess, sys, time
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__))); os.chdir(ROOT)
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ap = argparse.ArgumentParser(); ap.add_argument("--data", action="append", default=[]); ap.add_argument("--questions", required=True)
 ap.add_argument("--sample", default=os.path.join("..", "dataset", "sample-data")); ap.add_argument("--today"); ap.add_argument("--no-llm", action="store_true")
 ap.add_argument("--only-test", action="store_true", help="load only the test data (if it already contains the sample wells)")
 a = ap.parse_args(); t0 = time.time()
+# resolve user paths against the caller's directory, then work from the repo root
+a.data = [os.path.abspath(p) for p in a.data]; a.questions = os.path.abspath(a.questions)
+if a.sample != ap.get_default("sample"): a.sample = os.path.abspath(a.sample)
+os.chdir(ROOT)
 env = dict(os.environ)
 if a.today: env["AIC_TODAY"] = a.today
 if a.no_llm: env["AIC_LLM"] = "0"
