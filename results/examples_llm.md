@@ -1,6 +1,6 @@
 # Copilot answers (examples.json)
 
-**Score: 22/27**
+**Score: 25/27**
 
 ## Q1 — Michael Turner
 **Q:** Is WELL-0001 producing oil right now? When was it last inspected, and by whom?
@@ -40,43 +40,37 @@ The recorded status still says **active**, which is out of date.
 ## Q4 — Michael Turner
 **Q:** How many oil spills has WELL-0001 had in the last 4 years, and how much oil in total? List them in a table.
 
-**Real spills — WELL-0001, last 4 years (16 Oct 2022 to 16 Oct 2026): 6 in total**
+**6 real spills for WELL-0001 (16 Oct 2022 to 16 Oct 2026), 15.1 barrels in total.** 7 detections; excluded as corrected: INS-0001-0070 (7 Mar 2024, CTX-0001-001).
 
-- WELL-0001: 6
+*Visual:* table · *Citations:* INS-0001-0021, INS-0001-0027, INS-0001-0048, INS-0001-0051, INS-0001-0185, INS-0001-0201, CTX-0001-001, Dataset Guide: correction notes override detections
 
-_Rules applied: Detections voided by correction notes are excluded; runtime corrections applied._
-
-*Visual:* table · *Citations:* INS-0001-0021, INS-0001-0027, INS-0001-0048, INS-0001-0051, INS-0001-0185, INS-0001-0201
-
-*Check:* FAIL ['6 real spills', '15.1', 'INS-0001-0070', 'CTX-0001-001']  
+*Check:* PASS   
 
 ## Q5 — Michael Turner
 **Q:** How many days was WELL-0001 down in 2025?
 
-**Downtime — the whole field, 2025: 4060 days in total**
+**WELL-0001 was down 21 days** (1 Jan 2025–31 Dec 2025), from 3 weekly inspections where it was not producing oil:
+- 24 Jul 2025 (INS-0001-0140): wellhead 51.6 °C vs air 43.1 °C, only 8.5 °C warmer. Cause: Prime mover tripped on high temperature (MNT-0001-021).
+- 16 Oct 2025 (INS-0001-0152): wellhead 26.6 °C vs air 23.2 °C, only 3.4 °C warmer. Cause: Stuffing box packing leak (MNT-0001-023).
+- 23 Oct 2025 (INS-0001-0153): wellhead 16.0 °C vs air 16.6 °C, only -0.6 °C warmer. Cause: Stuffing box packing leak (MNT-0001-023); Scheduled lubrication and belt inspection (MNT-0001-024).
 
-_Rules applied: T200: producing when wellhead − air ≥ 15 °C (T200 manual); T350: producing when wellhead − air ≥ 20 °C (T350 manual); Downtime = 7 days per non-producing weekly inspection (Dataset Guide)._
+Downtime = 7 days per non-producing weekly inspection (Dataset Guide).
 
-*Visual:* None · *Citations:* INS-0001-0140, INS-0001-0152, INS-0001-0153, INS-0002-0080, INS-0002-0081, INS-0002-0082, INS-0003-0145, INS-0003-0146, INS-0005-0126, INS-0005-0127, INS-0005-0128, INS-0005-0129, INS-0005-0130, INS-0005-0131, INS-0006-0112, INS-0006-0127, INS-0006-0128, INS-0006-0129, INS-0006-0130, INS-0007-0113, INS-0007-0127, INS-0007-0128, INS-0007-0129, INS-0007-0130, INS-0007-0152
+*Visual:* None · *Citations:* INS-0001-0140, INS-0001-0152, INS-0001-0153, Dataset Guide (downtime), well-type manual
 
-*Check:* FAIL ['21 days', '24 Jul 2025', '51.6', '43.1', '8.5', 'MNT-0001-021', '16 Oct 2025', '23 Oct 2025', 'MNT-0001-023']  
+*Check:* PASS   
 
 ## Q6 — Michael Turner
 **Q:** Which 3 wells in Northeast Block 7 had the most downtime in the last 4 months? Show a bar chart.
 
-**Downtime — Northeast Block 7, T200 wells, last 4 months (16 Jun 2026 to 16 Oct 2026): 203 days in total**
+**Top 3 wells in Northeast Block 7 by downtime (16 Jun 2026 to 16 Oct 2026):** WELL-0121: 49 days (T200), WELL-0107: 42 days (T350), WELL-0138: 42 days (T350). Next is WELL-0119 at 28.
+- WELL-0121 why: Gearbox oil leak (MNT-0121-031); Scheduled wellhead valve service (MNT-0121-033); Prime mover failure (MNT-0121-034); Prime mover failure (MNT-0121-034)
+- WELL-0107 why: Stuffing box packing leak (MNT-0107-028); Stuffing box packing leak (MNT-0107-028); Annual flowline integrity test (MNT-0107-029)
+- WELL-0138 why: Prime mover failure (MNT-0138-031); Prime mover failure (MNT-0138-032); Gearbox oil leak (MNT-0138-034)
 
-**Highest: WELL-0121 (49 days)**
+*Visual:* bar · *Citations:* INS-0121-0189, INS-0121-0200, INS-0121-0201, INS-0121-0202, INS-0121-0203, INS-0121-0205, INS-0121-0206, INS-0107-0194, INS-0107-0195, INS-0107-0196, INS-0107-0197, INS-0107-0198, INS-0107-0199, INS-0138-0195, INS-0138-0196, INS-0138-0200, INS-0138-0201, INS-0138-0206, INS-0138-0207, Dataset Guide (downtime = 7 d per non-producing inspection)
 
-- WELL-0121: 49 days
-- WELL-0119: 28 days
-- WELL-0110: 21 days
-
-_Rules applied: T200: producing when wellhead − air ≥ 15 °C (T200 manual); Downtime = 7 days per non-producing weekly inspection (Dataset Guide)._
-
-*Visual:* bar · *Citations:* INS-0121-0189, INS-0121-0200, INS-0121-0201, INS-0121-0202, INS-0121-0203, INS-0121-0205, INS-0121-0206, INS-0119-0197, INS-0119-0198, INS-0119-0199, INS-0119-0200, INS-0110-0192, INS-0110-0193, INS-0110-0205
-
-*Check:* FAIL ['WELL-0138: 42 days', 'WELL-0107: 42 days', 'WELL-0119 at 28']  
+*Check:* PASS   
 
 ## Q7 — Michael Turner
 **Q:** Show on a map every well in Northeast Block 8 with a real spill in the last 90 days.
@@ -130,17 +124,12 @@ Real spills in 2026 by area and month (corrected detections removed). Totals: So
 ## Q11a — Michael Turner
 **Q:** Which 3 wells in Northeast Block 7 had the most downtime in the last 4 months? Show a bar chart.
 
-**Downtime — Northeast Block 7, T200 wells, last 4 months (16 Jun 2026 to 16 Oct 2026): 203 days in total**
+**Top 3 wells in Northeast Block 7 by downtime (16 Jun 2026 to 16 Oct 2026):** WELL-0121: 49 days (T200), WELL-0107: 42 days (T350), WELL-0138: 42 days (T350). Next is WELL-0119 at 28.
+- WELL-0121 why: Gearbox oil leak (MNT-0121-031); Scheduled wellhead valve service (MNT-0121-033); Prime mover failure (MNT-0121-034); Prime mover failure (MNT-0121-034)
+- WELL-0107 why: Stuffing box packing leak (MNT-0107-028); Stuffing box packing leak (MNT-0107-028); Annual flowline integrity test (MNT-0107-029)
+- WELL-0138 why: Prime mover failure (MNT-0138-031); Prime mover failure (MNT-0138-032); Gearbox oil leak (MNT-0138-034)
 
-**Highest: WELL-0121 (49 days)**
-
-- WELL-0121: 49 days
-- WELL-0119: 28 days
-- WELL-0110: 21 days
-
-_Rules applied: T200: producing when wellhead − air ≥ 15 °C (T200 manual); Downtime = 7 days per non-producing weekly inspection (Dataset Guide)._
-
-*Visual:* bar · *Citations:* INS-0121-0189, INS-0121-0200, INS-0121-0201, INS-0121-0202, INS-0121-0203, INS-0121-0205, INS-0121-0206, INS-0119-0197, INS-0119-0198, INS-0119-0199, INS-0119-0200, INS-0110-0192, INS-0110-0193, INS-0110-0205
+*Visual:* bar · *Citations:* INS-0121-0189, INS-0121-0200, INS-0121-0201, INS-0121-0202, INS-0121-0203, INS-0121-0205, INS-0121-0206, INS-0107-0194, INS-0107-0195, INS-0107-0196, INS-0107-0197, INS-0107-0198, INS-0107-0199, INS-0138-0195, INS-0138-0196, INS-0138-0200, INS-0138-0201, INS-0138-0206, INS-0138-0207, Dataset Guide (downtime = 7 d per non-producing inspection)
 
 *Check:* PASS   
 

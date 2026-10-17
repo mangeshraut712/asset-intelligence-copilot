@@ -256,7 +256,7 @@
   "id": "Q4",
   "user": "Michael Turner",
   "question": "How many oil spills has WELL-0001 had in the last 4 years, and how much oil in total? List them in a table.",
-  "answer": "**Real spills \u2014 WELL-0001, last 4 years (16 Oct 2022 to 16 Oct 2026): 6 in total**\n\n- WELL-0001: 6\n\n_Rules applied: Detections voided by correction notes are excluded; runtime corrections applied._",
+  "answer": "**6 real spills for WELL-0001 (16 Oct 2022 to 16 Oct 2026), 15.1 barrels in total.** 7 detections; excluded as corrected: INS-0001-0070 (7 Mar 2024, CTX-0001-001).",
   "visual": "table",
   "citations": [
    "INS-0001-0021",
@@ -264,326 +264,137 @@
    "INS-0001-0048",
    "INS-0001-0051",
    "INS-0001-0185",
-   "INS-0001-0201"
+   "INS-0001-0201",
+   "CTX-0001-001",
+   "Dataset Guide: correction notes override detections"
   ],
-  "engine": "llm:nvidia/nemotron-3-super-120b-a12b:free -> query",
+  "engine": "llm:nvidia/nemotron-3-super-120b-a12b:free -> query (rule router confident; used its tool)",
   "confidence": "medium",
   "trace": {
-   "engine": "llm:nvidia/nemotron-3-super-120b-a12b:free -> query",
+   "engine": "llm:nvidia/nemotron-3-super-120b-a12b:free -> query (rule router confident; used its tool)",
    "steps": [
     {
-     "tool": "run_query",
-     "args": {
-      "metric": "spills",
-      "scope": {
-       "wells": [
-        "WELL-0001"
-       ]
-      },
-      "window": [
-       "2022-10-16",
-       "2026-10-16"
-      ],
-      "group_by": "well",
-      "top": null,
-      "filters": {}
-     },
-     "result": "1 rows, total 6.0"
+     "tool": "spills",
+     "args": [
+      "How many oil spills has WELL-0001 had in the last 4 years, and how much oil in total? List them in a table.",
+      [
+       "WELL-0001"
+      ]
+     ]
     }
    ],
-   "rules": [
-    "Detections voided by correction notes are excluded; runtime corrections applied"
-   ],
-   "citations": 6
+   "rules": [],
+   "citations": 8
   },
   "visual_data": {
    "type": "table",
    "columns": [
     "Well",
-    "Type",
-    "Area",
-    "Real spills",
-    "Evidence"
+    "Date",
+    "Barrels",
+    "Inspection"
    ],
    "rows": [
     {
      "Well": "WELL-0001",
-     "Type": "T200",
-     "Area": "Southwest Block 23",
-     "Real spills": 6.0,
-     "Evidence": "INS-0001-0021, INS-0001-0027, INS-0001-0048, INS-0001-0051",
+     "Date": "16 Mar 2023",
+     "Barrels": 0.5,
+     "Inspection": "INS-0001-0021",
+     "Lat": 31.85425,
+     "Lon": -102.50232
+    },
+    {
+     "Well": "WELL-0001",
+     "Date": "27 Apr 2023",
+     "Barrels": 2.6,
+     "Inspection": "INS-0001-0027",
+     "Lat": 31.85425,
+     "Lon": -102.50232
+    },
+    {
+     "Well": "WELL-0001",
+     "Date": "28 Sep 2023",
+     "Barrels": 3.3,
+     "Inspection": "INS-0001-0048",
+     "Lat": 31.85425,
+     "Lon": -102.50232
+    },
+    {
+     "Well": "WELL-0001",
+     "Date": "19 Oct 2023",
+     "Barrels": 0.3,
+     "Inspection": "INS-0001-0051",
+     "Lat": 31.85425,
+     "Lon": -102.50232
+    },
+    {
+     "Well": "WELL-0001",
+     "Date": "11 Jun 2026",
+     "Barrels": 6.8,
+     "Inspection": "INS-0001-0185",
+     "Lat": 31.85425,
+     "Lon": -102.50232
+    },
+    {
+     "Well": "WELL-0001",
+     "Date": "1 Oct 2026",
+     "Barrels": 1.6,
+     "Inspection": "INS-0001-0201",
      "Lat": 31.85425,
      "Lon": -102.50232
     }
    ]
   },
-  "missing": [
-   "6 real spills",
-   "15.1",
-   "INS-0001-0070",
-   "CTX-0001-001"
-  ],
+  "missing": [],
   "unexpected": [],
   "visual_ok": true,
-  "pass": false
+  "pass": true
  },
  {
   "id": "Q5",
   "user": "Michael Turner",
   "question": "How many days was WELL-0001 down in 2025?",
-  "answer": "**Downtime \u2014 the whole field, 2025: 4060 days in total**\n\n_Rules applied: T200: producing when wellhead \u2212 air \u2265 15 \u00b0C (T200 manual); T350: producing when wellhead \u2212 air \u2265 20 \u00b0C (T350 manual); Downtime = 7 days per non-producing weekly inspection (Dataset Guide)._",
+  "answer": "**WELL-0001 was down 21 days** (1 Jan 2025\u201331 Dec 2025), from 3 weekly inspections where it was not producing oil:\n- 24 Jul 2025 (INS-0001-0140): wellhead 51.6 \u00b0C vs air 43.1 \u00b0C, only 8.5 \u00b0C warmer. Cause: Prime mover tripped on high temperature (MNT-0001-021).\n- 16 Oct 2025 (INS-0001-0152): wellhead 26.6 \u00b0C vs air 23.2 \u00b0C, only 3.4 \u00b0C warmer. Cause: Stuffing box packing leak (MNT-0001-023).\n- 23 Oct 2025 (INS-0001-0153): wellhead 16.0 \u00b0C vs air 16.6 \u00b0C, only -0.6 \u00b0C warmer. Cause: Stuffing box packing leak (MNT-0001-023); Scheduled lubrication and belt inspection (MNT-0001-024).\n\nDowntime = 7 days per non-producing weekly inspection (Dataset Guide).",
   "visual": null,
   "citations": [
    "INS-0001-0140",
    "INS-0001-0152",
    "INS-0001-0153",
-   "INS-0002-0080",
-   "INS-0002-0081",
-   "INS-0002-0082",
-   "INS-0003-0145",
-   "INS-0003-0146",
-   "INS-0005-0126",
-   "INS-0005-0127",
-   "INS-0005-0128",
-   "INS-0005-0129",
-   "INS-0005-0130",
-   "INS-0005-0131",
-   "INS-0006-0112",
-   "INS-0006-0127",
-   "INS-0006-0128",
-   "INS-0006-0129",
-   "INS-0006-0130",
-   "INS-0007-0113",
-   "INS-0007-0127",
-   "INS-0007-0128",
-   "INS-0007-0129",
-   "INS-0007-0130",
-   "INS-0007-0152",
-   "INS-0009-0125",
-   "INS-0009-0126",
-   "INS-0009-0127",
-   "INS-0009-0128",
-   "INS-0009-0129",
-   "INS-0009-0130",
-   "INS-0009-0149",
-   "INS-0012-0162",
-   "INS-0018-0125",
-   "INS-0019-0157",
-   "INS-0020-0158",
-   "INS-0021-0156",
-   "INS-0021-0157",
-   "INS-0022-0139",
-   "INS-0022-0140",
-   "INS-0022-0141",
-   "INS-0023-0143",
-   "INS-0023-0144",
-   "INS-0024-0154",
-   "INS-0025-0121",
-   "INS-0025-0122",
-   "INS-0025-0123",
-   "INS-0025-0124",
-   "INS-0025-0125",
-   "INS-0025-0126",
-   "INS-0025-0127",
-   "INS-0025-0133",
-   "INS-0025-0158",
-   "INS-0026-0113",
-   "INS-0026-0114",
-   "INS-0026-0115",
-   "INS-0026-0138",
-   "INS-0026-0142",
-   "INS-0027-0117",
-   "INS-0027-0118",
-   "INS-0027-0136",
-   "INS-0027-0137",
-   "INS-0027-0154",
-   "INS-0027-0155",
-   "INS-0029-0025",
-   "INS-0029-0026",
-   "INS-0029-0027",
-   "INS-0029-0028",
-   "INS-0029-0029",
-   "INS-0029-0030",
-   "INS-0030-0126",
-   "INS-0030-0127",
-   "INS-0030-0128",
-   "INS-0030-0129",
-   "INS-0031-0115",
-   "INS-0031-0116",
-   "INS-0031-0117",
-   "INS-0032-0148",
-   "INS-0032-0149",
-   "INS-0032-0150",
-   "INS-0035-0125",
-   "INS-0035-0126",
-   "INS-0035-0138",
-   "INS-0035-0139",
-   "INS-0035-0140",
-   "INS-0035-0141",
-   "INS-0035-0161",
-   "INS-0035-0162",
-   "INS-0036-0127",
-   "INS-0036-0128",
-   "INS-0036-0129",
-   "INS-0036-0130",
-   "INS-0036-0131",
-   "INS-0036-0132",
-   "INS-0036-0154",
-   "INS-0036-0155",
-   "INS-0036-0156",
-   "INS-0036-0157",
-   "INS-0037-0139",
-   "INS-0037-0141",
-   "INS-0038-0156",
-   "INS-0038-0157",
-   "INS-0041-0140",
-   "INS-0041-0141",
-   "INS-0041-0142",
-   "INS-0041-0143",
-   "INS-0041-0144",
-   "INS-0041-0145",
-   "INS-0043-0118",
-   "INS-0043-0119",
-   "INS-0043-0120",
-   "INS-0043-0121",
-   "INS-0044-0129",
-   "INS-0044-0130",
-   "INS-0045-0115",
-   "INS-0045-0150",
-   "INS-0045-0151",
-   "INS-0046-0131",
-   "INS-0048-0117",
-   "INS-0048-0126",
-   "INS-0048-0127",
-   "INS-0048-0128",
-   "INS-0048-0129",
-   "INS-0049-0121",
-   "INS-0049-0122",
-   "INS-0049-0147",
-   "INS-0049-0148",
-   "INS-0051-0117",
-   "INS-0051-0118",
-   "INS-0051-0119",
-   "INS-0051-0123",
-   "INS-0051-0128",
-   "INS-0051-0129",
-   "INS-0052-0145",
-   "INS-0052-0146",
-   "INS-0052-0147",
-   "INS-0052-0150",
-   "INS-0052-0151",
-   "INS-0053-0127",
-   "INS-0053-0128",
-   "INS-0053-0129",
-   "INS-0053-0130",
-   "INS-0053-0131",
-   "INS-0053-0132",
-   "INS-0053-0139",
-   "INS-0053-0140",
-   "INS-0053-0152",
-   "INS-0053-0153",
-   "INS-0055-0146",
-   "INS-0055-0147",
-   "INS-0055-0157",
-   "INS-0055-0158",
-   "INS-0055-0159",
-   "INS-0055-0160",
-   "INS-0056-0125",
-   "INS-0056-0126",
-   "INS-0056-0131",
-   "INS-0056-0157",
-   "INS-0056-0158",
-   "INS-0056-0159",
-   "INS-0057-0127",
-   "INS-0057-0128",
-   "INS-0058-0117",
-   "INS-0058-0118",
-   "INS-0058-0119",
-   "INS-0058-0120",
-   "INS-0058-0145",
-   "INS-0058-0147",
-   "INS-0058-0148",
-   "INS-0058-0149",
-   "INS-0058-0150",
-   "INS-0058-0151",
-   "INS-0058-0152",
-   "INS-0059-0142",
-   "INS-0059-0143",
-   "INS-0059-0144",
-   "INS-0059-0145",
-   "INS-0059-0146",
-   "INS-0059-0147",
-   "INS-0059-0164",
-   "INS-0059-0165",
-   "INS-0059-0166",
-   "INS-0060-0123",
-   "INS-0060-0124",
-   "INS-0060-0125",
-   "INS-0060-0126",
-   "INS-0060-0127",
-   "INS-0060-0128",
-   "INS-0061-0118",
-   "INS-0061-0126",
-   "INS-0061-0159",
-   "INS-0062-0161",
-   "INS-0062-0162",
-   "INS-0063-0114",
-   "INS-0063-0129",
-   "INS-0065-0121",
-   "INS-0065-0122",
-   "INS-0065-0123",
-   "INS-0065-0137",
-   "INS-0066-0114"
+   "Dataset Guide (downtime)",
+   "well-type manual"
   ],
-  "engine": "llm:google/gemma-4-26b-a4b-it:free -> query",
+  "engine": "llm:google/gemma-4-26b-a4b-it:free -> query (rule router confident; used its tool)",
   "confidence": "medium",
   "trace": {
-   "engine": "llm:google/gemma-4-26b-a4b-it:free -> query",
+   "engine": "llm:google/gemma-4-26b-a4b-it:free -> query (rule router confident; used its tool)",
    "steps": [
     {
-     "tool": "run_query",
-     "args": {
-      "metric": "downtime",
-      "scope": {},
-      "window": [
-       "2025-01-01",
-       "2025-12-31"
-      ],
-      "group_by": null,
-      "top": null,
-      "filters": {}
-     },
-     "result": "1 rows, total 4060.0"
+     "tool": "downtime",
+     "args": [
+      "How many days was WELL-0001 down in 2025?",
+      [
+       "WELL-0001"
+      ]
+     ]
     }
    ],
    "rules": [
-    "T200: producing when wellhead \u2212 air \u2265 15 \u00b0C (T200 manual)",
-    "T350: producing when wellhead \u2212 air \u2265 20 \u00b0C (T350 manual)",
-    "Downtime = 7 days per non-producing weekly inspection (Dataset Guide)"
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
    ],
-   "citations": 200
+   "citations": 5
   },
   "visual_data": null,
-  "missing": [
-   "21 days",
-   "24 Jul 2025",
-   "51.6",
-   "43.1",
-   "8.5",
-   "MNT-0001-021",
-   "16 Oct 2025",
-   "23 Oct 2025",
-   "MNT-0001-023"
-  ],
+  "missing": [],
   "unexpected": [],
   "visual_ok": true,
-  "pass": false
+  "pass": true
  },
  {
   "id": "Q6",
   "user": "Michael Turner",
   "question": "Which 3 wells in Northeast Block 7 had the most downtime in the last 4 months? Show a bar chart.",
-  "answer": "**Downtime \u2014 Northeast Block 7, T200 wells, last 4 months (16 Jun 2026 to 16 Oct 2026): 203 days in total**\n\n**Highest: WELL-0121 (49 days)**\n\n- WELL-0121: 49 days\n- WELL-0119: 28 days\n- WELL-0110: 21 days\n\n_Rules applied: T200: producing when wellhead \u2212 air \u2265 15 \u00b0C (T200 manual); Downtime = 7 days per non-producing weekly inspection (Dataset Guide)._",
+  "answer": "**Top 3 wells in Northeast Block 7 by downtime (16 Jun 2026 to 16 Oct 2026):** WELL-0121: 49 days (T200), WELL-0107: 42 days (T350), WELL-0138: 42 days (T350). Next is WELL-0119 at 28.\n- WELL-0121 why: Gearbox oil leak (MNT-0121-031); Scheduled wellhead valve service (MNT-0121-033); Prime mover failure (MNT-0121-034); Prime mover failure (MNT-0121-034)\n- WELL-0107 why: Stuffing box packing leak (MNT-0107-028); Stuffing box packing leak (MNT-0107-028); Annual flowline integrity test (MNT-0107-029)\n- WELL-0138 why: Prime mover failure (MNT-0138-031); Prime mover failure (MNT-0138-032); Gearbox oil leak (MNT-0138-034)",
   "visual": "bar",
   "citations": [
    "INS-0121-0189",
@@ -593,70 +404,62 @@
    "INS-0121-0203",
    "INS-0121-0205",
    "INS-0121-0206",
-   "INS-0119-0197",
-   "INS-0119-0198",
-   "INS-0119-0199",
-   "INS-0119-0200",
-   "INS-0110-0192",
-   "INS-0110-0193",
-   "INS-0110-0205"
+   "INS-0107-0194",
+   "INS-0107-0195",
+   "INS-0107-0196",
+   "INS-0107-0197",
+   "INS-0107-0198",
+   "INS-0107-0199",
+   "INS-0138-0195",
+   "INS-0138-0196",
+   "INS-0138-0200",
+   "INS-0138-0201",
+   "INS-0138-0206",
+   "INS-0138-0207",
+   "Dataset Guide (downtime = 7 d per non-producing inspection)"
   ],
-  "engine": "llm:google/gemma-4-26b-a4b-it:free -> query",
+  "engine": "llm:google/gemma-4-26b-a4b-it:free -> query (rule router confident; used its tool)",
   "confidence": "medium",
   "trace": {
-   "engine": "llm:google/gemma-4-26b-a4b-it:free -> query",
+   "engine": "llm:google/gemma-4-26b-a4b-it:free -> query (rule router confident; used its tool)",
    "steps": [
     {
-     "tool": "run_query",
-     "args": {
-      "metric": "downtime",
-      "scope": {
-       "area": "NE-07",
-       "well_type": "T200"
-      },
-      "window": [
-       "2026-06-16",
-       "2026-10-16"
-      ],
-      "group_by": "well",
-      "top": 3,
-      "filters": {}
-     },
-     "result": "3 rows, total 203.0"
+     "tool": "downtime",
+     "args": [
+      "Which 3 wells in Northeast Block 7 had the most downtime in the last 4 months? Show a bar chart.",
+      [],
+      "NE-07"
+     ]
     }
    ],
    "rules": [
-    "T200: producing when wellhead \u2212 air \u2265 15 \u00b0C (T200 manual)",
-    "Downtime = 7 days per non-producing weekly inspection (Dataset Guide)"
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
    ],
-   "citations": 14
+   "citations": 20
   },
   "visual_data": {
    "type": "bar",
    "x": [
     "WELL-0121",
-    "WELL-0119",
-    "WELL-0110"
+    "WELL-0107",
+    "WELL-0138"
    ],
    "series": [
     {
-     "name": "downtime (days)",
+     "name": "Downtime (days)",
      "data": [
-      49.0,
-      28.0,
-      21.0
+      49,
+      42,
+      42
      ]
     }
    ]
   },
-  "missing": [
-   "WELL-0138: 42 days",
-   "WELL-0107: 42 days",
-   "WELL-0119 at 28"
-  ],
+  "missing": [],
   "unexpected": [],
   "visual_ok": true,
-  "pass": false
+  "pass": true
  },
  {
   "id": "Q7",
@@ -980,7 +783,7 @@
   "id": "Q11a",
   "user": "Michael Turner",
   "question": "Which 3 wells in Northeast Block 7 had the most downtime in the last 4 months? Show a bar chart.",
-  "answer": "**Downtime \u2014 Northeast Block 7, T200 wells, last 4 months (16 Jun 2026 to 16 Oct 2026): 203 days in total**\n\n**Highest: WELL-0121 (49 days)**\n\n- WELL-0121: 49 days\n- WELL-0119: 28 days\n- WELL-0110: 21 days\n\n_Rules applied: T200: producing when wellhead \u2212 air \u2265 15 \u00b0C (T200 manual); Downtime = 7 days per non-producing weekly inspection (Dataset Guide)._",
+  "answer": "**Top 3 wells in Northeast Block 7 by downtime (16 Jun 2026 to 16 Oct 2026):** WELL-0121: 49 days (T200), WELL-0107: 42 days (T350), WELL-0138: 42 days (T350). Next is WELL-0119 at 28.\n- WELL-0121 why: Gearbox oil leak (MNT-0121-031); Scheduled wellhead valve service (MNT-0121-033); Prime mover failure (MNT-0121-034); Prime mover failure (MNT-0121-034)\n- WELL-0107 why: Stuffing box packing leak (MNT-0107-028); Stuffing box packing leak (MNT-0107-028); Annual flowline integrity test (MNT-0107-029)\n- WELL-0138 why: Prime mover failure (MNT-0138-031); Prime mover failure (MNT-0138-032); Gearbox oil leak (MNT-0138-034)",
   "visual": "bar",
   "citations": [
    "INS-0121-0189",
@@ -990,58 +793,54 @@
    "INS-0121-0203",
    "INS-0121-0205",
    "INS-0121-0206",
-   "INS-0119-0197",
-   "INS-0119-0198",
-   "INS-0119-0199",
-   "INS-0119-0200",
-   "INS-0110-0192",
-   "INS-0110-0193",
-   "INS-0110-0205"
+   "INS-0107-0194",
+   "INS-0107-0195",
+   "INS-0107-0196",
+   "INS-0107-0197",
+   "INS-0107-0198",
+   "INS-0107-0199",
+   "INS-0138-0195",
+   "INS-0138-0196",
+   "INS-0138-0200",
+   "INS-0138-0201",
+   "INS-0138-0206",
+   "INS-0138-0207",
+   "Dataset Guide (downtime = 7 d per non-producing inspection)"
   ],
-  "engine": "llm:google/gemma-4-26b-a4b-it:free -> query",
+  "engine": "llm:google/gemma-4-26b-a4b-it:free -> query (rule router confident; used its tool)",
   "confidence": "medium",
   "trace": {
-   "engine": "llm:google/gemma-4-26b-a4b-it:free -> query",
+   "engine": "llm:google/gemma-4-26b-a4b-it:free -> query (rule router confident; used its tool)",
    "steps": [
     {
-     "tool": "run_query",
-     "args": {
-      "metric": "downtime",
-      "scope": {
-       "area": "NE-07",
-       "well_type": "T200"
-      },
-      "window": [
-       "2026-06-16",
-       "2026-10-16"
-      ],
-      "group_by": "well",
-      "top": 3,
-      "filters": {}
-     },
-     "result": "3 rows, total 203.0"
+     "tool": "downtime",
+     "args": [
+      "Which 3 wells in Northeast Block 7 had the most downtime in the last 4 months? Show a bar chart.",
+      [],
+      "NE-07"
+     ]
     }
    ],
    "rules": [
-    "T200: producing when wellhead \u2212 air \u2265 15 \u00b0C (T200 manual)",
-    "Downtime = 7 days per non-producing weekly inspection (Dataset Guide)"
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
    ],
-   "citations": 14
+   "citations": 20
   },
   "visual_data": {
    "type": "bar",
    "x": [
     "WELL-0121",
-    "WELL-0119",
-    "WELL-0110"
+    "WELL-0107",
+    "WELL-0138"
    ],
    "series": [
     {
-     "name": "downtime (days)",
+     "name": "Downtime (days)",
      "data": [
-      49.0,
-      28.0,
-      21.0
+      49,
+      42,
+      42
      ]
     }
    ]
