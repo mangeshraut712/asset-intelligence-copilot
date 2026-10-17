@@ -112,8 +112,11 @@ AIC_DATA=/path/to/sample-data python -m pytest -q tests   # 101 tests: tools, ra
 
 ## Final hour (one command)
 ```bash
-AIC_TODAY=2026-10-17 python scripts/final_run.py --data <test-data> --questions final.txt   # or --today YYYY-MM-DD; --no-llm for rules only
+# exact command used for the submitted results (organizers' dataset repo, commit 009e2b5, cloned next to this repo as ../dataset):
+AIC_TODAY=2027-01-15 python scripts/final_run.py --data ../dataset/test-data/dataset --only-test --questions eval/final_questions.json
+# general form: --data <test-data> --questions final.txt; --today YYYY-MM-DD; --no-llm for rules only
 ```
+Reproduces `results/final.md` and `results/final.json` byte-for-byte in about 2.5 s. Note: it also regenerates `docs/results.md` from the template; the submitted page 2 adds hand-checked per-turn verdicts, so restore it with `git checkout docs/results.md` afterwards. Final result: 16 of 21 turns correct, 2 mostly correct, 3 judgement calls (see `docs/results.md`).
 It loads sample + test data (memory reset), answers every question (`.txt` lines may start with `User Name:`) and writes `results/final.md`, `results/final.json` and `docs/results.md`, filled from `docs/results_template.md` (summary, answer table, what worked, what didn't). A rehearsal output is in `docs/rehearsal-synthetic.md`. Rehearsed on the synthetic 400-well set (`synth/test-data`, built by `scripts/make_synthetic_dataset.py`): **1.8 s end to end**.
 
 ## Loading the test dataset
