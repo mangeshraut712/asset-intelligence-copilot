@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: asset-intelligence-copilot
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/healthz
+    envVars:
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: AIC_TODAY
+        value: "2026-10-17"
+      - key: AIC_LLM
+        value: auto

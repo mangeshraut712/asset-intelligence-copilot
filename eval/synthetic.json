@@ -1,0 +1,7 @@
+[{"id":"S1","user":"Michael Turner","chat":"s","q":"Is WELL-0201 producing oil right now? When was it last inspected, and by whom?","expect":["not producing","INS-0201-0203","Ryan Brooks","CTX-0201-003"],"visual":"card"},
+{"id":"S2","user":"Michael Turner","chat":"s","q":"Which 3 wells in Southeast Block 41 had the most downtime in the last 4 months? Show a bar chart.","expect":["WELL-0321: 49 days","WELL-0338: 42 days","WELL-0307: 42 days"],"visual":"bar"},
+{"id":"S3","user":"Michael Turner","chat":"s","q":"Show a heatmap of 2026 spills by geographic area and month.","expect":["Northwest Block 31: 35","Southeast Block 42: 26","Southwest Block 23: 35"],"visual":"heatmap"},
+{"id":"S4","user":"Michael Turner","chat":"s","q":"Which rules has WELL-0201 broken in the last 12 months, and what is still open?","expect":["4 rule breach","REG-0201-002","MNT-0201-029"],"visual":"table"},
+{"id":"S5","user":"Michael Turner","chat":"s","q":"In Northwest Block 32, which spills in the last 90 days were not contained within the SOP time limit?","expect":["WELL-0282","7.1","WELL-0300","8.1"],"visual":"table"},
+{"id":"S6","user":"Michael Turner","chat":"s","q":"Show on a map every well in Southeast Block 42 with a real spill in the last 90 days.","expect":["WELL-0351","WELL-0386","4 wells"],"visual":"map"},
+{"id":"S7","user":"Michael Turner","chat":"s","q":"Which 3 wells in Northeast Block 7 had the most downtime in the last 4 months? Show a bar chart.","expect":["WELL-0121: 49 days"],"visual":"bar"}]

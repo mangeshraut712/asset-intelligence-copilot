@@ -21,6 +21,9 @@ def index(): return FileResponse(os.path.join(WEB, "index.html"))
 @app.get("/api/users")
 def users(): return [dict(r) for r in db().execute("SELECT * FROM users ORDER BY user_id")]
 
+@app.get("/api/healthz")
+def healthz(): return {"ok": True}
+
 @app.get("/api/status")
 def status():
     cfg = llm_config()

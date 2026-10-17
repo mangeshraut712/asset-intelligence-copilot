@@ -50,14 +50,30 @@ dataset folder(s) ──► copilot/loader.py ──► SQLite (data/copilot.db)
 ## Run
 
 ```bash
+git clone https://github.com/FlytBaseAILabs/flytbase-ahc-swe-asset-intelligence-dataset ../dataset
 pip install -r requirements.txt
-python -m copilot.loader /path/to/sample-data            # builds data/copilot.db
+cp .env.example .env   # optional: add OPENROUTER_API_KEY, then `set -a; . ./.env; set +a`
+python -m copilot.loader ../dataset/sample-data           # builds data/copilot.db
 python -m uvicorn copilot.server:app --port 8765          # open http://localhost:8765
-python tests/test_tools.py                                 # deterministic tool tests
+python -m pytest -q tests                                  # 44 tests
 python -m eval.run_questions eval/examples.json --fresh    # 18 examples → results/examples.{md,json} + score
 ```
 
 Optional LLM (OpenAI-compatible tool calling; numbers always come from the tools): set one of `OPENROUTER_API_KEY`, `OPENAI_API_KEY`, `XAI_API_KEY`, `GROQ_API_KEY`, `GEMINI_API_KEY` (or `AIC_LLM_BASE=http://localhost:11434/v1` for Ollama), optionally `AIC_LLM_MODEL`, and `pip install openai`. Routing policy (`AIC_LLM`): `auto` (default) means the rule router is authoritative when it matches confidently and the LLM is only asked when it is unsure; `force` sends every question through the LLM; `0` means rules only. LLM picks are cached in `data/llm_cache.json`, a free-model fallback chain is tried (`AIC_LLM_FALLBACKS`), the timeout is `AIC_LLM_TIMEOUT` (20 s), and any error falls back to the rule router, so rate limits cannot block a run.
+
+## Tests
+
+```bash
+pip install -r requirements-dev.txt
+AIC_DATA=/path/to/sample-data python -m pytest -q tests   # 44 tests: tools, raw-data recomputation, memory scopes, corrections, 18 examples, API
+```
+`tests/test_raw_recompute.py` recomputes key expected answers straight from the raw JSON (no copilot code), so the example checker is not just matching strings. Tests use a temporary DB and never touch the running server's memory.
+
+## Deploy
+
+* **Docker:** `docker build -t aic . && docker run -p 8765:8765 -e OPENROUTER_API_KEY=... aic`. The image bakes in the public sample dataset; to add the test set, mount it and set `DATA_DIRS="/data/sample-data /data/extra"`.
+* **Render (one step):** New → Blueprint → pick this repo (`render.yaml`), set `OPENROUTER_API_KEY`. Health check: `/api/healthz`.
+* Any Docker host (Fly, Railway, Cloud Run) works the same way: the container listens on `$PORT`.
 
 ## Loading the test dataset
 
@@ -69,6 +85,7 @@ AIC_TODAY=2026-10-17 python -m uvicorn copilot.server:app --port 8765   # set "t
 # final questions: one per line in a .txt, or a JSON list of {id, q, user, chat, day}
 python -m eval.run_questions final_questions.txt --out results/final
 ```
+To dry-run this step: `python scripts/make_synthetic_dataset.py <sample-data> /tmp/test-data` builds a 200-well copy (renumbered wells, new areas). `eval/synthetic.json` checks answers on sample + synthetic loaded together (7/7, 400 wells load in about 1 s).
 `--reset-memory` on the loader wipes runtime memory; otherwise it is preserved across reloads.
 
 ## Models and cost

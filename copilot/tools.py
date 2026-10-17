@@ -42,7 +42,7 @@ def area_id(c, text):
     if m:
         for r in c.execute("SELECT area_id, name FROM areas"):
             num = re.search(r"(\d+)$", r["area_id"]).group(1)
-            if num == m.group(2) and (not m.group(1) or r["name"].lower().replace(" ", "").startswith(m.group(1).replace(" ", "")[:5]) or r["area_id"].lower().startswith(m.group(1)[:2])):
+            if int(num) == int(m.group(2)) and (not m.group(1) or r["name"].lower().replace(" ", "").startswith(m.group(1).replace(" ", "")[:5]) or r["area_id"].lower().startswith(m.group(1)[:2])):
                 return r["area_id"]
     return None
 
