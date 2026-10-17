@@ -57,7 +57,9 @@ class Copilot:
         """Most recent conversation of THIS user (never other users) in another chat that mentioned wells.
         'yesterday' restricts to earlier days; 'earlier/before' allows earlier chats today."""
         cutoff = now()[:10] if yesterday else "9999"
-        r = self.c.execute("SELECT * FROM memory_conversations WHERE user_id=? AND chat_id!=? AND wells!='[]' AND substr(ts,1,10)<? ORDER BY id DESC LIMIT 1", (user, chat, cutoff)).fetchone()
+        rows = self.c.execute("SELECT * FROM memory_conversations WHERE user_id=? AND chat_id!=? AND wells!='[]' AND substr(ts,1,10)<? ORDER BY id DESC LIMIT 20", (user, chat, cutoff)).fetchall()
+        n = getattr(self, "_want_n", None)
+        r = next((x for x in rows if n and len(json.loads(x["wells"])) == n), rows[0] if rows else None)
         return (json.loads(r["wells"]), r) if r else (None, None)
 
     # ---------------- entry ----------------
@@ -94,6 +96,8 @@ class Copilot:
             if wells and re.search(r"(wrong|faulty|re-?measured|measured|estimated|correct)", ql): return self.correction(q, user, wells[0])
             if wells: return self.statement(q, user, wells[0])
         if re.search(r"(discussed|talked about|we looked at).*(yesterday|earlier|before|last time)|wells we discussed", ql):
+            mm = re.search(r"\b(two|three|four|five|\d+) wells", ql)
+            self._want_n = ({"two": 2, "three": 3, "four": 4, "five": 5}.get(mm.group(1)) or int(mm.group(1))) if mm and not mm.group(1).isalpha() or (mm and mm.group(1) in ("two", "three", "four", "five")) else None
             ws, conv = self.earlier_wells(user, chat, yesterday="yesterday" in ql)
             if not ws: return {"text": f"I have no earlier conversation with {user_name(c, user)} that mentions wells, so I can't tell which wells you mean. (Private memory is per user; I don't use other users' chats.) Which wells do you mean?", "visual": None, "citations": [], "wells": []}
             pre = f"From your earlier conversation ({conv['ts'][:16]}: \"{conv['question']}\") the wells were {', '.join(ws)}. "
