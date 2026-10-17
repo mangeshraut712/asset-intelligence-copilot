@@ -11,7 +11,9 @@ A chat copilot for oil-field operators. It answers plain-English questions about
 | pytest | **101 passed** |
 | Final-hour command on a synthetic 400-well set (sample + test data) | **~2 s** end to end, 7/7 checks |
 
-**Demo video (4:41, narrated in my own voice):** https://vimeo.com/1236779581
+**Demo video (4:41, narrated in my own voice):** https://drive.google.com/file/d/1OdlK_6-9StQk0gc5ztwZs5MSVCvVVWHz/view (mirror: https://vimeo.com/1236779581)
+
+**Report (PDF):** https://drive.google.com/file/d/1V4ps3w4if5FurkkwLpUvRyxdnbfuCW2f/view · in repo: [docs/report.pdf](docs/report.pdf) ([markdown](docs/report.md))
 
 Docs: [system design (page 1)](docs/writeup.md) · [results (page 2)](docs/results.md) · [video script](docs/video/script.md) · [contributing](CONTRIBUTING.md)
 
