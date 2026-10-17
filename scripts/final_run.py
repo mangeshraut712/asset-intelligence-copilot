@@ -14,7 +14,7 @@ dirs = (a.data if a.only_test else [a.sample] + a.data)
 print("[1/3] loading", dirs); subprocess.run([sys.executable, "-m", "copilot.loader", "--reset-memory", *dirs], check=True, env=env)
 qf = a.questions
 if qf.endswith(".txt"):  # support "User Name: question"
-    users = None; items = []
+    items = []
     for i, l in enumerate(x.strip() for x in open(qf)):
         if not l or l.startswith("#"): continue
         m = re.match(r"^\s*(?:Q?\d+[.)]\s*)?(?:\[?([A-Z][a-z]+ [A-Z][a-z]+)\]?:\s+)?(.+)$", l)

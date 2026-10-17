@@ -37,19 +37,6 @@ def period_from(q):
     if w: return w[0], w[1]
     return None
 
-def _old_period_from(q):
-    ql = q.lower()
-    m = re.search(r"last (\d+) (month|day|week|year)s?", ql)
-    if m:
-        n, u = int(m.group(1)), m.group(2)
-        return window(months=n) if u == "month" else window(days=n) if u == "day" else window(days=7 * n) if u == "week" else window(months=12 * n)
-    if "last 12 months" in ql or "past year" in ql: return window(months=12)
-    m = re.search(r"\b(?:in|during|for)\s+(20\d\d)\b", ql) or re.search(r"\b(20\d\d)\b", ql)
-    if m: return window(year=int(m.group(1)))
-    if "this summer" in ql: return dt.date(TODAY.year, 6, 1), dt.date(TODAY.year, 8, 31)
-    if "this year" in ql: return window(year=TODAY.year)
-    return None
-
 HANDLERS = ["status", "area_status", "temps", "spills", "downtime", "heatmap", "compliance", "containment", "reportable", "rca", "costs", "spill_dispute",
             "planned", "repairs", "docs", "correction", "type_rule", "statement"]
 HANDLER_RULES = {"status": ["%.producing_delta_c"], "area_status": ["%.producing_delta_c"], "temps": ["%.producing_delta_c"], "downtime": ["%.producing_delta_c"],

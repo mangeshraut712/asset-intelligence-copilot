@@ -7,7 +7,7 @@ TODAY = dt.date(2026, 10, 17); Y = TODAY - dt.timedelta(days=1)
 THR = {}
 for p in glob.glob(f"{D}/fleet/well-types/*.md"):
     THR[os.path.basename(p)[:-3]] = float(re.search(r"at least \*\*([\d.]+) °C above", open(p).read()).group(1))
-areas = json.load(open(f"{D}/fleet/areas.json")); AN = {a["area_id"]: a["name"] for a in areas["areas"]}; TN = {t["team_id"]: t["name"] for t in areas["teams"]}
+areas = json.load(open(f"{D}/fleet/areas.json")); AN = {a["area_id"]: a["name"] for a in areas["areas"]}
 UN = {u["user_id"]: u["name"] for u in json.load(open(f"{D}/fleet/users.json"))["users"]}
 W = {}
 for d in sorted(glob.glob(f"{D}/assets/*")):
@@ -101,7 +101,6 @@ for a in ["SW-23", "NE-07"]:
 # --- notes and planned shutdowns
 for w in ["WELL-0101", "WELL-0013"]:
     ns = W[w]["notes"]; add(f"What notes do we have on {w}?", [n["note_id"] for n in ns])
-pl = [k for k in W for n in W[k]["notes"] if n.get("valid_to") and n["valid_to"] >= str(TODAY) and re.search("shut|planned|workover", n["text"], re.I)]
 add("Is any downtime planned for WELL-0001?", ["Yes", "CTX-0001-003", "20 Oct"])
 # --- compliance one well
 add("Which rules has WELL-0082 broken in the last 12 months?", ["SR-02", "MNT-0082-028"])

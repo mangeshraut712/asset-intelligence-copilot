@@ -217,7 +217,7 @@ def spill_compliance(c, r):
     out["class"] = cls; out["volume_bbl"] = vol
     return out
 
-def rca_check(area=None, equipment_kind=None, asset_ids=None, ref_date=None):
+def rca_check(area=None, equipment_kind=None, asset_ids=None):
     """Wells with >= N corrective repairs on the same equipment kind in the 12 months before today. N from manual, overridable per well type by users."""
     c = db(); ids = asset_ids or [w["asset_id"] for w in wells_in(c, area_id(c, area) if area else None)]
     s = sub_months(TODAY, 12); out = []; applied_rules = {}

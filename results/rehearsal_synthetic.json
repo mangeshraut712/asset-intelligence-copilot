@@ -64,314 +64,29 @@
  {
   "id": "F2",
   "user": "Michael Turner",
-  "question": "Which wells in Southeast Block 42 are not producing oil right now, and why? Show them in a table.",
-  "answer": "**4 wells in Southeast Block 42 are not producing oil right now** (latest inspection per well): WELL-0364, WELL-0370, WELL-0372, WELL-0375.",
-  "visual": "table",
-  "citations": [
-   "INS-0364-0205",
-   "INS-0370-0206",
-   "INS-0372-0206",
-   "INS-0375-0204",
-   "T200/T350 manual production rule"
-  ],
-  "engine": "rules",
-  "confidence": "high",
-  "trace": {
-   "engine": "rules",
-   "steps": [
-    {
-     "tool": "area_status",
-     "args": [
-      "SE-42"
-     ]
-    }
-   ],
-   "rules": [
-    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
-    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
-   ],
-   "citations": 5
-  },
-  "visual_data": {
-   "type": "table",
-   "columns": [
-    "Well",
-    "Type",
-    "Last inspected",
-    "Wellhead above air (\u00b0C)",
-    "Recorded status",
-    "Reason",
-    "Inspection"
-   ],
-   "rows": [
-    {
-     "Well": "WELL-0364",
-     "Type": "T200",
-     "Last inspected": "15 Oct 2026",
-     "Wellhead above air (\u00b0C)": 4.1,
-     "Recorded status": "active (out of date)",
-     "Reason": "No recorded reason. Inspector noted \"Pump jack not moving.\" \u2014 suggest a site check",
-     "Inspection": "INS-0364-0205",
-     "Lat": 32.6452,
-     "Lon": -102.1788
-    },
-    {
-     "Well": "WELL-0370",
-     "Type": "T200",
-     "Last inspected": "15 Oct 2026",
-     "Wellhead above air (\u00b0C)": 2.9,
-     "Recorded status": "down",
-     "Reason": "Repair MNT-0370-031: Walking beam bearing wear (started 19 Sep 2026, still open)",
-     "Inspection": "INS-0370-0206",
-     "Lat": 32.65939,
-     "Lon": -102.1766
-    },
-    {
-     "Well": "WELL-0372",
-     "Type": "T200",
-     "Last inspected": "15 Oct 2026",
-     "Wellhead above air (\u00b0C)": 5.7,
-     "Recorded status": "active (out of date)",
-     "Reason": "Repair MNT-0372-028: Flowline corrosion pinhole leak (started 3 Oct 2026, still open)",
-     "Inspection": "INS-0372-0206",
-     "Lat": 32.65584,
-     "Lon": -102.19308
-    },
-    {
-     "Well": "WELL-0375",
-     "Type": "T200",
-     "Last inspected": "15 Oct 2026",
-     "Wellhead above air (\u00b0C)": 0.4,
-     "Recorded status": "active (out of date)",
-     "Reason": "No recorded reason \u2014 suggest a site check",
-     "Inspection": "INS-0375-0204",
-     "Lat": 32.6802,
-     "Lon": -102.1479
-    }
-   ]
-  }
- },
- {
-  "id": "F3",
-  "user": "Michael Turner",
-  "question": "Show a line chart of WELL-0321's wellhead temperature against air temperature for the last 13 weeks.",
-  "answer": "13 readings for WELL-0321 (23 Jul 2026 to 15 Oct 2026). Not producing oil on: 3 Sep 2026, 10 Sep 2026, 17 Sep 2026, 24 Sep 2026, 8 Oct 2026, 15 Oct 2026 (wellhead less than 15 \u00b0C above air).",
-  "visual": "line",
-  "citations": [
-   "INS-0321-0194 \u2026 INS-0321-0206"
-  ],
-  "engine": "rules",
-  "confidence": "high",
-  "trace": {
-   "engine": "rules",
-   "steps": [
-    {
-     "tool": "temps",
-     "args": [
-      "Show a line chart of WELL-0321's wellhead temperature against air temperature for the last 13 weeks.",
-      "WELL-0321"
-     ]
-    }
-   ],
-   "rules": [
-    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
-    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
-   ],
-   "citations": 1
-  },
-  "visual_data": {
-   "type": "line",
-   "x": [
-    "2026-07-23",
-    "2026-07-30",
-    "2026-08-06",
-    "2026-08-13",
-    "2026-08-20",
-    "2026-08-27",
-    "2026-09-03",
-    "2026-09-10",
-    "2026-09-17",
-    "2026-09-24",
-    "2026-10-01",
-    "2026-10-08",
-    "2026-10-15"
-   ],
-   "series": [
-    {
-     "name": "Wellhead \u00b0C",
-     "data": [
-      66.4,
-      67.0,
-      63.3,
-      60.2,
-      58.6,
-      49.0,
-      29.8,
-      34.4,
-      27.1,
-      33.0,
-      54.6,
-      29.0,
-      22.7
-     ]
-    },
-    {
-     "name": "Air \u00b0C",
-     "data": [
-      38.8,
-      35.6,
-      34.1,
-      32.6,
-      34.7,
-      30.0,
-      29.2,
-      29.5,
-      27.9,
-      27.8,
-      24.6,
-      25.5,
-      21.7
-     ]
-    }
-   ],
-   "marks": [
-    "2026-09-03",
-    "2026-09-10",
-    "2026-09-17",
-    "2026-09-24",
-    "2026-10-08",
-    "2026-10-15"
-   ],
-   "mark_label": "not producing"
-  }
- },
- {
-  "id": "F4",
-  "user": "Michael Turner",
-  "question": "How many oil spills has WELL-0282 had in the last 4 years, and how much oil in total? List them in a table.",
-  "answer": "**3 real spills for WELL-0282 (16 Oct 2022 to 16 Oct 2026), 2.9 barrels in total.**",
-  "visual": "table",
-  "citations": [
-   "INS-0282-0083",
-   "INS-0282-0167",
-   "INS-0282-0198",
-   "Dataset Guide: correction notes override detections"
-  ],
-  "engine": "rules",
-  "confidence": "high",
-  "trace": {
-   "engine": "rules",
-   "steps": [
-    {
-     "tool": "spills",
-     "args": [
-      "How many oil spills has WELL-0282 had in the last 4 years, and how much oil in total? List them in a table.",
-      [
-       "WELL-0282"
-      ]
-     ]
-    }
-   ],
-   "rules": [],
-   "citations": 4
-  },
-  "visual_data": {
-   "type": "table",
-   "columns": [
-    "Well",
-    "Date",
-    "Barrels",
-    "Inspection"
-   ],
-   "rows": [
-    {
-     "Well": "WELL-0282",
-     "Date": "6 Jun 2024",
-     "Barrels": 2.0,
-     "Inspection": "INS-0282-0083",
-     "Lat": 32.30691,
-     "Lon": -102.47894
-    },
-    {
-     "Well": "WELL-0282",
-     "Date": "29 Jan 2026",
-     "Barrels": 0.2,
-     "Inspection": "INS-0282-0167",
-     "Lat": 32.30691,
-     "Lon": -102.47894
-    },
-    {
-     "Well": "WELL-0282",
-     "Date": "10 Sep 2026",
-     "Barrels": 0.7,
-     "Inspection": "INS-0282-0198",
-     "Lat": 32.30691,
-     "Lon": -102.47894
-    }
-   ]
-  }
- },
- {
-  "id": "F5",
-  "user": "Michael Turner",
-  "question": "How many days was WELL-0205 down in 2025?",
-  "answer": "**WELL-0205 was down 42 days** (1 Jan 2025\u201331 Dec 2025), from 6 weekly inspections where it was not producing oil:\n- 27 Mar 2025 (INS-0205-0126): wellhead 17.0 \u00b0C vs air 13.7 \u00b0C, only 3.3 \u00b0C warmer. Cause: Flowline corrosion pinhole leak (MNT-0205-020).\n- 3 Apr 2025 (INS-0205-0127): wellhead 25.4 \u00b0C vs air 15.2 \u00b0C, only 10.2 \u00b0C warmer. Cause: Flowline corrosion pinhole leak (MNT-0205-020).\n- 10 Apr 2025 (INS-0205-0128): wellhead 32.3 \u00b0C vs air 22.2 \u00b0C, only 10.1 \u00b0C warmer. Cause: Flowline corrosion pinhole leak (MNT-0205-020).\n- 17 Apr 2025 (INS-0205-0129): wellhead 26.5 \u00b0C vs air 18.6 \u00b0C, only 7.9 \u00b0C warmer. Cause: Flowline corrosion pinhole leak (MNT-0205-020).\n- 24 Apr 2025 (INS-0205-0130): wellhead 28.5 \u00b0C vs air 26.2 \u00b0C, only 2.3 \u00b0C warmer. Cause: Flowline corrosion pinhole leak (MNT-0205-020); Walking beam bearing wear (MNT-0205-021).\n- 1 May 2025 (INS-0205-0131): wellhead 30.8 \u00b0C vs air 28.0 \u00b0C, only 2.8 \u00b0C warmer. Cause: Walking beam bearing wear (MNT-0205-021).\n\nDowntime = 7 days per non-producing weekly inspection (Dataset Guide).",
-  "visual": null,
-  "citations": [
-   "INS-0205-0126",
-   "INS-0205-0127",
-   "INS-0205-0128",
-   "INS-0205-0129",
-   "INS-0205-0130",
-   "INS-0205-0131",
-   "Dataset Guide (downtime)",
-   "well-type manual"
-  ],
-  "engine": "rules",
-  "confidence": "high",
-  "trace": {
-   "engine": "rules",
-   "steps": [
-    {
-     "tool": "downtime",
-     "args": [
-      "How many days was WELL-0205 down in 2025?",
-      [
-       "WELL-0205"
-      ]
-     ]
-    }
-   ],
-   "rules": [
-    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
-    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
-   ],
-   "citations": 8
-  },
-  "visual_data": null
- },
- {
-  "id": "F6",
-  "user": "Michael Turner",
-  "question": "Which 3 wells in Northwest Block 32 had the most downtime in the last 4 months? Show a bar chart.",
-  "answer": "**Top 3 wells in Northwest Block 32 by downtime (16 Jun 2026 to 16 Oct 2026):** WELL-0284: 42 days (T200), WELL-0269: 35 days (T200), WELL-0261: 28 days (T200). Next is WELL-0271 at 28.\n- WELL-0284 why: Separator level controller fault (MNT-0284-031); Gearbox oil leak (MNT-0284-032)\n- WELL-0269 why: Prime mover failure (MNT-0269-034); Prime mover failure (MNT-0269-034); Downhole pump stuck (MNT-0269-035); Downhole pump stuck (MNT-0269-035)\n- WELL-0261 why: Sucker rod parted (MNT-0261-028); Sucker rod parted (MNT-0261-028); Scheduled lubrication and belt inspection (MNT-0261-029)",
+  "question": "Which 3 wells in Southeast Block 41 had the most downtime in the last 4 months? Show a bar chart.",
+  "answer": "**Top 3 wells in Southeast Block 41 by downtime (16 Jun 2026 to 16 Oct 2026):** WELL-0321: 49 days (T200), WELL-0307: 42 days (T350), WELL-0338: 42 days (T350). Next is WELL-0319 at 28.\n- WELL-0321 why: Gearbox oil leak (MNT-0321-031); Scheduled wellhead valve service (MNT-0321-033); Prime mover failure (MNT-0321-034); Prime mover failure (MNT-0321-034)\n- WELL-0307 why: Stuffing box packing leak (MNT-0307-028); Stuffing box packing leak (MNT-0307-028); Annual flowline integrity test (MNT-0307-029)\n- WELL-0338 why: Prime mover failure (MNT-0338-031); Prime mover failure (MNT-0338-032); Gearbox oil leak (MNT-0338-034)",
   "visual": "bar",
   "citations": [
-   "INS-0284-0199",
-   "INS-0284-0200",
-   "INS-0284-0201",
-   "INS-0284-0203",
-   "INS-0284-0204",
-   "INS-0284-0205",
-   "INS-0269-0187",
-   "INS-0269-0188",
-   "INS-0269-0189",
-   "INS-0269-0190",
-   "INS-0269-0191",
-   "INS-0261-0202",
-   "INS-0261-0203",
-   "INS-0261-0204",
-   "INS-0261-0205",
+   "INS-0321-0189",
+   "INS-0321-0200",
+   "INS-0321-0201",
+   "INS-0321-0202",
+   "INS-0321-0203",
+   "INS-0321-0205",
+   "INS-0321-0206",
+   "INS-0307-0194",
+   "INS-0307-0195",
+   "INS-0307-0196",
+   "INS-0307-0197",
+   "INS-0307-0198",
+   "INS-0307-0199",
+   "INS-0338-0195",
+   "INS-0338-0196",
+   "INS-0338-0200",
+   "INS-0338-0201",
+   "INS-0338-0206",
+   "INS-0338-0207",
    "Dataset Guide (downtime = 7 d per non-producing inspection)"
   ],
   "engine": "rules",
@@ -382,9 +97,9 @@
     {
      "tool": "downtime",
      "args": [
-      "Which 3 wells in Northwest Block 32 had the most downtime in the last 4 months? Show a bar chart.",
+      "Which 3 wells in Southeast Block 41 had the most downtime in the last 4 months? Show a bar chart.",
       [],
-      "NW-32"
+      "SE-41"
      ]
     }
    ],
@@ -392,119 +107,29 @@
     "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
     "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
    ],
-   "citations": 16
+   "citations": 20
   },
   "visual_data": {
    "type": "bar",
    "x": [
-    "WELL-0284",
-    "WELL-0269",
-    "WELL-0261"
+    "WELL-0321",
+    "WELL-0307",
+    "WELL-0338"
    ],
    "series": [
     {
      "name": "Downtime (days)",
      "data": [
+      49,
       42,
-      35,
-      28
+      42
      ]
     }
    ]
   }
  },
  {
-  "id": "F7",
-  "user": "Michael Turner",
-  "question": "Show on a map every well in Southeast Block 41 with a real spill in the last 90 days.",
-  "answer": "**10 real spills for Southeast Block 41 (19 Jul 2026 to 16 Oct 2026), 14.6 barrels in total.** 13 detections; excluded as corrected: INS-0307-0201 (20 Aug 2026, CTX-0307-002), INS-0320-0202 (10 Sep 2026, CTX-0320-001), INS-0322-0201 (10 Sep 2026, CTX-0322-002). 9 wells: WELL-0301 (20 Aug 2026, 1.0 bbl, 32.62969, -102.22385); WELL-0323 (24 Sep 2026, 6.0 bbl, 32.61597, -102.17947); WELL-0328 (10 Sep 2026, 1.0 bbl, 32.60752, -102.17395); WELL-0332 (6 Aug 2026, 0.8 bbl, 32.59385, -102.17676); WELL-0333 (20 Aug 2026, 1.0 bbl, 32.61644, -102.20567); WELL-0338 (15 Oct 2026, 1.6 bbl, 32.61961, -102.22191); WELL-0341 (3 Sep 2026, 0.9 bbl, 32.61475, -102.20487); WELL-0345 (30 Jul 2026, 0.4 bbl, 32.58642, -102.21354); WELL-0349 (17 Sep 2026, 0.2 bbl, 32.62487, -102.21263)",
-  "visual": "map",
-  "citations": [
-   "INS-0301-0197",
-   "INS-0323-0093",
-   "INS-0328-0198",
-   "INS-0332-0197",
-   "INS-0333-0198",
-   "INS-0338-0208",
-   "INS-0341-0195",
-   "INS-0341-0198",
-   "INS-0345-0189",
-   "INS-0349-0204",
-   "CTX-0307-002",
-   "CTX-0320-001",
-   "CTX-0322-002",
-   "Dataset Guide: correction notes override detections"
-  ],
-  "engine": "rules",
-  "confidence": "high",
-  "trace": {
-   "engine": "rules",
-   "steps": [
-    {
-     "tool": "spills",
-     "args": [
-      "Show on a map every well in Southeast Block 41 with a real spill in the last 90 days.",
-      [],
-      "SE-41"
-     ]
-    }
-   ],
-   "rules": [],
-   "citations": 14
-  },
-  "visual_data": {
-   "type": "map",
-   "points": [
-    {
-     "lat": 32.62969,
-     "lon": -102.22385,
-     "label": "WELL-0301 \u00b7 20 Aug 2026 \u00b7 1.0 bbl"
-    },
-    {
-     "lat": 32.61597,
-     "lon": -102.17947,
-     "label": "WELL-0323 \u00b7 24 Sep 2026 \u00b7 6.0 bbl"
-    },
-    {
-     "lat": 32.60752,
-     "lon": -102.17395,
-     "label": "WELL-0328 \u00b7 10 Sep 2026 \u00b7 1.0 bbl"
-    },
-    {
-     "lat": 32.59385,
-     "lon": -102.17676,
-     "label": "WELL-0332 \u00b7 6 Aug 2026 \u00b7 0.8 bbl"
-    },
-    {
-     "lat": 32.61644,
-     "lon": -102.20567,
-     "label": "WELL-0333 \u00b7 20 Aug 2026 \u00b7 1.0 bbl"
-    },
-    {
-     "lat": 32.61961,
-     "lon": -102.22191,
-     "label": "WELL-0338 \u00b7 15 Oct 2026 \u00b7 1.6 bbl"
-    },
-    {
-     "lat": 32.61475,
-     "lon": -102.20487,
-     "label": "WELL-0341 \u00b7 3 Sep 2026 \u00b7 0.9 bbl"
-    },
-    {
-     "lat": 32.58642,
-     "lon": -102.21354,
-     "label": "WELL-0345 \u00b7 30 Jul 2026 \u00b7 0.4 bbl"
-    },
-    {
-     "lat": 32.62487,
-     "lon": -102.21263,
-     "label": "WELL-0349 \u00b7 17 Sep 2026 \u00b7 0.2 bbl"
-    }
-   ]
-  }
- },
- {
-  "id": "F8",
+  "id": "F3",
   "user": "Michael Turner",
   "question": "Show a heatmap of 2026 spills by geographic area and month.",
   "answer": "Real spills in 2026 by area and month (corrected detections removed). Totals: Southwest Block 23: 35, Southwest Block 24: 43, Northeast Block 7: 37, Northeast Block 8: 26, Northwest Block 31: 35, Northwest Block 32: 43, Southeast Block 41: 37, Southeast Block 42: 26",
@@ -653,27 +278,22 @@
   }
  },
  {
-  "id": "F9",
+  "id": "F4",
   "user": "Michael Turner",
-  "question": "Which rules has WELL-0213 broken in the last 12 months, and what is still open?",
-  "answer": "**WELL-0213: 4 rule breach(es) in the last 12 months**.\n- **SR-02** (1 Jan 2026 (3.4 bbl, INS-0213-0165)): contained after about 5.7 h vs 4 h limit (report MNT-0213-026)\n- **SR-02** (26 Mar 2026 (2.3 bbl, INS-0213-0177)): contained after about 5 h vs 4 h limit (report MNT-0213-029)\n- **SR-01** (11 Jun 2026 (5.2 bbl, INS-0213-0188)): written notice after 48 h vs 24 h limit (REG-0213-001)\n- **SR-03** (11 Jun 2026 (5.2 bbl, INS-0213-0188)): agency clean-up verification due by 10 Aug 2026, still open (REG-0213-004)\n\n**Still open / pending:**\n- RCA: root-cause analysis due on flowline: 5 corrective repairs in 12 months (MNT-0213-025, MNT-0213-026, MNT-0213-029, MNT-0213-031, MNT-0213-033)\n\n**Met:**\n- SR-02: contained after about 2.7 h vs 4 h limit (report MNT-0213-025)\n- SR-02: contained after about 1.2 h vs 4 h limit (report MNT-0213-031)\n- SR-02: contained after about 1.5 h vs 4 h limit (report MNT-0213-033)\n- RC-02: annual flowline integrity test done 7 Mar 2026 (MNT-0213-028)",
+  "question": "Which rules has WELL-0201 broken in the last 12 months, and what is still open?",
+  "answer": "**WELL-0201: 4 rule breach(es) in the last 12 months**, USD 5,000 in fines still open.\n- **SR-01** (11 Jun 2026 (6.8 bbl, INS-0201-0185)): written notice after 41 h vs 24 h limit (REG-0201-001)\n- **SR-03** (11 Jun 2026 (6.8 bbl, INS-0201-0185)): agency clean-up verification due by 10 Aug 2026, still open (REG-0201-003)\n- **RC-04** (11 Jun 2026 (6.8 bbl, INS-0201-0185)): response to REG-0201-002 was due by 30 Jul 2026; none recorded\n- **SR-02** (11 Jun 2026 (6.8 bbl, INS-0201-0185)): contained after about 7 h vs 4 h limit (report MNT-0201-029)\n\n**Still open / pending:**\n- SR-01 (11 Jun 2026 (6.8 bbl, INS-0201-0185)): notice of violation REG-0201-002, fine USD 5,000, still open\n- RCA: root-cause analysis due on flowline: 3 corrective repairs in 12 months (MNT-0201-028, MNT-0201-029, MNT-0201-032)\n- Manual \u00a74: planned shut-in not yet recorded in the maintenance system, which the manual requires before work starts (CTX-0201-003)\n\n**Met:**\n- SR-02 (1 Oct 2026 (1.6 bbl, INS-0201-0201)): contained after about 1.7 h vs 4 h limit (report MNT-0201-032)\n- RC-02: annual flowline integrity test done 7 Mar 2026 (MNT-0201-026)",
   "visual": "table",
   "citations": [
-   "INS-0213-0163",
-   "MNT-0213-025",
-   "INS-0213-0165",
-   "MNT-0213-026",
-   "INS-0213-0177",
-   "MNT-0213-029",
-   "INS-0213-0183",
-   "MNT-0213-031",
-   "INS-0213-0188",
-   "REG-0213-001",
-   "REG-0213-002",
-   "REG-0213-003",
-   "REG-0213-004",
-   "MNT-0213-033",
-   "MNT-0213-028",
+   "INS-0201-0185",
+   "REG-0201-001",
+   "REG-0201-002",
+   "REG-0201-003",
+   "MNT-0201-029",
+   "INS-0201-0201",
+   "MNT-0201-032",
+   "MNT-0201-028",
+   "MNT-0201-026",
+   "CTX-0201-003",
    "Spill Response SOP",
    "Regulatory Compliance SOP"
   ],
@@ -685,7 +305,7 @@
     {
      "tool": "compliance",
      "args": [
-      "WELL-0213"
+      "WELL-0201"
      ]
     }
    ],
@@ -698,7 +318,7 @@
     "T200.rca_repairs = 3 (T200 manual (maintenance escalation, RCA))",
     "T350.rca_repairs = 3 (T350 manual (maintenance escalation, RCA))"
    ],
-   "citations": 17
+   "citations": 12
   },
   "visual_data": {
    "type": "table",
@@ -710,47 +330,53 @@
    "rows": [
     {
      "Status": "Breach",
-     "Rule": "SR-02",
-     "Detail": "contained after about 5.7 h vs 4 h limit (report MNT-0213-026)"
-    },
-    {
-     "Status": "Breach",
-     "Rule": "SR-02",
-     "Detail": "contained after about 5 h vs 4 h limit (report MNT-0213-029)"
-    },
-    {
-     "Status": "Breach",
      "Rule": "SR-01",
-     "Detail": "written notice after 48 h vs 24 h limit (REG-0213-001)"
+     "Detail": "written notice after 41 h vs 24 h limit (REG-0201-001)"
     },
     {
      "Status": "Breach",
      "Rule": "SR-03",
-     "Detail": "agency clean-up verification due by 10 Aug 2026, still open (REG-0213-004)"
+     "Detail": "agency clean-up verification due by 10 Aug 2026, still open (REG-0201-003)"
+    },
+    {
+     "Status": "Breach",
+     "Rule": "RC-04",
+     "Detail": "response to REG-0201-002 was due by 30 Jul 2026; none recorded"
+    },
+    {
+     "Status": "Breach",
+     "Rule": "SR-02",
+     "Detail": "contained after about 7 h vs 4 h limit (report MNT-0201-029)"
+    },
+    {
+     "Status": "Open",
+     "Rule": "SR-01",
+     "Detail": "notice of violation REG-0201-002, fine USD 5,000, still open"
     },
     {
      "Status": "Open",
      "Rule": "RCA",
-     "Detail": "root-cause analysis due on flowline: 5 corrective repairs in 12 months (MNT-0213-025, MNT-0213-026, MNT-0213-029, MNT-0213-031, MNT-0213-033)"
+     "Detail": "root-cause analysis due on flowline: 3 corrective repairs in 12 months (MNT-0201-028, MNT-0201-029, MNT-0201-032)"
+    },
+    {
+     "Status": "Open",
+     "Rule": "Manual \u00a74",
+     "Detail": "planned shut-in not yet recorded in the maintenance system, which the manual requires before work starts (CTX-0201-003)"
     }
    ]
   }
  },
  {
-  "id": "F10",
+  "id": "F5",
   "user": "Michael Turner",
-  "question": "In Northwest Block 31, which spills in the last 90 days were not contained within the SOP time limit?",
-  "answer": "**4 spills in Northwest Block 31 were not contained within the 4-hour SOP limit (SR-02):** WELL-0217 after about 4.9 h (report MNT-0217-029, inspection INS-0217-0198); WELL-0230 after about 7.3 h (report MNT-0230-032, inspection INS-0230-0192); WELL-0242 after about 7.5 h (report MNT-0242-026, inspection INS-0242-0204); WELL-0244 after about 7.9 h (report MNT-0244-036, inspection INS-0244-0197). Containment times come from the free-text repair reports.",
+  "question": "In Northwest Block 32, which spills in the last 90 days were not contained within the SOP time limit?",
+  "answer": "**2 spills in Northwest Block 32 were not contained within the 4-hour SOP limit (SR-02):** WELL-0282 after about 7.1 h (report MNT-0282-028, inspection INS-0282-0198); WELL-0300 after about 8.1 h (report MNT-0300-034, inspection INS-0300-0196). Containment times come from the free-text repair reports.",
   "visual": "table",
   "citations": [
-   "MNT-0217-029",
-   "MNT-0230-032",
-   "MNT-0242-026",
-   "MNT-0244-036",
-   "INS-0217-0198",
-   "INS-0230-0192",
-   "INS-0242-0204",
-   "INS-0244-0197",
+   "MNT-0282-028",
+   "MNT-0300-034",
+   "INS-0282-0198",
+   "INS-0300-0196",
    "Spill Response SOP SR-02"
   ],
   "engine": "rules",
@@ -761,15 +387,15 @@
     {
      "tool": "containment",
      "args": [
-      "In Northwest Block 31, which spills in the last 90 days were not contained within the SOP time limit?",
-      "NW-31"
+      "In Northwest Block 32, which spills in the last 90 days were not contained within the SOP time limit?",
+      "NW-32"
      ]
     }
    ],
    "rules": [
     "SR-02.hours = 4 (Spill Response SOP SR-02)"
    ],
-   "citations": 9
+   "citations": 5
   },
   "visual_data": {
    "type": "table",
@@ -782,243 +408,36 @@
    ],
    "rows": [
     {
-     "Well": "WELL-0217",
-     "Date": "13 Aug 2026",
-     "Contained after (h)": 4.9,
-     "Report": "MNT-0217-029",
-     "Inspection": "INS-0217-0198"
+     "Well": "WELL-0282",
+     "Date": "10 Sep 2026",
+     "Contained after (h)": 7.1,
+     "Report": "MNT-0282-028",
+     "Inspection": "INS-0282-0198"
     },
     {
-     "Well": "WELL-0230",
-     "Date": "23 Jul 2026",
-     "Contained after (h)": 7.3,
-     "Report": "MNT-0230-032",
-     "Inspection": "INS-0230-0192"
-    },
-    {
-     "Well": "WELL-0242",
-     "Date": "24 Sep 2026",
-     "Contained after (h)": 7.5,
-     "Report": "MNT-0242-026",
-     "Inspection": "INS-0242-0204"
-    },
-    {
-     "Well": "WELL-0244",
-     "Date": "20 Aug 2026",
-     "Contained after (h)": 7.9,
-     "Report": "MNT-0244-036",
-     "Inspection": "INS-0244-0197"
+     "Well": "WELL-0300",
+     "Date": "10 Sep 2026",
+     "Contained after (h)": 8.1,
+     "Report": "MNT-0300-034",
+     "Inspection": "INS-0300-0196"
     }
    ]
   }
  },
  {
-  "id": "F11",
+  "id": "F6",
   "user": "Michael Turner",
-  "question": "Which area lost the most production days in 2025?",
-  "answer": "**Downtime \u2014 the whole field, 2025: 8120 days in total**\n\n**Highest: Northwest Block 32 (1449 days)**\n\n- Northwest Block 32: 1449 days\n- Southwest Block 24: 1449 days\n- Northeast Block 7: 966 days\n- Southeast Block 41: 966 days\n- Northwest Block 31: 889 days\n- Southwest Block 23: 889 days\n- Northeast Block 8: 756 days\n- Southeast Block 42: 756 days\n\n_Rules applied: T200: producing when wellhead \u2212 air \u2265 15 \u00b0C (T200 manual); T350: producing when wellhead \u2212 air \u2265 20 \u00b0C (T350 manual); Downtime = 7 days per non-producing weekly inspection (Dataset Guide)._",
-  "visual": "bar",
+  "question": "Show on a map every well in Southeast Block 42 with a real spill in the last 90 days.",
+  "answer": "**4 real spills for Southeast Block 42 (19 Jul 2026 to 16 Oct 2026), 10.2 barrels in total.** 6 detections; excluded as corrected: INS-0394-0192 (23 Jul 2026, CTX-0394-002), INS-0399-0200 (10 Sep 2026, CTX-0399-002). 4 wells: WELL-0351 (24 Sep 2026, 4.5 bbl, 32.62246, -102.18445); WELL-0365 (30 Jul 2026, 1.2 bbl, 32.65665, -102.14522); WELL-0375 (30 Jul 2026, 3.9 bbl, 32.6802, -102.1479); WELL-0386 (23 Jul 2026, 0.6 bbl, 32.67552, -102.17775)",
+  "visual": "map",
   "citations": [
-   "INS-0251-0117",
-   "INS-0251-0118",
-   "INS-0251-0119",
-   "INS-0251-0123",
-   "INS-0251-0128",
-   "INS-0251-0129",
-   "INS-0252-0145",
-   "INS-0252-0146",
-   "INS-0252-0147",
-   "INS-0252-0150",
-   "INS-0252-0151",
-   "INS-0253-0127",
-   "INS-0253-0128",
-   "INS-0253-0129",
-   "INS-0253-0130",
-   "INS-0253-0131",
-   "INS-0253-0132",
-   "INS-0253-0139",
-   "INS-0253-0140",
-   "INS-0253-0152",
-   "INS-0253-0153",
-   "INS-0255-0146",
-   "INS-0255-0147",
-   "INS-0255-0157",
-   "INS-0255-0158",
-   "INS-0255-0159",
-   "INS-0255-0160",
-   "INS-0256-0125",
-   "INS-0256-0126",
-   "INS-0256-0131",
-   "INS-0256-0157",
-   "INS-0256-0158",
-   "INS-0256-0159",
-   "INS-0257-0127",
-   "INS-0257-0128",
-   "INS-0258-0117",
-   "INS-0258-0118",
-   "INS-0258-0119",
-   "INS-0258-0120",
-   "INS-0258-0145",
-   "INS-0258-0147",
-   "INS-0258-0148",
-   "INS-0258-0149",
-   "INS-0258-0150",
-   "INS-0258-0151",
-   "INS-0258-0152",
-   "INS-0259-0142",
-   "INS-0259-0143",
-   "INS-0259-0144",
-   "INS-0259-0145",
-   "INS-0259-0146",
-   "INS-0259-0147",
-   "INS-0259-0164",
-   "INS-0259-0165",
-   "INS-0259-0166",
-   "INS-0260-0123",
-   "INS-0260-0124",
-   "INS-0260-0125",
-   "INS-0260-0126",
-   "INS-0260-0127",
-   "INS-0260-0128",
-   "INS-0261-0118",
-   "INS-0261-0126",
-   "INS-0261-0159",
-   "INS-0262-0161",
-   "INS-0262-0162",
-   "INS-0263-0114",
-   "INS-0263-0129",
-   "INS-0265-0121",
-   "INS-0265-0122",
-   "INS-0265-0123",
-   "INS-0265-0137",
-   "INS-0266-0114",
-   "INS-0266-0115",
-   "INS-0266-0145",
-   "INS-0266-0146",
-   "INS-0267-0116",
-   "INS-0267-0117",
-   "INS-0267-0118",
-   "INS-0267-0119",
-   "INS-0267-0122",
-   "INS-0267-0145",
-   "INS-0267-0146",
-   "INS-0267-0147",
-   "INS-0267-0148",
-   "INS-0268-0120",
-   "INS-0268-0121",
-   "INS-0268-0122",
-   "INS-0269-0138",
-   "INS-0269-0139",
-   "INS-0269-0140",
-   "INS-0269-0141",
-   "INS-0269-0157",
-   "INS-0269-0158",
-   "INS-0270-0136",
-   "INS-0270-0137",
-   "INS-0270-0138",
-   "INS-0270-0139",
-   "INS-0270-0140",
-   "INS-0271-0113",
-   "INS-0271-0114",
-   "INS-0271-0128",
-   "INS-0271-0136",
-   "INS-0271-0137",
-   "INS-0271-0150",
-   "INS-0271-0151",
-   "INS-0272-0146",
-   "INS-0273-0130",
-   "INS-0273-0164",
-   "INS-0273-0165",
-   "INS-0273-0166",
-   "INS-0274-0141",
-   "INS-0274-0142",
-   "INS-0274-0143",
-   "INS-0275-0148",
-   "INS-0275-0149",
-   "INS-0275-0166",
-   "INS-0279-0112",
-   "INS-0279-0113",
-   "INS-0279-0132",
-   "INS-0279-0133",
-   "INS-0279-0134",
-   "INS-0279-0141",
-   "INS-0279-0142",
-   "INS-0279-0149",
-   "INS-0279-0150",
-   "INS-0279-0155",
-   "INS-0279-0156",
-   "INS-0279-0157",
-   "INS-0279-0158",
-   "INS-0281-0144",
-   "INS-0282-0113",
-   "INS-0282-0114",
-   "INS-0282-0118",
-   "INS-0283-0121",
-   "INS-0283-0122",
-   "INS-0283-0138",
-   "INS-0283-0139",
-   "INS-0283-0146",
-   "INS-0283-0147",
-   "INS-0283-0148",
-   "INS-0283-0155",
-   "INS-0284-0114",
-   "INS-0285-0133",
-   "INS-0285-0134",
-   "INS-0285-0135",
-   "INS-0286-0120",
-   "INS-0286-0121",
-   "INS-0286-0132",
-   "INS-0286-0136",
-   "INS-0286-0137",
-   "INS-0286-0138",
-   "INS-0286-0139",
-   "INS-0286-0151",
-   "INS-0286-0153",
-   "INS-0286-0154",
-   "INS-0286-0155",
-   "INS-0288-0118",
-   "INS-0288-0162",
-   "INS-0288-0163",
-   "INS-0289-0136",
-   "INS-0289-0160",
-   "INS-0289-0161",
-   "INS-0290-0121",
-   "INS-0290-0122",
-   "INS-0290-0123",
-   "INS-0290-0124",
-   "INS-0290-0149",
-   "INS-0290-0150",
-   "INS-0290-0154",
-   "INS-0293-0161",
-   "INS-0293-0162",
-   "INS-0294-0052",
-   "INS-0294-0053",
-   "INS-0294-0054",
-   "INS-0294-0055",
-   "INS-0294-0056",
-   "INS-0294-0057",
-   "INS-0295-0163",
-   "INS-0295-0164",
-   "INS-0296-0145",
-   "INS-0296-0152",
-   "INS-0296-0154",
-   "INS-0296-0155",
-   "INS-0296-0156",
-   "INS-0296-0157",
-   "INS-0297-0120",
-   "INS-0297-0137",
-   "INS-0297-0138",
-   "INS-0297-0139",
-   "INS-0298-0122",
-   "INS-0298-0123",
-   "INS-0298-0124",
-   "INS-0298-0125",
-   "INS-0298-0126",
-   "INS-0298-0127",
-   "INS-0300-0112",
-   "INS-0300-0117",
-   "INS-0300-0118",
-   "INS-0300-0125"
+   "INS-0351-0201",
+   "INS-0365-0194",
+   "INS-0375-0193",
+   "INS-0386-0097",
+   "CTX-0394-002",
+   "CTX-0399-002",
+   "Dataset Guide: correction notes override detections"
   ],
   "engine": "rules",
   "confidence": "high",
@@ -1026,301 +445,108 @@
    "engine": "rules",
    "steps": [
     {
-     "tool": "run_query",
-     "args": {
-      "metric": "downtime",
-      "scope": {},
-      "window": [
-       "2025-01-01",
-       "2025-12-31"
-      ],
-      "group_by": "area",
-      "top": null,
-      "filters": {}
-     },
-     "result": "8 rows, total 8120.0"
+     "tool": "spills",
+     "args": [
+      "Show on a map every well in Southeast Block 42 with a real spill in the last 90 days.",
+      [],
+      "SE-42"
+     ]
+    }
+   ],
+   "rules": [],
+   "citations": 7
+  },
+  "visual_data": {
+   "type": "map",
+   "points": [
+    {
+     "lat": 32.62246,
+     "lon": -102.18445,
+     "label": "WELL-0351 \u00b7 24 Sep 2026 \u00b7 4.5 bbl"
+    },
+    {
+     "lat": 32.65665,
+     "lon": -102.14522,
+     "label": "WELL-0365 \u00b7 30 Jul 2026 \u00b7 1.2 bbl"
+    },
+    {
+     "lat": 32.6802,
+     "lon": -102.1479,
+     "label": "WELL-0375 \u00b7 30 Jul 2026 \u00b7 3.9 bbl"
+    },
+    {
+     "lat": 32.67552,
+     "lon": -102.17775,
+     "label": "WELL-0386 \u00b7 23 Jul 2026 \u00b7 0.6 bbl"
+    }
+   ]
+  }
+ },
+ {
+  "id": "F7",
+  "user": "Michael Turner",
+  "question": "Which 3 wells in Northeast Block 7 had the most downtime in the last 4 months? Show a bar chart.",
+  "answer": "**Top 3 wells in Northeast Block 7 by downtime (16 Jun 2026 to 16 Oct 2026):** WELL-0121: 49 days (T200), WELL-0107: 42 days (T350), WELL-0138: 42 days (T350). Next is WELL-0119 at 28.\n- WELL-0121 why: Gearbox oil leak (MNT-0121-031); Scheduled wellhead valve service (MNT-0121-033); Prime mover failure (MNT-0121-034); Prime mover failure (MNT-0121-034)\n- WELL-0107 why: Stuffing box packing leak (MNT-0107-028); Stuffing box packing leak (MNT-0107-028); Annual flowline integrity test (MNT-0107-029)\n- WELL-0138 why: Prime mover failure (MNT-0138-031); Prime mover failure (MNT-0138-032); Gearbox oil leak (MNT-0138-034)",
+  "visual": "bar",
+  "citations": [
+   "INS-0121-0189",
+   "INS-0121-0200",
+   "INS-0121-0201",
+   "INS-0121-0202",
+   "INS-0121-0203",
+   "INS-0121-0205",
+   "INS-0121-0206",
+   "INS-0107-0194",
+   "INS-0107-0195",
+   "INS-0107-0196",
+   "INS-0107-0197",
+   "INS-0107-0198",
+   "INS-0107-0199",
+   "INS-0138-0195",
+   "INS-0138-0196",
+   "INS-0138-0200",
+   "INS-0138-0201",
+   "INS-0138-0206",
+   "INS-0138-0207",
+   "Dataset Guide (downtime = 7 d per non-producing inspection)"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "downtime",
+     "args": [
+      "Which 3 wells in Northeast Block 7 had the most downtime in the last 4 months? Show a bar chart.",
+      [],
+      "NE-07"
+     ]
     }
    ],
    "rules": [
-    "T200: producing when wellhead \u2212 air \u2265 15 \u00b0C (T200 manual)",
-    "T350: producing when wellhead \u2212 air \u2265 20 \u00b0C (T350 manual)",
-    "Downtime = 7 days per non-producing weekly inspection (Dataset Guide)"
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
    ],
-   "citations": 200
+   "citations": 20
   },
   "visual_data": {
    "type": "bar",
    "x": [
-    "Northwest Block 32",
-    "Southwest Block 24",
-    "Northeast Block 7",
-    "Southeast Block 41",
-    "Northwest Block 31",
-    "Southwest Block 23",
-    "Northeast Block 8",
-    "Southeast Block 42"
+    "WELL-0121",
+    "WELL-0107",
+    "WELL-0138"
    ],
    "series": [
     {
-     "name": "downtime (days)",
+     "name": "Downtime (days)",
      "data": [
-      1449.0,
-      1449.0,
-      966.0,
-      966.0,
-      889.0,
-      889.0,
-      756.0,
-      756.0
+      49,
+      42,
+      42
      ]
     }
    ]
-  }
- },
- {
-  "id": "F12",
-  "user": "Michael Turner",
-  "question": "What fines are still open across the field?",
-  "answer": "**Regulator fines \u2014 the whole field (open=True): USD 15,000 in total**\n\n- REG-0001-002 (WELL-0001, 30 Jun 2026): notice of violation, SR-01, fine USD 5,000, open\n- REG-0160-002 (WELL-0160, 5 May 2023): notice of violation, SR-01, fine USD 2,500, open\n- REG-0201-002 (WELL-0201, 30 Jun 2026): notice of violation, SR-01, fine USD 5,000, open\n- REG-0360-002 (WELL-0360, 5 May 2023): notice of violation, SR-01, fine USD 2,500, open",
-  "visual": "table",
-  "citations": [
-   "REG-0001-002",
-   "REG-0160-002",
-   "REG-0201-002",
-   "REG-0360-002"
-  ],
-  "engine": "rules",
-  "confidence": "high",
-  "trace": {
-   "engine": "rules",
-   "steps": [
-    {
-     "tool": "run_query",
-     "args": {
-      "metric": "fines",
-      "scope": {},
-      "window": null,
-      "group_by": null,
-      "top": null,
-      "filters": {
-       "open": true
-      }
-     },
-     "result": "1 rows, total 15000.0"
-    }
-   ],
-   "rules": [],
-   "citations": 4
-  },
-  "visual_data": {
-   "type": "table",
-   "columns": [
-    "well",
-    "event",
-    "type",
-    "date",
-    "fine",
-    "status",
-    "protocol"
-   ],
-   "rows": [
-    {
-     "well": "WELL-0001",
-     "event": "REG-0001-002",
-     "type": "notice_of_violation",
-     "date": "2026-06-30",
-     "fine": 5000.0,
-     "status": "open",
-     "protocol": "SR-01"
-    },
-    {
-     "well": "WELL-0160",
-     "event": "REG-0160-002",
-     "type": "notice_of_violation",
-     "date": "2023-05-05",
-     "fine": 2500.0,
-     "status": "open",
-     "protocol": "SR-01"
-    },
-    {
-     "well": "WELL-0201",
-     "event": "REG-0201-002",
-     "type": "notice_of_violation",
-     "date": "2026-06-30",
-     "fine": 5000.0,
-     "status": "open",
-     "protocol": "SR-01"
-    },
-    {
-     "well": "WELL-0360",
-     "event": "REG-0360-002",
-     "type": "notice_of_violation",
-     "date": "2023-05-05",
-     "fine": 2500.0,
-     "status": "open",
-     "protocol": "SR-01"
-    }
-   ]
-  }
- },
- {
-  "id": "F13",
-  "user": "Jessica Reed",
-  "question": "Is WELL-0364 producing oil right now?",
-  "answer": "**WELL-0364 is not producing oil** (as of its latest inspection).\n\nLatest inspection INS-0364-0205 on 15 Oct 2026, by manual, by Tyler Hughes. Wellhead 24.0 \u00b0C vs air 19.9 \u00b0C: 4.1 \u00b0C warmer, below the T200 limit of 15 \u00b0C.\n\nInspector note on that inspection: \"Pump jack not moving.\"\n\nReason: no recorded reason in repairs or notes. Suggest a site check.\n\nThe recorded status still says **active**, which is out of date.",
-  "visual": "card",
-  "citations": [
-   "INS-0364-0205",
-   "T200 manual"
-  ],
-  "engine": "rules",
-  "confidence": "high",
-  "trace": {
-   "engine": "rules",
-   "steps": [
-    {
-     "tool": "status",
-     "args": [
-      "WELL-0364"
-     ]
-    }
-   ],
-   "rules": [
-    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
-    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
-   ],
-   "citations": 2
-  },
-  "visual_data": {
-   "type": "card",
-   "data": {
-    "asset_id": "WELL-0364",
-    "well_type": "T200",
-    "area": "Southeast Block 42",
-    "producing": false,
-    "last_inspection_id": "INS-0364-0205",
-    "inspected_at": "2026-10-15T11:45:00Z",
-    "inspector": "Tyler Hughes",
-    "method": "manual",
-    "wellhead_c": 24.0,
-    "ambient_c": 19.9,
-    "delta_c": 4.1,
-    "threshold_c": 15.0,
-    "recorded_status": "active",
-    "recorded_status_stale": true,
-    "inspector_note": "Pump jack not moving.",
-    "reasons": [],
-    "corrections": [],
-    "shared_facts": [],
-    "lat": 32.6452,
-    "lon": -102.1788,
-    "citations": [
-     "INS-0364-0205",
-     "T200 manual"
-    ]
-   }
-  }
- },
- {
-  "id": "F14",
-  "user": "Michael Turner",
-  "question": "The 15 Oct reading for WELL-0364 is wrong. The field crew re-measured the wellhead at 41.0 \u00b0C.",
-  "answer": "Recorded: **INS-0364-0205** (15 Oct 2026) wellhead_temp_c corrected from 24.0 to 41.0 by Michael Turner. The original value is kept; the correction applies to every later answer for every user.\n\nWith 41.0 \u00b0C against 19.9 \u00b0C air (21.1 \u00b0C warmer, above the T200 limit of 15 \u00b0C), WELL-0364 is **producing oil**.\n\n\u26a0 Conflict: the same inspection has the note \"Pump jack not moving.\" by Tyler Hughes, which disagrees with the corrected reading. Michael Turner, can you confirm?",
-  "visual": null,
-  "citations": [
-   "INS-0364-0205"
-  ],
-  "engine": "rules",
-  "confidence": "conflict",
-  "trace": {
-   "engine": "rules",
-   "steps": [
-    {
-     "tool": "correction",
-     "args": [
-      "The 15 Oct reading for WELL-0364 is wrong. The field crew re-measured the wellhead at 41.0 \u00b0C.",
-      "U-201",
-      "WELL-0364"
-     ]
-    }
-   ],
-   "rules": [
-    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
-    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))",
-    "spill.reportable_bbl = 5 (Spill Response SOP \u00a73)",
-    "SR-01.hours = 24 (Spill Response SOP SR-01)",
-    "SR-03.days = 60 (Spill Response SOP SR-03)"
-   ],
-   "citations": 1
-  },
-  "visual_data": null
- },
- {
-  "id": "F15",
-  "user": "Jessica Reed",
-  "question": "Is WELL-0364 producing oil right now?",
-  "answer": "**WELL-0364 is producing oil** (as of its latest inspection).\n\nLatest inspection INS-0364-0205 on 15 Oct 2026, by manual, by Tyler Hughes. Wellhead 41.0 \u00b0C vs air 19.9 \u00b0C: 21.1 \u00b0C warmer, at/above the T200 limit of 15 \u00b0C.\n\n\u26a0 This reading was corrected by Michael Turner: wellhead_temp_c 24.0 \u2192 41.0 (The 15 Oct reading for WELL-0364 is wrong. The field crew re-measured the wellhead at 41.0 \u00b0C.). Original kept for reference.\n\nInspector note on that inspection: \"Pump jack not moving.\" \u2014 this disagrees with the corrected reading; please confirm.",
-  "visual": "card",
-  "citations": [
-   "INS-0364-0205",
-   "T200 manual",
-   "memory_corrections#1"
-  ],
-  "engine": "rules",
-  "confidence": "conflict",
-  "trace": {
-   "engine": "rules",
-   "steps": [
-    {
-     "tool": "status",
-     "args": [
-      "WELL-0364"
-     ]
-    }
-   ],
-   "rules": [
-    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
-    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
-   ],
-   "citations": 3
-  },
-  "visual_data": {
-   "type": "card",
-   "data": {
-    "asset_id": "WELL-0364",
-    "well_type": "T200",
-    "area": "Southeast Block 42",
-    "producing": true,
-    "last_inspection_id": "INS-0364-0205",
-    "inspected_at": "2026-10-15T11:45:00Z",
-    "inspector": "Tyler Hughes",
-    "method": "manual",
-    "wellhead_c": 41.0,
-    "ambient_c": 19.9,
-    "delta_c": 21.1,
-    "threshold_c": 15.0,
-    "recorded_status": "active",
-    "recorded_status_stale": false,
-    "inspector_note": "Pump jack not moving.",
-    "reasons": [],
-    "corrections": [
-     {
-      "source": "memory_corrections#1",
-      "field": "wellhead_temp_c",
-      "original": "24.0",
-      "corrected": "41.0",
-      "by": "Michael Turner",
-      "reason": "The 15 Oct reading for WELL-0364 is wrong. The field crew re-measured the wellhead at 41.0 \u00b0C."
-     }
-    ],
-    "shared_facts": [],
-    "lat": 32.6452,
-    "lon": -102.1788,
-    "citations": [
-     "INS-0364-0205",
-     "T200 manual"
-    ]
-   }
   }
  }
 ]

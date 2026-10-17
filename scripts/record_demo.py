@@ -1,5 +1,5 @@
 """Record the demo video by driving the real UI with Playwright (1280x720), burning captions in as an overlay.
-Writes video/demo.mp4, video/demo.srt, video/narration.txt and docs/video-script.md (timed). No synthetic voice."""
+Writes video/demo.mp4, video/demo.srt, video/narration.txt and docs/video/script.md (timed). No synthetic voice."""
 import asyncio, json, os, subprocess, sys, time, glob, shutil
 from playwright.async_api import async_playwright
 OUT = sys.argv[1] if len(sys.argv) > 1 else "/workspace/ahc-hackday/video"
