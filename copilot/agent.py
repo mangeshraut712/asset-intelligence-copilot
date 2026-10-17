@@ -102,6 +102,10 @@ class Copilot:
         return res
     def route(self, q, user, chat):
         c = self.c; ql = q.lower(); wells = [w.upper() for w in WELL_RE.findall(q)]; area = area_from(c, q)
+        from . import final_tools as FT
+        fr = FT.dispatch(self, q, user, chat, wells, area)
+        if fr is not None:
+            self.steps.append({"tool": "final_tools", "args": [q[:80]]}); return fr
         is_q = q.strip().endswith("?") or re.match(r"^(is|are|was|were|which|what|how|show|list|when|who|why|did|does|do|give|find|can|could|plot|compare|chart|graph|map|draw|display|tell|summari[sz]e|rank|count|get|list|break ?down|where|who)\b", ql)
         # --- feedback / statements ---
         if not is_q:

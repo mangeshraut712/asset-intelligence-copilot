@@ -854,7 +854,7 @@
   "id": "Q11",
   "user": "Michael Turner",
   "question": "For the three wells we discussed yesterday, what have repairs cost this year?",
-  "answer": "From your earlier conversation (2026-10-18T08:16: \"Which 3 wells in Northeast Block 7 had the most downtime in the last 4 months? Show a bar chart.\") the wells were WELL-0121, WELL-0107, WELL-0138. **Repair costs in 2026:** WELL-0121: USD 25,794 (7 jobs) \u00b7 WELL-0107: USD 5,176 (6 jobs) \u00b7 WELL-0138: USD 46,942 (10 jobs)",
+  "answer": "From your earlier conversation (2026-10-18T11:17: \"Which 3 wells in Northeast Block 7 had the most downtime in the last 4 months? Show a bar chart.\") the wells were WELL-0121, WELL-0107, WELL-0138. **Repair costs in 2026:** WELL-0121: USD 25,794 (7 jobs) \u00b7 WELL-0107: USD 5,176 (6 jobs) \u00b7 WELL-0138: USD 46,942 (10 jobs)",
   "visual": "bar",
   "citations": [
    "MNT-0121-029",
