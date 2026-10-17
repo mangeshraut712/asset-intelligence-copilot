@@ -1,78 +1,49 @@
-# Asset Intelligence Copilot: System Design
-*Mangesh Raut · FlytBase challenge, AHC × Hacktoberfest 2026 · MIT · github.com/mangeshraut712/asset-intelligence-copilot*
+# Asset Intelligence Copilot by Mangesh
+*Mangesh Raut · FlytBase challenge, AHC × Hacktoberfest 2026 · MIT*
 
-**Repo:** https://github.com/mangeshraut712/asset-intelligence-copilot · **Video:** https://vimeo.com/1236779581
+**Repo:** https://github.com/mangeshraut712/asset-intelligence-copilot · **Video (4:41):** https://vimeo.com/1236779581
 
-**Principle: the model never does arithmetic.** Every number comes from a deterministic, unit-tested tool over SQLite. Every threshold and deadline is extracted from the manuals and SOPs. Every answer cites record IDs and document passages. The open-weight **Gemma 4** model plans tool calls, phrases answers and reads photos, and is checked at each step.
+> The formatted version of this report is `docs/report.pdf` (page 1: system design; pages 2–3: results).
 
-**Storage and indexing.** A re-runnable loader ingests any number of dataset folders: wells, equipment, inspections (indexed by well and date), maintenance, regulator events, notes and documents. It follows each `report_file` and extracts facts that exist only in prose (*"contained about 7 hours after the inspection flight"*, also "after/within", minutes). It also builds a `rules` table from the documents: producing at Δ ≥ 15 °C (T200) and 20 °C (T350); reportable at ≥ 5 bbl; notice within 24 h; containment within 4 h; verification within 60 d; NOV response within 30 d; RCA at 3 repairs. New wells, areas or manuals need no code change; 400 wells load in about 1 s.
+## System design
+**Principle: the model never does arithmetic.** Every number comes from a deterministic, unit-tested tool over SQLite; every threshold and deadline is extracted from the manuals and SOPs; every answer cites record IDs and document passages. Gemma 4 plans tool calls, phrases answers and reads photos, and is checked at each step.
 
-**Tools.** `effective_inspections` is the single source of truth: raw readings + correction notes + runtime corrections, with the originals kept. Specialised tools cover status, temperature series, spills, downtime (7 days per non-producing inspection, causes from overlapping repairs and notes), compliance (SR-01/02/03, RC-02, RC-04, RCA), containment, reportable spills and repair history. A **composable query** covers the long tail: metric (downtime, spills, volume, repairs, cost, fines, regulator events, not producing, stale status, notes) × scope (well, area, type, team, field) × window (right now, last N, season, month, quarter, half, between dates) × group-by (well, area, type, team, month, equipment).
+Flow: Datasets → Loader + rules (SQLite, prose facts, rules table) → Deterministic tools (`effective_inspections`, compliance, composable query, `copilot/final_tools.py`) → Agent (feedback → memory → rule router → Gemma 4 planner, number guard) → Answer (citations, visual, confidence, trace).
 
-**Agent (Gemma 4 by default).** 1) Feedback detection (correction, type-wide rule or well statement). 2) Private-memory recall. 3) A confident rule router. 4) Otherwise **Gemma 4 as planner** fills the structured query (function calling, with a JSON fallback). Its arguments are **validated**; an invalid or empty result triggers **one retry** through the rule router, and the rule router stays authoritative whenever it is confident. Gemma 4 runs via the **Gemini API** (`GEMINI_API_KEY`) or OpenRouter, or locally via Ollama. Gemma 4 also writes a plain-language summary, accepted only if it introduces **no number absent from the tool output**. **Multimodal:** Gemma 4 describes an uploaded inspection photo (equipment, staining, % of pad), shown as advisory next to the records and never overriding them. Picks are cached, and any LLM failure falls back to rules, so a rate limit can't block a run. The visual is the one the user asked for, or else the best fit (card, table, line, bar, map or heatmap).
+Memory has scope and provenance (conversations per user; well facts, corrections and type rules shared, attributed and marked confirmed/unconfirmed). 101 pytest tests; examples 27/27; unseen 46/46. Model cost $0. Runs locally.
 
-**Memory with scope and provenance.**
-| Level | Scope | Behaviour |
-|---|---|---|
-| Conversations | one user | "the wells we discussed yesterday" resolves only from that user's own chats |
-| Well facts | all users | attributed, timestamped, *confirmed / unconfirmed / planned* |
-| Corrections | one inspection field, all users | original + new value, author, reason; rules re-evaluated (4.5 → 5.4 bbl ⇒ SR-01/SR-03) |
-| Type rules | every well of one type only | "T350: RCA after 2" changes T350 only; the answer cites the user, not the manual |
-
-**Honesty about conflicts.** Claims are checked against the latest inspection. A contradiction is stored as *unconfirmed*, and the answer names the inspection that disagrees and the user who agrees, then asks for confirmation. A correction that clashes with an inspector note is flagged, and disagreeing notes are shown side by side. Only formal corrections override detections.
-
-**Demo layer.** Proactive field briefing (SOP breaches, unreported spills, open fines, RC-03 downtime, stale status). A clickable evidence drawer with highlighted report and SOP passages. A **"How I got this"** trace (tools, arguments, rules with their source documents). Confidence and conflict badges, follow-up chips, and dark and light themes.
-
-**Quality, cost, next.** 101 pytest tests, including an SR-02 regression test, a Gemma 4 number-guard test, the 18 examples (27/27) and 46 unseen questions whose answers were computed independently from the raw files (46/46). The final-hour command loads, answers and fills the results page in about 2 s. Model cost: $0 (free Gemma 4). Demo video (4:41, my own voice): https://vimeo.com/1236779581. Runs locally; no hosted deployment. Next: embedding retrieval over reports, multi-turn follow-ups, and Gemma 4 spill-area estimation from real drone imagery.
+## Results on the 11 final questions
+Organizers' test dataset (600 wells, commit 009e2b5), today = 15 Jan 2027. **16/21 correct · 2 mostly correct · 3 judgement calls · 101 tests · ≈2.5 s full run (was 185 s).**
 
 
-<div style="page-break-before:always"></div>
-
-# Asset Intelligence Copilot: Results on the Final Questions
-*Mangesh Raut · FlytBase challenge, AHC × Hacktoberfest 2026 · pages 2–3*
-
-Test data: organizers' test dataset (600 wells, commit 009e2b5), today = 15 Jan 2027. Command:
-`AIC_TODAY=2027-01-15 python scripts/final_run.py --data <test-data>/dataset --only-test --questions eval/final_questions.json`.
-**All 21 turns answered in about 2.5 s end to end** (was 185 s). Every turn is now answered by a deterministic tool, so Gemma 4 isn't called on this set.
-
-## What changed since the first run
-My first run on the final questions got nearly every turn wrong, because the router only knew the sample question types (see git history for that page). I then added `copilot/final_tools.py`: deterministic tools that read their rules from the documents (recall lots and the due date from the recall notice; letter scope, threshold and the "Soil samples sent to the lab." test from the regulator letter; MOC well lists, expiry dates and extensions from the MOC memos; OPS-1/2/3/5 from the Operations SOP). I also added router rules for these question types, private per-user preferences, and pump-swap claims that record whether a claim is first-hand or relayed. No answers are hard-coded.
-
-## Per-turn verdicts (checked by hand against the raw files)
-| Turn | Before | After | Notes on the hand check |
+| Turn | Question | Answer (short) | Verdict |
 |---|---|---|---|
-| Q1 | Wrong (spill heatmap) | **Correct**: declines, explains | No pressure field exists in inspections, maintenance or notes. The only pressures are flowline test pressures in repair reports. |
-| Q2 | Wrong (no tool) | **Correct**: declines, explains | No production volumes in the data, only producing/not producing from thermal readings. |
-| Q3 | Wrong | **Correct** | 26 gas reports since 1 Nov 2026: 17 met, 9 missed (24 h, or 12 h from 1 Jan 2027; repair or manual inspection only). WELL-0332 checked by hand: only drone inspections followed, so missed. |
-| Q4 | Wrong (no tool) | **Correct** | Now: WELL-0248 allowed (MOC-031 extended by MOC-044 to 28 Feb 2027), WELL-0249 expired (MOC-036 ended 15 Dec), WELL-0405 not approved. Past violations: WELL-0087 and WELL-0158 expired; WELL-0561 not approved. |
-| Q5 | Wrong (all Nov spills) | **Correct** | 6 reportable spills in NE Block 7/8 since 1 Jun 2026; 3 not compliant (WELL-0123, WELL-0182, WELL-0262: no "Soil samples sent to the lab."). |
-| Q6 | Wrong | **Mostly correct** | 15 wells, applying OPS-3. Caveat: "drive tripping on underload, restarted from the panel" notes (WELL-0219, WELL-0249) count as restart notes; the inspection is newer there anyway. |
-| Q7.1 | Wrong (counted repairs) | **Plausible, judgement** | Abnormal-sound notes from the last month on wells with no repair since, ranked by a transparent score (repeat notes, non-producing readings, repair frequency, recalled pump). The score isn't a validated failure model. |
-| Q7.2 | Wrong | **Plausible, judgement** | Top 3 of that ranking: WELL-0182, WELL-0411, WELL-0297. |
-| Q8.1 | Partly (recorded, no recall logic) | **Correct** | First-hand report, so WELL-0333 is counted as replaced, attributed to Nathan, with no work order. |
-| Q8.2 | Wrong (cost query) | **Correct** | Saved as Nathan's private preference only. |
-| Q8.3 | Wrong (no tool) | **Correct** | 8 recalled pumps in the ground. All 18 recalled-lot installs were checked by hand: 9 were replaced later by other lots, and WELL-0333 is excluded per Nathan. |
-| Q8.4 | Wrong ("confirmed by data") | **Correct** | Not removed: a second-hand claim (Nathan → Olivia) with no work order, flagged **unconfirmed**. |
-| Q8.5 | Wrong | **Correct** | NW Block 12: WELL-0305, WELL-0426, WELL-0428, sorted by area then ID, costs in $K (install job cost). |
-| Q9.1 | Wrong | **Correct** | 8 pumps: NE8 2, NW12 3, SE32 1, SW23 2. WELL-0577 is still listed as unconfirmed. |
-| Q9.2 | Wrong | **Correct** | Nathan Pierce leads Northwest Production, which runs 150 wells. |
-| Q9.3 | Partly (SOP only) | **Correct** | OPS-5 quoted. Example: WELL-0310 (INS-0310-0213, 17 Dec, −6 °C, producing, no heat trace check within 7 days). |
-| Q9.4 | Wrong (status card) | **Correct/partial** | No H2S reading is recorded for that report; the only follow-ups were drone inspections, and OPS-1 was missed. It says so instead of inventing a number. |
-| Q9.5 | Wrong | **Correct** | Of the 8 wells, WELL-0263 and WELL-0160 aren't producing; the last repair is shown for each. |
-| Q9.6 | Wrong | **Plausible, judgement** | WELL-0332: missed gas response (safety first), not producing. |
-| Q10 | Wrong (counted jobs) | **Mostly correct** | 500 delayed jobs in 2026 parsed from "about N days longer than the repair itself because …": weather 28%, contractors 26%, parts 23%, crews 22%; median 9 extra days. No area differs from the field mix by more than 20 points. The "stands out" judgement is weak. |
-| Q11 | Wrong (no tool) | **Correct** | Southeast Block 31 has the hottest producing wellheads in 13 of 13 months. Air temperature is the same across areas (spread ≤ 0.7 °C), and the gap holds within each well type. |
+| Q1 | Reservoir pressure map | Declines: no pressure field in inspections, maintenance or notes (only flowline test pressures in repair reports). | Correct |
+| Q2 | Top oil producer 2026 | Declines: no production volumes, only producing / not producing from thermal readings. | Correct |
+| Q3 | Gas reports since 1 Nov | 26 reports: 17 met, 9 missed (24 h, 12 h from 1 Jan 2027). WELL-0332 missed (drone only). | Correct |
+| Q4 | Flowline bypasses | WELL-0248 allowed (MOC-031 ext. by MOC-044 to 28 Feb 2027); WELL-0249 expired; WELL-0405 not approved. Past: 0087, 0158 expired; 0561 not approved. | Correct |
+| Q5 | Regulator spill letter | 6 reportable spills in NE Block 7/8 since 1 Jun 2026; 3 not compliant (WELL-0123, 0182, 0262: no soil samples). | Correct |
+| Q6 | Inspection vs note conflicts | 15 wells, applying OPS-3. Caveat: underload-restart notes (WELL-0219, 0249) counted as restarts. | Mostly correct |
+| Q7.1 | Wells that sound wrong | Last-month abnormal notes, no repair since, ranked by a transparent (unvalidated) score. | Judgement call |
+| Q7.2 | Top 3 crews this week | WELL-0182, WELL-0411, WELL-0297. | Judgement call |
+| Q8.1 | WELL-0333 pump swapped | First-hand: counted as replaced, attributed to Nathan, no work order. | Correct |
+| Q8.2 | Private sort preference | Saved as Nathan's private preference only. | Correct |
+| Q8.3 | Recalled pumps in ground | 8 pumps. All 18 recalled-lot installs checked: 9 replaced by other lots, WELL-0333 excluded. | Correct |
+| Q8.4 | Remove WELL-0577 | Not removed: second-hand claim, no work order, flagged unconfirmed. | Correct |
+| Q8.5 | My area + install cost | NW Block 12: WELL-0305, 0426, 0428; sorted by area then ID, costs in $K. | Correct |
+| Q9.1 | Recalled pumps by area | 8: NE8 2, NW12 3, SE32 1, SW23 2. WELL-0577 listed as unconfirmed. | Correct |
+| Q9.2 | Northwest Production lead | Nathan Pierce; team runs 150 wells. | Correct |
+| Q9.3 | OPS-5 cold-weather check | OPS-5 quoted. Example: WELL-0310 (INS-0310-0213, 17 Dec, −6 °C, no heat-trace check in 7 days). | Correct |
+| Q9.4 | H2S reading | No H2S reading recorded; only drone follow-ups, OPS-1 missed. Says so, no invented number. | Correct |
+| Q9.5 | Producing status of the 8 | WELL-0263 and WELL-0160 not producing; last repair shown for each. | Correct |
+| Q9.6 | Most urgent well | WELL-0332: missed gas response (safety first), not producing. | Judgement call |
+| Q10 | Delay causes 2026 | 500 delayed jobs: weather 28%, contractors 26%, parts 23%, crews 22%; median 9 extra days. No area >20 pts off field mix. | Mostly correct |
+| Q11 | Hottest wellheads | Southeast Block 31 in 13 of 13 months; air temp spread ≤ 0.7 °C; holds within each well type. | Correct |
 
-**Summary:** before, 0 of 21 turns were fully correct (2 partly). After: 16 correct, 2 mostly correct (Q6, Q10), and 3 judgement calls with evidence (Q7.1, Q7.2, Q9.6).
-
-## Still weak
-- Q7 ranking and Q9.6 use a hand-designed score; the reasoning is shown, but it isn't validated.
-- The keyword patterns for gas and abnormal-sound notes cover the phrasings in this dataset; a new phrasing would need the pattern extended or the Gemma planner.
+## Limits and next steps
+- Q7 ranking and Q9.6 use a hand-designed score; reasoning shown, not validated.
+- Gas and abnormal-sound keyword patterns cover this dataset's phrasings only.
 - Q10's "stands out" uses a fixed 20-point rule.
+- Next: embedding retrieval, multi-turn follow-ups, Gemma 4 spill-area estimation from drone imagery.
 
-## Tests
-- `pytest`: 101 passed.
-- Example checks: 27/27. Unseen-question checks: 46/46 (`results/examples_rules.md`, `results/unseen_rules.md`).
-
-
-Full answers, citations and visual data: `results/final.md`, `results/final.json`. Repo: https://github.com/mangeshraut712/asset-intelligence-copilot · Video: https://vimeo.com/1236779581
+Full answers: `results/final.md`, `results/final.json`.
