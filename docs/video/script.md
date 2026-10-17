@@ -1,8 +1,10 @@
 # Demo video script (final)
 
-The demo is recorded by `scripts/record_demo.py`, which drives the real UI at 1280×720 with the captions burned in. Mangesh records the voiceover in his own voice (no synthetic voice), reading each line at its timestamp. The video runs 3:59.
+**Final video: https://vimeo.com/1236779581 (4:41), narrated by Mangesh in his own voice.**
 
-**Mux your voice in** (after recording `voice.m4a` or `.wav`):
+The screen capture was recorded with `scripts/record_demo.py`, which drives the real UI at 1280×720. The table below is the shot plan and narration; timestamps are from the capture plan and shift slightly in the final 4:41 cut.
+
+To add a voice track to a fresh capture:
 ```bash
 ffmpeg -i video/demo.mp4 -i voice.m4a -map 0:v -map 1:a -c:v copy -c:a aac -b:a 160k -shortest video/demo_final.mp4
 ```

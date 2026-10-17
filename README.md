@@ -8,10 +8,14 @@ A chat copilot for oil-field operators. It answers plain-English questions about
 |---|---|
 | 18 example scenarios (27 checks) | **27/27** (`results/examples_rules.md`) |
 | 46 unseen questions, expected answers computed independently from raw files (`eval/gen_unseen.py`) | **46/46** (`results/unseen_rules.md`) |
-| pytest | **94 passed** |
-| Final-hour command on a synthetic 400-well test set | **~2 s** end to end |
+| pytest | **101 passed** |
+| Final-hour command on a synthetic 400-well set (sample + test data) | **~2 s** end to end, 7/7 checks |
 
-Docs: [system design (page 1)](docs/writeup.md) · [results template (page 2)](docs/results_template.md) · [video script](docs/video-script.md)
+**Demo video (4:41, narrated in my own voice):** https://vimeo.com/1236779581
+
+Docs: [system design (page 1)](docs/writeup.md) · [results (page 2)](docs/results.md) · [video script](docs/video/script.md) · [contributing](CONTRIBUTING.md)
+
+Runs locally (no hosted deployment). Open source under the [MIT License](LICENSE).
 
 ## Gemma 4 (open-weight) in the LLM layer
 * **Default model:** Gemma 4 31B (`gemma-4-31b-it`), with Gemma 4 26B as fallback. Provider order: **Gemini API** (`GEMINI_API_KEY`), then OpenRouter (`OPENROUTER_API_KEY`, `google/gemma-4-31b-it:free`), then local Ollama (`AIC_LLM_BASE=http://localhost:11434/v1`, `gemma4:*`).
@@ -51,7 +55,7 @@ dataset folder(s) ──► copilot/loader.py ──► SQLite (data/copilot.db)
                     copilot/agent.py
    1. feedback detection → correction / type-wide rule / shared well fact (with conflict check)
    2. memory recall ("wells we discussed yesterday") from this user's own past chats only
-   3. intent routing: LLM tool-calling (if a key is set) or rule-based router (fallback)
+   3. intent routing: confident rule router first; otherwise the Gemma 4 planner (validated, one retry)
    4. answer + citations + visual (user-requested visual wins, else the fitting one)
                                    │
           copilot/server.py (FastAPI)  ──►  web/index.html (Chart.js, Leaflet, user picker)
@@ -60,7 +64,7 @@ dataset folder(s) ──► copilot/loader.py ──► SQLite (data/copilot.db)
 * **Producing oil** = wellhead − ambient ≥ the per-type threshold parsed from the manual (T200: 15 °C, T350: 20 °C).
 * **Downtime** = 7 days per non-producing weekly inspection in the period; missed inspections add nothing. Causes come from overlapping/triggered repairs and dated notes.
 * **Corrections** (`note_type=correction`) void the detection of the named inspection.
-* **Spill rules** from the Spill Response SOP: reportable ≥ 5 bbl, written notice ≤ 24 h (2 h major), containment ≤ 4 h, agency verification ≤ 60 days; RC-04 NOV response ≤ 30 days. Containment times are parsed from the free-text repair reports.
+* **Spill rules** from the Spill Response SOP: reportable ≥ 5 bbl, written notice ≤ 24 h (2 h major), containment ≤ 4 h, agency verification ≤ 60 days; RC-04 NOV response ≤ 30 days. Containment times are parsed from the free-text repair reports ("contained about/after/within N hours" or minutes); each SR-02 line in an answer names the spill it belongs to.
 * **Periods**: "today" = `AIC_TODAY` (default 2026-10-17); "last N months/days" end yesterday; repairs belong to a period by start date.
 
 ## Composable query, planner and self-check
@@ -87,9 +91,10 @@ git clone https://github.com/FlytBaseAILabs/flytbase-ahc-swe-asset-intelligence-
 pip install -r requirements.txt
 cp .env.example .env   # optional: add OPENROUTER_API_KEY, then `set -a; . ./.env; set +a`
 python -m copilot.loader ../dataset/sample-data           # builds data/copilot.db
-python -m uvicorn copilot.server:app --port 8000          # open http://localhost:8000
-python -m pytest -q tests                                  # 94 tests
-python -m eval.run_questions eval/examples.json --fresh    # 18 examples → results/examples.{md,json} + score
+python3 -m uvicorn copilot.server:app --port 8000         # open http://localhost:8000
+python -m pytest -q tests                                  # 101 tests
+python -m eval.run_questions eval/examples.json --fresh    # 18 examples (27 checks) → results/examples.{md,json} + score
+python -m eval.run_questions eval/unseen.json --fresh      # 46 unseen questions
 ```
 
 LLM (Gemma 4 by default; numbers always come from the tools): set `GEMINI_API_KEY` (Gemma 4 via the Gemini API) or `OPENROUTER_API_KEY`, or point `AIC_LLM_BASE` at Ollama. Optional: `AIC_LLM_MODEL`, `AIC_LLM_PROVIDER`, `AIC_LLM_FALLBACKS`. Routing policy (`AIC_LLM`): `auto` (default) means the rule router is authoritative when it matches confidently and the LLM is only asked when it is unsure; `force` sends every question through the LLM; `0` means rules only. LLM picks are cached in `data/llm_cache.json`, a free-model fallback chain is tried (`AIC_LLM_FALLBACKS`), the timeout is `AIC_LLM_TIMEOUT` (20 s), and any error falls back to the rule router, so rate limits cannot block a run.
@@ -98,21 +103,18 @@ LLM (Gemma 4 by default; numbers always come from the tools): set `GEMINI_API_KE
 
 ```bash
 pip install -r requirements-dev.txt
-AIC_DATA=/path/to/sample-data python -m pytest -q tests   # 94 tests: tools, raw-data recomputation, memory scopes, corrections, 18 examples, API
+AIC_DATA=/path/to/sample-data python -m pytest -q tests   # 101 tests: tools, raw-data recomputation, memory scopes, corrections, 18 examples, 46 unseen, SR-02 regression, Gemma 4 guard, API
 ```
 `tests/test_raw_recompute.py` recomputes key expected answers straight from the raw JSON (no copilot code), so the example checker is not just matching strings. Tests use a temporary DB and never touch the running server's memory.
 
-## Deploy
-
-* **Docker:** `docker build -t aic . && docker run -p 8000:8000 -e OPENROUTER_API_KEY=... aic`. The image bakes in the public sample dataset; to add the test set, mount it and set `DATA_DIRS="/data/sample-data /data/extra"`.
-* **Render (one step):** New → Blueprint → pick this repo (`render.yaml`), set `OPENROUTER_API_KEY`. Health check: `/api/healthz`.
-* Any Docker host (Fly, Railway, Cloud Run) works the same way: the container listens on `$PORT`.
+## Docker (optional, local)
+`docker build -t aic . && docker run -p 8000:8000 -e GEMINI_API_KEY=... aic`. The image bakes in the public sample dataset; to add the test set, mount it and set `DATA_DIRS="/data/sample-data /data/extra"`. The container listens on `$PORT` (default 8000). There is no hosted deployment.
 
 ## Final hour (one command)
 ```bash
-python scripts/final_run.py --data /path/to/test-data --questions final_questions.txt   # add --today YYYY-MM-DD if needed, --no-llm for rules only
+AIC_TODAY=2026-10-17 python scripts/final_run.py --data <test-data> --questions final.txt   # or --today YYYY-MM-DD; --no-llm for rules only
 ```
-It loads sample + test data (memory reset), answers every question (`.txt` lines may start with `User Name:`) and writes `results/final.md`, `results/final.json` and `docs/results.md`, filled from `docs/results_template.md` (summary, answer table, what worked, what didn't). A rehearsal output is in `docs/results_rehearsal_synthetic.md`. Rehearsed on the synthetic 400-well set with 15 questions: **1.6 s end to end**.
+It loads sample + test data (memory reset), answers every question (`.txt` lines may start with `User Name:`) and writes `results/final.md`, `results/final.json` and `docs/results.md`, filled from `docs/results_template.md` (summary, answer table, what worked, what didn't). A rehearsal output is in `docs/rehearsal-synthetic.md`. Rehearsed on the synthetic 400-well set (`synth/test-data`, built by `scripts/make_synthetic_dataset.py`): **1.8 s end to end**.
 
 ## Loading the test dataset
 
@@ -120,9 +122,9 @@ The loader is idempotent and accepts several folders (same layout as `sample-dat
 
 ```bash
 python -m copilot.loader /path/to/sample-data /path/to/test-data   # or just the test folder
-AIC_TODAY=2026-10-17 python -m uvicorn copilot.server:app --port 8000   # set "today" if the test data says otherwise
+AIC_TODAY=2026-10-17 python3 -m uvicorn copilot.server:app --port 8000   # set "today" if the test data says otherwise
 # final questions: one per line in a .txt, or a JSON list of {id, q, user, chat, day}
-python -m eval.run_questions final_questions.txt --out results/final
+python -m eval.run_questions final.txt --out results/final
 ```
 To dry-run this step: `python scripts/make_synthetic_dataset.py <sample-data> /tmp/test-data` builds a 200-well copy (renumbered wells, new areas). `eval/synthetic.json` checks answers on sample + synthetic loaded together (7/7, 400 wells load in about 1 s).
 `--reset-memory` on the loader wipes runtime memory; otherwise it is preserved across reloads.
@@ -131,11 +133,12 @@ To dry-run this step: `python scripts/make_synthetic_dataset.py <sample-data> /t
 Deterministic core: no model, $0. Optional LLM routing uses one small tool-call per question (free Gemma 4 on OpenRouter/AI Studio by default).
 
 ## Demo video
-`python scripts/record_demo.py <out-dir>` drives the real UI with Playwright (1280×720), burns in captions, and writes `demo.mp4`, `demo.srt` and `narration.txt` (timed lines for the presenter's own voice). See `docs/video-script.md` for the timed script and the ffmpeg command to add the voiceover.
+**https://vimeo.com/1236779581** (4:41), narrated in my own voice over the real UI. The timed script is in `docs/video/script.md` and the narration in `docs/video/narration.txt`. `python scripts/record_demo.py <out-dir>` re-records the screen capture by driving the UI with Playwright (1280×720) against `http://localhost:8000` (override with `AIC_URL`).
 
 ## Next steps
 Embedding retrieval over reports, LLM-written prose on top of tool JSON, richer statement parsing for arbitrary feedback, per-chat context for follow-ups.
 
-License: MIT
+## Contributing and license
+See [CONTRIBUTING.md](CONTRIBUTING.md); issue and PR templates are in `.github/`. Released under the [MIT License](LICENSE) © 2026 Mangesh Raut.
 
 **CI:** the workflow is in `docs/ci-workflow.yml`. Copy it to `.github/workflows/ci.yml`; pushing it needs a token with the `workflow` scope.
