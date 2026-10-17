@@ -276,26 +276,58 @@ def letter(cp, q):
     return res("\n\n".join(txt), table(rows), [dd[0]["doc_id"]] + cites, [r["Well"] for r in rows])
 
 # ---------- OPS-3 status disagreement ----------
-SHUT = re.compile(r"\bshut.?in\b", re.I); RESTART = re.compile(r"restarted|put back on production|back online|back on production", re.I)
+SHUT = re.compile(r"\bshut.?in\b|\bshut (the|this) well in\b|\bstays shut in\b", re.I)
+RESTART = re.compile(r"\brestarted\b|put back on production|back online|back on production", re.I)
+# A drive trip that the operator reset on the spot is an equipment remark under OPS-3, not a shut-in/restart of the
+# well. It is ambiguous, so the answer reports both readings.
+TRIP = re.compile(r"\btripp(ing|ed)\b.*\b(restarted|reset)\b", re.I)
+
+def status_note_kind(text):
+    """'shut', 'restart', 'trip' (ambiguous drive trip + reset) or None for notes OPS-3 ignores."""
+    if TRIP.search(text): return "trip"
+    if SHUT.search(text): return "shut"
+    if RESTART.search(text): return "restart"
+    return None
+
+def _conflict(ins, n, kind):
+    says_up = kind in ("restart", "trip")
+    if says_up == bool(ins["producing"]): return None
+    newer = n["created_at"] > ins["inspected_at"]
+    status = ("Producing oil (unconfirmed)" if says_up else "Not producing oil (shut in)") if newer else ("Producing oil" if ins["producing"] else "Not producing oil")
+    why = ("operator note is more recent than the inspection (OPS-3)" if newer else "inspection is more recent than the note (OPS-3)")
+    return status, why
+
 def status_conflicts(cp, q):
     c = cp.c; an = anames(c); wl = wells(c)
     last = {}
     for r in T.effective_inspections(c, None, TODAY - dt.timedelta(days=120), TODAY): last[r["asset_id"]] = r
-    rows, cites = [], []
+    rows, alt, cites = [], [], []
     for w, ins in sorted(last.items()):
-        n = c.execute("SELECT * FROM notes WHERE asset_id=? AND note_type='operator_note' ORDER BY created_at DESC", (w,)).fetchall()
-        n = next((x for x in n if w in x["text"] and (SHUT.search(x["text"]) or RESTART.search(x["text"]))), None)
-        if not n: continue
-        says_up = bool(RESTART.search(n["text"])) and not SHUT.search(n["text"])
-        if says_up == bool(ins["producing"]): continue
-        newer = n["created_at"] > ins["inspected_at"]
-        status = ("Producing oil (unconfirmed)" if says_up else "Not producing oil (shut in)") if newer else ("Producing oil" if ins["producing"] else "Not producing oil")
-        why = ("operator note is more recent than the inspection (OPS-3)" if newer else "inspection is more recent than the note (OPS-3)")
-        rows.append({"Well": w, "Area": an[wl[w]["area_id"]], "Latest inspection": f"{ins['inspection_id']}, {fmt(ins['date'])}: {'producing' if ins['producing'] else 'not producing'} (Δ {ins['delta']} °C vs {ins['threshold']:g})",
-                     "Latest operator note": f"{hm(n['created_at'])}: {n['text']}", "Status now": status, "Why": why})
-        cites += [ins["inspection_id"], n["note_id"]]
-    txt = [f"**{len(rows)} wells** where the latest inspection and the latest shut-in/restart operator note disagree. Rule (Operations SOP OPS-3): the more recent evidence wins; a restart note newer than the inspection means producing (unconfirmed) until an inspection confirms; gas, bypass and equipment notes don't change status."]
-    return res("\n\n".join(txt), table(rows), ["Operations SOP OPS-3"] + cites, [r["Well"] for r in rows])
+        ns = [(x, status_note_kind(x["text"])) for x in c.execute("SELECT * FROM notes WHERE asset_id=? AND note_type='operator_note' ORDER BY created_at DESC", (w,))
+              if w in x["text"]]  # OPS-3: a round note names the well it is filed under
+        strict = next(((x, k) for x, k in ns if k in ("shut", "restart")), None)
+        loose = next(((x, k) for x, k in ns if k), None)
+        insd = f"{ins['inspection_id']}, {hm(ins['inspected_at'])}: {'producing' if ins['producing'] else 'not producing'} (Δ {ins['delta']} °C vs {ins['threshold']:g})"
+        if ins.get("corrections"): insd += " after " + ", ".join(x["source"] for x in ins["corrections"])
+        if strict and (cf := _conflict(ins, *strict)):
+            n = strict[0]
+            rows.append({"Well": w, "Area": an[wl[w]["area_id"]], "Latest inspection": insd, "Latest shut-in/restart note": f"{n['note_id']}, {hm(n['created_at'])}: {n['text']}", "Status now": cf[0], "Why": cf[1]})
+            cites += [ins["inspection_id"], n["note_id"]]
+        if loose and loose[1] == "trip" and (cf := _conflict(ins, *loose)):
+            n = loose[0]
+            alt.append({"Well": w, "Area": an[wl[w]["area_id"]], "Latest inspection": insd, "Drive-trip note": f"{n['note_id']}, {hm(n['created_at'])}: {n['text']}", "Status now": cf[0], "Why": cf[1]})
+            cites += [ins["inspection_id"], n["note_id"]]
+    down = [r for r in rows if r["Status now"].startswith("Not")]
+    txt = [f"**{len(rows)} wells** where the latest inspection and the latest operator note saying the well was shut in or restarted disagree. "
+           f"Real status now: **{len(rows) - len(down)} producing**, **{len(down)} not producing** (table, one line per well with the reason).",
+           "Rule (Operations SOP OPS-3): the more recent of the two wins. A shut-in note newer than the inspection means not producing (shut in); a restart note newer than the inspection means producing (unconfirmed) until an inspection confirms it; an inspection newer than the note stands. Inspections are read after any data_correction note. Gas, bypass and equipment notes don't change status.",
+           "Not producing because the note is newer: " + (", ".join(r["Well"] for r in rows if r["Status now"] == "Not producing oil (shut in)") or "none") + ". "
+           "Producing (unconfirmed) because a restart note is newer: " + (", ".join(r["Well"] for r in rows if "unconfirmed" in r["Status now"]) or "none") + ". "
+           "Inspection is newer, so it stands: " + (", ".join(f"{r['Well']} ({r['Status now'].lower()})" for r in rows if "OPS-3" in r["Why"] and r["Why"].startswith("inspection")) or "none") + "."]
+    if alt:
+        txt.append(f"**Assumption, stated:** I read \"drive tripping …, restarted/reset from the panel\" as an equipment remark (the well was never shut in), so it doesn't count under OPS-3. "
+                   f"If you count it as a restart note, {len(alt)} more well(s) disagree: " + "; ".join(f"{r['Well']} ({r['Drive-trip note'].split(': ', 1)[1]}) → still **{r['Status now'].lower()}**, because {r['Why']}" for r in alt) + ". The status answer is the same under both readings.")
+    return res("\n\n".join(txt), table(rows), ["Operations SOP OPS-3"] + cites, [r["Well"] for r in rows] + [r["Well"] for r in alt]) | ({"alt_table": alt} if alt else {})
 
 # ---------- OPS-5 freeze ----------
 def cold(cp, q):
@@ -317,44 +349,137 @@ def cold(cp, q):
                table(rows), ["Operations SOP OPS-5", r["inspection_id"]], [r["asset_id"]])
 
 # ---------- operator notes: abnormal behaviour ----------
-ABN = re.compile(r"rattl|squeal|fluid pound|tagging|amps hunting|knock|vibrat|clank|groan|thump|squeak|grind|banging|leak|weep|drip|noisy|noise|slipping|belt|hot to the touch|smoking|stalling|struggl", re.I)
-NORMAL = re.compile(r"normal|nothing to report|dry and clean", re.I)
+ABN = re.compile(r"rattl|squeal|fluid pound|tagging|amps hunting|tripp|knock|vibrat|clank|groan|thump|squeak|grind|banging|leak|weep|drip|noisy|noise|slipping|belt|hot to the touch|smoking|stalling|struggl", re.I)
+NORMAL = re.compile(r"normal|nothing to report|dry and clean|running steady", re.I)
+# symptom -> (label, equipment kinds it points at); equipment/usual problems follow the Field Work SOP section 4 table
+SYMPTOMS = [(r"tripp", "drive trips", ("esp_pump", "pump_jack")), (r"amps hunting", "amps hunting", ("esp_pump",)),
+            (r"fluid pound", "fluid pound", ("downhole_pump",)), (r"tagging", "tagging bottom", ("downhole_pump", "rod_string")),
+            (r"rattl|knock|clank|bang|belt|slipping", "pump-jack rattle/knock", ("pump_jack",)),
+            (r"squeal|squeak|stuffing box|leak|weep|drip", "stuffing-box squeal/leak", ("wellhead",)),
+            (r".", "other abnormal sound", ())]
+REPEAT_TRIP = re.compile(r"on and off|each time|again|repeated", re.I)
+
+def symptom(text):
+    return next((lab, kinds) for pat, lab, kinds in SYMPTOMS if re.search(pat, text, re.I))
+
+def warning_rule(c):
+    """T500 early-warning rule (manual section 5): N drops in a row totalling at least X °C. Parsed from the manual."""
+    d = doc(c, "T500"); t = d[0]["text"] if d else ""
+    m = re.search(r"fallen by\s*(\d+(?:\.\d+)?)\s*°C", t); n = re.search(r"(two|three|four|\d+) inspections in a row", t)
+    words = {"two": 2, "three": 3, "four": 4}
+    drops = (words.get(n.group(1), None) or int(n.group(1))) if n else 3
+    return drops, float(m.group(1)) if m else 3.0, bool(d)
+
+def falling(deltas, drops, total):
+    if len(deltas) < drops + 1: return False
+    w = deltas[-(drops + 1):]
+    return all(b < a for a, b in zip(w, w[1:])) and w[0] - w[-1] >= total
+
+def ops3_status(c, w, ins):
+    """Latest OPS-3 status for well w given its latest effective inspection."""
+    n = next((x for x in c.execute("SELECT * FROM notes WHERE asset_id=? AND note_type='operator_note' ORDER BY created_at DESC", (w,))
+              if w in x["text"] and status_note_kind(x["text"]) in ("shut", "restart")), None)
+    if n and n["created_at"] > ins["inspected_at"]: return status_note_kind(n["text"]) == "restart", n
+    return bool(ins["producing"]), n
+
 def note_risk(cp, q, user, chat, n=10):
-    c = cp.c; an = anames(c); wl = wells(c); s = TODAY - dt.timedelta(days=31)
+    """Rank wells with abnormal operator notes in the last month and no repair since, using evidence the documents
+    name as failure precursors. Every point of the score is shown in the table."""
+    c = cp.c; an = anames(c); wl = wells(c); s = T.sub_months(TODAY, 1)
     notes = defaultdict(list)
     for x in c.execute("SELECT * FROM notes WHERE note_type='operator_note' AND created_at>=? ORDER BY created_at", (str(s),)):
-        if ABN.search(x["text"]) and not NORMAL.search(x["text"]) and not GAS.search(x["text"]) and "bypass" not in x["text"].lower(): notes[x["asset_id"]].append(x)
-    cand = []
+        t = x["text"]
+        if ABN.search(t) and not NORMAL.search(t) and not GAS.search(t) and "bypass" not in t.lower() and not SHUT.search(t) and not RESTART.search(t.replace("restarted from the panel", "")):
+            notes[x["asset_id"]].append(x)
+    drops, total, have_manual = warning_rule(c)
+    _, _, _, rec = recalled_in_ground(c); recw = {r["well"] for r in rec}
+    cand, repaired_since_first, in_progress = [], 0, []
     for w, ns in notes.items():
-        first = ns[0]["created_at"]
-        if c.execute("SELECT 1 FROM maintenance WHERE asset_id=? AND started_at>=? AND maintenance_type!='scheduled'", (w, first)).fetchone(): continue
-        last = c.execute("SELECT * FROM maintenance WHERE asset_id=? AND maintenance_type='corrective' ORDER BY started_at DESC", (w,)).fetchall()
-        yr = [m for m in last if m["started_at"] >= str(TODAY - dt.timedelta(days=365))]
-        ins = T.effective_inspections(c, [w], TODAY - dt.timedelta(days=45), TODAY)
-        drop = [i for i in ins if not i["producing"]]
-        kinds = Counter(re.sub(r"WELL-\d{4}", "", x["text"]).strip()[:30] for x in ns)
-        score = len(ns) * 3 + len(yr) + len(drop) * 2 + len(kinds)
-        _, lots, _, rec = recalled_in_ground(c) if not hasattr(cp, "_rec") else (None, None, None, cp._rec)
-        cp._rec = rec
-        recalled = any(r["well"] == w for r in rec)
-        score += 3 if recalled else 0
-        signs = [f"{len(yr)} corrective repairs in the last 12 months"] + ([f"{len(drop)} recent inspections not producing"] if drop else []) + (["recalled pump in the ground"] if recalled else [])
-        cand.append({"Well": w, "Area": an[wl[w]["area_id"]], "Operator-note evidence": " | ".join(f"{x['created_at'][:10]}: \"{x['text']}\"" for x in ns[-3:]) + (f" (+{len(ns)-3} more)" if len(ns) > 3 else ""),
-                     "Other warning signs": "; ".join(signs), "Last repair": (f"{last[0]['maintenance_id']} {fmt(last[0]['started_at'])} ({last[0]['issue']})" if last else "none"), "_s": score, "_n": len(ns)})
-    cand.sort(key=lambda r: (-r["_s"], r["Well"]))
+        lastn = ns[-1]["created_at"]
+        rep = c.execute("SELECT 1 FROM maintenance WHERE asset_id=? AND started_at>? AND maintenance_type!='scheduled' AND lower(issue) NOT LIKE '%spill%'", (w, lastn)).fetchone()
+        if rep: continue
+        op = c.execute("SELECT * FROM maintenance WHERE asset_id=? AND maintenance_type!='scheduled' AND lower(issue) NOT LIKE '%spill%' AND started_at<=? AND (completed_at IS NULL OR completed_at>?) ORDER BY started_at DESC",
+                       (w, f"{TODAY}T23:59:59", f"{TODAY}T00:00:00")).fetchone()
+        if op: in_progress.append(f"{w} ({op['maintenance_id']} {op['issue']}, started {fmt(op['started_at'])}" + (f", due to finish {fmt(op['completed_at'])})" if op["completed_at"] else ")")); continue
+        if c.execute("SELECT 1 FROM maintenance WHERE asset_id=? AND started_at>? AND maintenance_type!='scheduled' AND lower(issue) NOT LIKE '%spill%'", (w, ns[0]["created_at"])).fetchone(): repaired_since_first += 1
+        wt = wl[w]["well_type"]
+        ins = T.effective_inspections(c, [w], TODAY - dt.timedelta(days=120), TODAY)
+        if not ins: continue
+        deltas = [i["delta"] for i in ins]; latest = ins[-1]
+        up, stnote = ops3_status(c, w, latest)
+        syms = [symptom(x["text"]) for x in ns]; kinds = {k for _, ks in syms for k in ks}
+        if wt != "T500": kinds.discard("esp_pump")
+        yr = [m for m in c.execute("SELECT * FROM maintenance WHERE asset_id=? AND maintenance_type='corrective' AND started_at>=? AND lower(issue) NOT LIKE '%spill%' ORDER BY started_at DESC",
+                                   (w, str(TODAY - dt.timedelta(days=365))))]
+        same = [m for m in yr if m["equipment_kind"] in kinds]
+        rca = 2 if (wt == "T500" and "esp_pump" in kinds) else int((T.rule(c, f"{wt}.rca_repairs", 3)[0]) or 3)
+        pts, signs = [], []
+        trend = falling(deltas, drops, total) and latest["producing"]
+        if trend and wt == "T500":
+            pts.append(8); signs.append(f"T500 early-warning pattern: wellhead-minus-air fell {drops} inspections in a row by {deltas[-drops-1] - deltas[-1]:.1f} °C ({' → '.join(f'{v:g}' for v in deltas[-drops-1:])}); the manual says ESP motors usually fail after this and calls for a drive and insulation check within 14 days, i.e. by {fmt(T.d(latest['date']) + dt.timedelta(days=14))}")
+        elif trend:
+            pts.append(3); signs.append(f"steady fall in wellhead-minus-air ({' → '.join(f'{v:g}' for v in deltas[-drops-1:])} °C)")
+        trips = [x for x, (lab, _) in zip(ns, syms) if lab == "drive trips"]
+        if wt == "T500" and trips and (len(trips) >= 2 or any(REPEAT_TRIP.search(x["text"]) for x in trips)):
+            pts.append(6); signs.append("repeated drive trips that were reset; the T500 manual says repeated trips must be treated as a failure, not reset")
+        elif trips:
+            pts.append(2); signs.append("drive trip reset by the operator")
+        if not up and not (stnote and status_note_kind(stnote["text"]) == "shut" and stnote["created_at"] >= ns[0]["created_at"]):
+            pts.append(6); signs.append(f"latest inspection {latest['inspection_id']} ({fmt(latest['date'])}) reads not producing (Δ {latest['delta']} °C, below the {latest['threshold']:g} °C rule) with no shut-in note or open job to explain it — " + ("for a rod-lift well the manual lists 'unit running, wellhead cold' as rod parted or pump stuck" if wt != "T500" else "for an ESP well this is consistent with a drive/motor failure"))
+        pts.append(min(len(ns), 3) * 1.5); pts.append(len({lab for lab, _ in syms}) - 1)
+        if same:
+            pts.append(min(len(same), 3)); signs.append(f"{len(same)} corrective repair(s) on the same equipment ({', '.join(sorted({m['equipment_kind'] for m in same}))}) in the last 12 months" + (f" — at the RCA threshold ({rca})" if len(same) >= rca else ""))
+            if len(same) >= rca: pts.append(2)
+        if w in recw: pts.append(2); signs.append("recalled pump still in the ground")
+        score = round(sum(pts), 1)
+        cand.append({"Well": w, "Area": an[wl[w]["area_id"]], "Type": wt, "Score": score,
+                     "Operator-note evidence": " | ".join(f"{x['note_id']} {x['created_at'][:10]}: \"{x['text']}\"" for x in ns[-3:]) + (f" (+{len(ns)-3} more)" if len(ns) > 3 else ""),
+                     "Warning signs": "; ".join(signs) or f"{len(ns)} abnormal note(s) only",
+                     "Last repair": (f"{yr[0]['maintenance_id']} {fmt(yr[0]['started_at'])} ({yr[0]['issue']})" if yr else "none in 12 months"),
+                     "_cites": [x["note_id"] for x in ns] + [latest["inspection_id"]], "_strong": len([p for p in pts if p >= 6])})
+    # wells with a precursor the documents name come before wells with only supporting evidence
+    cand.sort(key=lambda r: (-min(r["_strong"], 1), -r["Score"], r["Well"]))
     top = cand[:n]
     for i, r in enumerate(top, 1): r["Rank"] = i
-    rows = [{k: r[k] for k in ["Rank", "Well", "Area", "Operator-note evidence", "Other warning signs", "Last repair"]} for r in top]
-    txt = [f"In the last month operators wrote abnormal-behaviour notes (rattling, rod squeal, fluid pound, tagging bottom, amps hunting, etc.) about **{len(notes)} wells**; **{len(cand)}** have had no repair since the first such note. Ranked by: number of repeated notes, recent non-producing readings, corrective-repair frequency over 12 months, and recalled pumps. This is a judgement score, not a validated failure model."]
-    return res("\n\n".join(txt), table(rows), [], [r["Well"] for r in rows])
+    rows = [{k: r[k] for k in ["Rank", "Well", "Area", "Type", "Score", "Operator-note evidence", "Warning signs", "Last repair"]} for r in top]
+    cut = (min(top[-1]["_strong"], 1), top[-1]["Score"]) if top else None; ties = [r["Well"] for r in cand[n:] if (min(r["_strong"], 1), r["Score"]) == cut]
+    txt = [f"In the last month ({fmt(s)} – {fmt(TODAY)}) operators wrote notes about **{len(notes)} wells** that sound or behave wrong (rattling, rod squeal, fluid pound, tagging bottom, amps hunting, drive trips, stuffing-box leaks). "
+           f"**{len(cand)}** have had no repair since the latest such note (spill clean-ups don't count as a repair; {repaired_since_first} more would drop out if you count from the first note instead).",
+           "How I ranked them: wells with a failure precursor that the documents name come first, then by points (table) — the T500 manual's early-warning temperature fall (8), repeated drive trips (6), and a well that reads not producing with no shut-in or job to explain it (6; T200 manual: 'unit running, wellhead cold' = rod parted or pump stuck). Then repeated notes (1.5 each, up to 3), different symptoms (+1 each), corrective repairs on the same equipment in 12 months (+1 each, +2 at the RCA threshold) and a recalled pump (+2). There is no history to validate a 90-day failure model, so this is an evidence-weighted ranking, not a probability."]
+    if in_progress: txt.append(f"Left out because a repair is already under way: {'; '.join(sorted(in_progress))}.")
+    more = [r["Well"] for r in cand[n:] if r["_strong"]]
+    if more: txt.append(f"Also showing a documented precursor but ranked below #{n} on supporting evidence: {', '.join(more)}.")
+    if ties: txt.append(f"Tied with #{n} on score: {', '.join(ties)} (sorted by well ID).")
+    return res("\n\n".join(txt), table(rows), [x for r in top for x in r["_cites"]] + (["T500 manual §5"] if have_manual else []) + ["T200 manual §7", "Field Work SOP §4"], [r["Well"] for r in rows]) | {"_cand": top, "judgement": True}
 
 def crew_first(cp, q, user, chat):
-    r = note_risk(cp, q, user, chat, n=10); top = r["visual"]["rows"][:3]
-    txt = ["Send crews first to:"] + [f"{i}. **{x['Well']}** ({x['Area']}) — {x['Operator-note evidence'].split(' | ')[-1]}; {x['Other warning signs']}; last repair {x['Last repair']}." for i, x in enumerate(top, 1)]
-    txt.append("Why: these have the most repeated abnormal notes without a repair since, plus the strongest other warning signs. Gas-odor and recalled-pump items are handled under their own procedures.")
-    return res("\n".join(txt), table(top), r["citations"], [x["Well"] for x in top])
+    r = note_risk(cp, q, user, chat, n=10); top = r["_cand"][:3]
+    txt = [f"Send crews first to {', '.join(x['Well'] for x in top[:-1])} and {top[-1]['Well']}:" if len(top) > 1 else "Send a crew first to:"] + [f"{i}. **{x['Well']}** ({x['Area']}, {x['Type']}, score {x['Score']}) — {x['Operator-note evidence'].split(' | ')[-1]}. Why: {x['Warning signs']}. Last repair: {x['Last repair']}." for i, x in enumerate(top, 1)]
+    nxt = r["_cand"][3] if len(r["_cand"]) > 3 else None
+    txt.append("Why these three: each has a precursor the manuals treat as an imminent or actual failure, not just a noise note" + (f"; next in line is {nxt['Well']} (score {nxt['Score']})" if nxt else "") + ". "
+               "Assumption: this is about the noise/behaviour list from your previous question. Safety items come before all of it: an unanswered gas-odor report (OPS-1) or an overdue recalled pump is handled under its own procedure, so check those lists too before you plan the week.")
+    rows = [{k: x[k] for k in ["Rank", "Well", "Area", "Type", "Score", "Warning signs", "Last repair"]} for x in top]
+    return res("\n".join(txt), table(rows), [c for x in top for c in x["_cites"]], [x["Well"] for x in top]) | {"judgement": True}
 
 # ---------- shut-in delay reasons ----------
+def chi2_sf(x, k):
+    """Upper tail of the chi-square distribution (regularized upper incomplete gamma), no scipy needed."""
+    import math
+    a, x = k / 2.0, x / 2.0
+    if x <= 0: return 1.0
+    if x < a + 1:
+        term = sm = 1.0 / a; n = a
+        for _ in range(500):
+            n += 1; term *= x / n; sm += term
+            if abs(term) < abs(sm) * 1e-12: break
+        return max(0.0, 1 - sm * math.exp(-x + a * math.log(x) - math.lgamma(a)))
+    b = x + 1 - a; cc = 1 / 1e-300; d = 1 / b; h = d
+    for i in range(1, 500):
+        an_ = -i * (i - a); b += 2; d = an_ * d + b; d = 1 / (d if abs(d) > 1e-300 else 1e-300)
+        cc = b + an_ / cc; cc = cc if abs(cc) > 1e-300 else 1e-300; dl = d * cc; h *= dl
+        if abs(dl - 1) < 1e-12: break
+    return math.exp(-x + a * math.log(x) - math.lgamma(a)) * h
+
 REASONS = [("parts", r"part|back-?order|supplier|vendor|delivery"), ("contractors", r"contractor"), ("crews", r"crew|staff|technician|rig"), ("weather", r"weather|rain|snow|ice|wind|storm|mud|road|freez")]
 def delays(cp, q):
     c = cp.c; an = anames(c); wl = wells(c); y = re.search(r"(20\d\d)", q); y = y.group(1) if y else str(TODAY.year - 1)
@@ -375,15 +500,39 @@ def delays(cp, q):
     for a in agg:
         for k, v in agg[a].items(): allv[k] += v
     tot = sum(len(v) for v in allv.values())
-    stand = []
+    # how common delays are: share of the area's maintenance jobs started that year whose report states a delay
+    jobs = {an[r["area_id"]]: r["n"] for r in c.execute("SELECT w.area_id, count(*) n FROM maintenance m JOIN wells w USING(asset_id) WHERE substr(m.started_at,1,4)=? AND m.report_text IS NOT NULL AND m.report_text!='' GROUP BY w.area_id", (y,))}
     for r in rows:
-        a = r["Area"]; for_k = {k: len(agg[a].get(k, [])) / r["Jobs"] for k in keys}
-        for k in keys:
-            fs = len(allv[k]) / tot if tot else 0
-            if for_k[k] - fs > 0.2 and r["Jobs"] >= 5: stand.append(f"{a}: {k} {for_k[k]*100:.0f}% vs {fs*100:.0f}% field-wide")
-    txt = [f"**{tot} jobs started in {y}** kept the well shut in longer than the repair (the report states \"about N days longer than the repair itself because …\"). Field-wide: " + ", ".join(f"{k} {100*len(v)/tot:.0f}% (median {median(v):g} extra days)" for k, v in sorted(allv.items(), key=lambda kv: -len(kv[1])) if v) + ".",
-           "By area: " + "; ".join(f"{r['Area']}: {r['Jobs']} jobs, mostly {r['Main reason']} (" + ", ".join(f"{k} {r[k.capitalize()]}" for k in keys if r[k.capitalize()] != '-') + ")" for r in rows) + ".",
-           "Stands out: " + ("; ".join(stand) if stand else "no area's mix differs from the field mix by more than 20 percentage points, and the typical extra wait is about the same everywhere; " + max(rows, key=lambda r: r['Jobs'])['Area'] + " simply has the most delayed jobs") + "."]
+        allr = [x for v in agg[r["Area"]].values() for x in v]
+        r["Typical extra days (median)"] = median(allr); r["Delayed share of jobs"] = f"{100 * r['Jobs'] / jobs[r['Area']]:.0f}%" if jobs.get(r["Area"]) else "-"
+    # 1) is the reason mix different by area? chi-square test of independence (area x reason)
+    used = [k for k in keys if allv.get(k)]
+    chi = sum((len(agg[r["Area"]].get(k, [])) - r["Jobs"] * len(allv[k]) / tot) ** 2 / (r["Jobs"] * len(allv[k]) / tot) for r in rows for k in used) if tot else 0
+    dfree = max((len(rows) - 1) * (len(used) - 1), 1); p_mix = chi2_sf(chi, dfree)
+    # 2) are the extra days different? per area x reason cells with at least 10 jobs, permutation test on the median
+    import random
+    rnd = random.Random(7); stand, watch = [], []
+    for r in rows:
+        for k in used:
+            v = agg[r["Area"]].get(k, []); f = allv[k]
+            if len(v) < 10: continue
+            d0 = abs(median(v) - median(f))
+            if d0 < 0.5 * median(f): continue
+            hits = sum(abs(median(rnd.sample(f, len(v))) - median(f)) >= d0 for _ in range(2000))
+            pv = (hits + 1) / 2001
+            (stand if pv < 0.05 else watch).append(f"{r['Area']} {k}: median {median(v):g} extra days vs {median(f):g} field-wide (n={len(v)}, p≈{pv:.2f})")
+    for r in rows:
+        for k in used:
+            v = agg[r["Area"]].get(k, [])
+            share, fs = len(v) / r["Jobs"], len(allv[k]) / tot
+            if abs(share - fs) >= 0.10 and r["Jobs"] >= 20: watch.append(f"{r['Area']} {k} share {share*100:.0f}% vs {fs*100:.0f}% field-wide ({len(v)} of {r['Jobs']} jobs)")
+    shares = sorted(rows, key=lambda r: r["Jobs"] / jobs.get(r["Area"], 1))
+    txt = [f"**{tot} jobs started in {y}** kept the well shut in longer than the repair (the report states \"about N days longer than the repair itself because …\"). Field-wide the waits split " + ", ".join(f"{k} {100*len(v)/tot:.0f}%" for k, v in sorted(allv.items(), key=lambda kv: -len(kv[1])) if v) + f": **no single cause dominates**, weather is only slightly ahead, four causes in roughly equal shares. Typical extra time: median **{median([x for v in allv.values() for x in v]):g} days** (mean {sum(x for v in allv.values() for x in v)/tot:.1f}), about the same for every cause.",
+           "By area (table): " + "; ".join(f"{r['Area']}: {r['Jobs']} jobs ({r['Delayed share of jobs']} of its jobs), mostly {r['Main reason']}, median {r['Typical extra days (median)']:g} extra days" for r in rows) + ".",
+           f"Does any area stand out? **Not clearly.** The reason mix doesn't differ between areas more than chance would (chi-square {chi:.1f} on {dfree} df, p≈{p_mix:.2f})" + (f", and these differences in waiting time are statistically clear: {'; '.join(stand)}" if stand else ", and no area's waiting time for any cause differs clearly from the field") + ". "
+           + (f"Worth watching, but small samples: {'; '.join(watch)}. " if watch else "")
+           + f"Delays are most common in {shares[-1]['Area']} ({shares[-1]['Delayed share of jobs']} of jobs) and least common in {shares[0]['Area']} ({shares[0]['Delayed share of jobs']}); {max(rows, key=lambda r: r['Jobs'])['Area']} has the most delayed jobs simply because it has the most wells.",
+           "Method: the cause is read from the 'because …' clause (back-ordered part → parts, weekday contractor slot → contractors, crew committed elsewhere or rig busy → crews, rain/road → weather); 'typical' = median."]
     vis = {"type": "bar", "stacked": True, "x": [r["Area"] for r in rows], "series": [{"name": k, "data": [len(agg[r["Area"]].get(k, [])) for r in rows]} for k in keys if allv.get(k)]}
     return res("\n\n".join(txt), vis, cites, []) | {"alt_visual": table(rows), "table": rows}
 
@@ -428,16 +577,54 @@ def recall_followup(cp, q, user, chat):
     return res(f"Of the {len(set(prev))} wells with recalled pumps from your first question, **{len(rows)} are not producing oil right now** (latest inspection below the well-type threshold):", table(rows), [], [r["Well"] for r in rows])
 
 def deal_first(cp, q, user, chat):
-    c = cp.c; ws = list(dict.fromkeys(w for _, x in chat_wells(c, user, chat) for w in x))
+    """Rank every well mentioned in this chat on safety, compliance and production evidence; show the whole
+    comparison, the pick, the runner-up and the assumption behind 'today'."""
+    c = cp.c; an = anames(c); wl = wells(c)
+    ws = [w for w in dict.fromkeys(w for _, x in chat_wells(c, user, chat) for w in x) if w in wl]
     if not ws: return None
-    _, _, due, rec = recalled_in_ground(c); recw = {r["well"] for r in rec}
+    _, _, due, rec = recalled_in_ground(c); recw = {r["well"]: r for r in rec}
     gasrows, _ = gas(cp, "since 1 Nov 2026", wells_only=ws)
-    missed = {r["Well"] for r in gasrows if r["Met / Missed"] == "Missed"}
-    def score(w):
-        s = T.well_status(w); return (w in missed) * 4 + (w in recw) * 2 + (not s["producing"]) * 1
-    best = max(ws, key=lambda w: (score(w), w)); s = T.well_status(best)
-    why = (["gas-odor report with a missed OPS-1 response (safety)"] if best in missed else []) + (["recalled pump still in the ground, past the 31 Dec 2026 replacement date"] if best in recw else []) + (["not producing oil right now"] if not s["producing"] else [])
-    return res(f"Of the {len(ws)} wells discussed in this conversation, I'd deal with **{best}** ({s['area']}) first: " + "; ".join(why or ["highest combined risk"]) + ". Safety items (gas) outrank production and recall items, then overdue recalls, then lost production. This is a judgement call based on the evidence above.", None, [s["last_inspection_id"]], [best])
+    abn = {r["Well"]: r for r in note_risk(cp, "", user, chat, n=10 ** 6)["_cand"]}
+    cv = cold(cp, "")["visual"]; coldmiss = {}
+    for r in (cv["rows"] if cv else []): coldmiss.setdefault(r["Well"], f"{r['Inspection']} ({r['Date']})")
+    rows = []
+    for w in ws:
+        ins = T.effective_inspections(c, [w])[-1]; up, _ = ops3_status(c, w, ins)
+        pts, why, cites = 0, [], [ins["inspection_id"]]
+        for g in [g for g in gasrows if g["Well"] == w and g["Met / Missed"] == "Missed"]:
+            t0 = g["Reported at"].replace(" UTC", "").replace(" ", "T")
+            visit = c.execute("SELECT 1 FROM maintenance WHERE asset_id=? AND started_at>? UNION SELECT 1 FROM inspections WHERE asset_id=? AND method='manual' AND inspected_at>?", (w, t0, w, t0)).fetchone()
+            pts += 10 if not visit else 6
+            why.append(f"gas-odor report {g['Reported at'][:10]} with a missed OPS-1 response" + (" and **no crew on site since** (only drone inspections) — an open safety item" if not visit else " (a crew has been there since)"))
+        if w in recw:
+            cl = recw[w].get("claim")
+            pts += 4; why.append(f"recalled pump ({recw[w]['lot']}) still in the ground, past the {fmt(due) if due else 'recall'} replacement date" + (f" (a swap was reported by {cl['author']}, unconfirmed)" if cl else ""))
+        op = c.execute("SELECT * FROM maintenance WHERE asset_id=? AND maintenance_type!='scheduled' AND started_at<=? AND (completed_at IS NULL OR completed_at>?) ORDER BY started_at DESC",
+                       (w, f"{TODAY}T23:59:59", f"{TODAY}T00:00:00")).fetchone()
+        if not up and op:
+            pts += 1; why.append(f"not producing now, but repair {op['maintenance_id']} ({op['issue']}) is already under way" + (f" until {fmt(op['completed_at'])}" if op["completed_at"] else "")); cites.append(op["maintenance_id"])
+        elif not up:
+            pts += 3; why.append(f"not producing now ({ins['inspection_id']}, Δ {ins['delta']} °C) with no repair under way")
+        if w in abn:
+            pts += 1; why.append("abnormal operator notes with no repair since (" + ", ".join(sorted({symptom(t)[0] for t in re.findall(r'\"([^\"]+)\"', abn[w]["Operator-note evidence"])})) + ")")
+        if w in coldmiss:
+            pts += 1; why.append(f"missed the OPS-5 heat trace check after {coldmiss[w]} (past compliance miss)")
+        rows.append({"Well": w, "Area": an[wl[w]["area_id"]], "Points": pts, "Evidence": "; ".join(why) or "nothing open", "_c": cites})
+    rows.sort(key=lambda r: (-r["Points"], r["Well"]))
+    for i, r in enumerate(rows, 1): r["Rank"] = i
+    best = rows[0]; nxt = rows[1] if len(rows) > 1 else None
+    txt = [f"Of the **{len(ws)} wells** we've discussed in this conversation ({', '.join(ws)}), I'd deal with **{best['Well']}** ({best['Area']}) first: {best['Evidence']}.",
+           "How I weighed them: an unanswered safety report beats everything (gas/H2S can hurt people; OPS-1 and WS-03), then an overdue recalled pump (compliance with the supplier recall), then lost production, then abnormal-behaviour notes. Full comparison in the table."]
+    if nxt:
+        tied = [r["Well"] for r in rows[1:] if r["Points"] == nxt["Points"]]
+        txt.append(f"Runner-up: **{nxt['Well']}** ({nxt['Area']}): {nxt['Evidence']}." + (f" Tied on points with {', '.join(tied[1:])}." if len(tied) > 1 else ""))
+        if best["Evidence"].startswith("gas"):
+            txt.append("If you mean 'first' for production or the recall rather than safety, the answer changes: the recalled-pump wells come first.")
+    opp = [r["Well"] for r in rows if "recalled pump" in r["Evidence"] and "already under way" in r["Evidence"]]
+    if opp: txt.append(f"Quick win: a repair crew is already on {', '.join(opp)}, which still have recalled pumps; it is worth scheduling the pump swap while the well is already down.")
+    txt.append("Assumption: 'today' means this conversation (the wells named in my earlier answers here). This is a judgement call based on the evidence shown, not a computed risk.")
+    tab = [{k: r[k] for k in ["Rank", "Well", "Area", "Points", "Evidence"]} for r in rows]
+    return res("\n\n".join(txt), table(tab), ["Operations SOP OPS-1", "recall notice"] + [x for r in rows[:3] for x in r["_c"]], [best["Well"]]) | {"judgement": True}
 
 # ---------- dispatcher ----------
 def dispatch(cp, q, user, chat, wells, area):

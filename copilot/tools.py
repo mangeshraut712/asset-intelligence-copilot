@@ -64,6 +64,10 @@ def effective_inspections(c, asset_ids=None, start=None, end=None):
     if end: q += " AND i.date<=?"; a.append(str(end))
     rows = [dict(r) for r in c.execute(q + " ORDER BY i.asset_id, i.inspected_at", a)]
     corr_notes = {r["inspection_id"]: dict(r) for r in c.execute("SELECT * FROM notes WHERE note_type='correction' AND inspection_id IS NOT NULL")}
+    data_corr = defaultdict(list)
+    try:
+        for n in c.execute("SELECT * FROM notes WHERE note_type='data_correction' AND inspection_id IS NOT NULL ORDER BY created_at"): data_corr[n["inspection_id"]].append(dict(n))
+    except Exception: pass  # older databases without the field columns
     mem = defaultdict(list)
     for r in c.execute("SELECT * FROM memory_corrections ORDER BY id"): mem[r["inspection_id"]].append(dict(r))
     thr = {k.split(".")[0]: v for k, v in c.execute("SELECT key, value FROM rules WHERE key LIKE '%.producing_delta_c'")}
@@ -73,6 +77,15 @@ def effective_inspections(c, asset_ids=None, start=None, end=None):
             n = corr_notes[r["inspection_id"]]
             r["spill_detected"] = 0; r["spill_voided_by"] = n["note_id"]
             r["corrections"].append({"source": n["note_id"], "field": "spill_detected", "by": user_name(c, n["author_user_id"]), "text": n["text"]})
+        # data_correction notes (OPS-3: "after any data_correction note") replace one field with a measured value
+        for n in data_corr.get(r["inspection_id"], []):
+            f = n["field"]
+            if f not in r or n["corrected_value"] is None: continue
+            try: v = float(n["corrected_value"])
+            except ValueError: continue
+            r[f + "_original"] = r.get(f); r[f] = v
+            r["corrections"].append({"source": n["note_id"], "field": f, "original": n["original_value"], "corrected": v,
+                                     "by": user_name(c, n["author_user_id"]), "reason": n["text"]})
         for m in mem.get(r["inspection_id"], []):
             f = m["field"]; v = m["corrected_value"]
             r[f + "_original"] = r.get(f)

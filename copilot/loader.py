@@ -27,7 +27,7 @@ CREATE INDEX ix_mnt ON maintenance(asset_id);
 CREATE TABLE reg_events(event_id TEXT PRIMARY KEY, asset_id TEXT, date TEXT, agency TEXT, event_type TEXT,
   protocol_id TEXT, related_inspection_id TEXT, detail TEXT, hours_to_report REAL, fine_usd REAL, status TEXT);
 CREATE TABLE notes(note_id TEXT PRIMARY KEY, asset_id TEXT, created_at TEXT, author_user_id TEXT, note_type TEXT,
-  inspection_id TEXT, text TEXT, valid_from TEXT, valid_to TEXT);
+  inspection_id TEXT, text TEXT, valid_from TEXT, valid_to TEXT, field TEXT, original_value TEXT, corrected_value TEXT);
 CREATE TABLE documents(doc_id TEXT PRIMARY KEY, path TEXT, title TEXT, text TEXT);
 CREATE TABLE rules(key TEXT PRIMARY KEY, value REAL, source TEXT);
 """
@@ -132,8 +132,9 @@ def load(data_dirs, db_path=DB_PATH):
                 con.execute("INSERT OR REPLACE INTO reg_events VALUES(?,?,?,?,?,?,?,?,?,?,?)", (x["event_id"], x["asset_id"], x.get("date"), x.get("agency"), x.get("event_type"),
                     x.get("protocol_id"), x.get("related_inspection_id"), x.get("detail"), x.get("hours_to_report"), x.get("fine_usd"), x.get("status")))
             for x in rows("context.jsonl"):
-                con.execute("INSERT OR REPLACE INTO notes VALUES(?,?,?,?,?,?,?,?,?)", (x["note_id"], x["asset_id"], x.get("created_at"), x.get("author_user_id"),
-                    x.get("note_type"), x.get("inspection_id"), x.get("text"), x.get("valid_from"), x.get("valid_to")))
+                con.execute("INSERT OR REPLACE INTO notes VALUES(?,?,?,?,?,?,?,?,?,?,?,?)", (x["note_id"], x["asset_id"], x.get("created_at"), x.get("author_user_id"),
+                    x.get("note_type"), x.get("inspection_id"), x.get("text"), x.get("valid_from"), x.get("valid_to"),
+                    x.get("field"), None if x.get("original_value") is None else str(x.get("original_value")), None if x.get("corrected_value") is None else str(x.get("corrected_value"))))
     con.commit()
     n = {t: con.execute(f"SELECT COUNT(*) FROM {t}").fetchone()[0] for t in ["wells", "inspections", "maintenance", "reg_events", "notes", "documents"]}
     con.close()

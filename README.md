@@ -8,7 +8,8 @@ A chat copilot for oil-field operators. It answers plain-English questions about
 |---|---|
 | 18 example scenarios (27 checks) | **27/27** (`results/examples_rules.md`) |
 | 46 unseen questions, expected answers computed independently from raw files (`eval/gen_unseen.py`) | **46/46** (`results/unseen_rules.md`) |
-| pytest | **101 passed** |
+| pytest | **121 passed** (101 at submission + 20 post-submission) |
+| Final questions (organizers' test data) | submitted: 16 correct, 2 mostly correct, 3 judgement calls; **post-submission branch: 21/21** by hand check (see `docs/results.md`) |
 | Final-hour command on a synthetic 400-well set (sample + test data) | **~2 s** end to end, 7/7 checks |
 
 **Demo video (4:41, narrated in my own voice):** https://drive.google.com/file/d/1OdlK_6-9StQk0gc5ztwZs5MSVCvVVWHz/view (mirror: https://vimeo.com/1236779581)
@@ -94,7 +95,7 @@ pip install -r requirements.txt
 cp .env.example .env   # optional: add OPENROUTER_API_KEY, then `set -a; . ./.env; set +a`
 python -m copilot.loader ../dataset/sample-data           # builds data/copilot.db
 python3 -m uvicorn copilot.server:app --port 8000         # open http://localhost:8000
-python -m pytest -q tests                                  # 101 tests
+python -m pytest -q tests                                  # 121 tests
 python -m eval.run_questions eval/examples.json --fresh    # 18 examples (27 checks) → results/examples.{md,json} + score
 python -m eval.run_questions eval/unseen.json --fresh      # 46 unseen questions
 ```
@@ -105,7 +106,7 @@ LLM (Gemma 4 by default; numbers always come from the tools): set `GEMINI_API_KE
 
 ```bash
 pip install -r requirements-dev.txt
-AIC_DATA=/path/to/sample-data python -m pytest -q tests   # 101 tests: tools, raw-data recomputation, memory scopes, corrections, 18 examples, 46 unseen, SR-02 regression, Gemma 4 guard, API
+AIC_DATA=/path/to/sample-data python -m pytest -q tests   # 121 tests: tools, raw-data recomputation, memory scopes, corrections, 18 examples, 46 unseen, SR-02 regression, Gemma 4 guard, API
 ```
 `tests/test_raw_recompute.py` recomputes key expected answers straight from the raw JSON (no copilot code), so the example checker is not just matching strings. Tests use a temporary DB and never touch the running server's memory.
 
@@ -142,6 +143,15 @@ Deterministic core: no model, $0. Optional LLM routing uses one small tool-call 
 
 ## Next steps
 Embedding retrieval over reports, LLM-written prose on top of tool JSON, richer statement parsing for arbitrary feedback, per-chat context for follow-ups.
+
+## Future scope
+What is still open after the post-submission work (details in `docs/results.md`):
+- **Validated failure model.** The "most likely to need a repair in 90 days" ranking (Q7) and "which well first" (Q9.6) use documented precursors (T500 early-warning fall, repeated drive trips, "unit running, wellhead cold") with hand-set points. With a longer note history, the points should be fitted and back-tested against later repairs.
+- **Phrasing coverage.** Gas-odor, shut-in/restart, bypass and abnormal-sound notes are matched with patterns that cover this dataset's wording. New wording should fall back to the Gemma 4 planner or an embedding classifier, with the pattern match kept as the audit trail.
+- **Ambiguity as a first-class output.** Some answers already state an assumption and give the other reading (drive trips under OPS-3, "today", repair since the first or the latest note). This should become a structured `assumptions` field in the API and UI, not just prose.
+- **Statistics.** Q10 uses a chi-square test and permutation tests without a multiple-comparison correction. Trends over time per area and contractor would make "stands out" more useful.
+- **Recall and swap reconciliation.** User-reported pump swaps are stored as shared facts. When the work order lands, the system should close them out automatically and flag mismatches.
+- **Per-chat context** for follow-ups beyond the patterns handled now ("back to the pumps…", "wells we've talked about").
 
 ## Contributing and license
 See [CONTRIBUTING.md](CONTRIBUTING.md); issue and PR templates are in `.github/`. Released under the [MIT License](LICENSE) © 2026 Mangesh Raut.

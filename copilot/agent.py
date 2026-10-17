@@ -97,6 +97,8 @@ class Copilot:
         txt = res["text"]
         conflict = bool(re.search(r"⚠|disagree|contradict|unconfirmed|conflict", txt, re.I))
         res["confidence"] = "conflict" if conflict else ("low" if not self.confident else "medium" if res["engine"].startswith("llm") else "high")
+        res.pop("_cand", None)
+        if res.pop("judgement", False) and res["confidence"] == "high": res["confidence"] = "medium (judgement)"
         res["trace"] = {"engine": res["engine"], "steps": self.steps, "rules": list(dict.fromkeys(self.rules_used)), "citations": len(set(res["citations"]))}
         res["followups"] = followups(self.steps, res.get("wells", []), question)
         return res
