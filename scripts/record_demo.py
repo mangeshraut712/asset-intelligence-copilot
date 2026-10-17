@@ -3,7 +3,7 @@ Writes video/demo.mp4, video/demo.srt, video/narration.txt and docs/video-script
 import asyncio, json, os, subprocess, sys, time, glob, shutil
 from playwright.async_api import async_playwright
 OUT = sys.argv[1] if len(sys.argv) > 1 else "/workspace/ahc-hackday/video"
-URL = os.environ.get("AIC_URL", "http://localhost:8765/")
+URL = os.environ.get("AIC_URL", "http://localhost:8000/")
 os.makedirs(OUT, exist_ok=True); CUES = []; T0 = [0.0]
 
 OVERLAY_JS = """

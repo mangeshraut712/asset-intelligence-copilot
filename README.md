@@ -87,7 +87,7 @@ git clone https://github.com/FlytBaseAILabs/flytbase-ahc-swe-asset-intelligence-
 pip install -r requirements.txt
 cp .env.example .env   # optional: add OPENROUTER_API_KEY, then `set -a; . ./.env; set +a`
 python -m copilot.loader ../dataset/sample-data           # builds data/copilot.db
-python -m uvicorn copilot.server:app --port 8765          # open http://localhost:8765
+python -m uvicorn copilot.server:app --port 8000          # open http://localhost:8000
 python -m pytest -q tests                                  # 94 tests
 python -m eval.run_questions eval/examples.json --fresh    # 18 examples → results/examples.{md,json} + score
 ```
@@ -104,7 +104,7 @@ AIC_DATA=/path/to/sample-data python -m pytest -q tests   # 94 tests: tools, raw
 
 ## Deploy
 
-* **Docker:** `docker build -t aic . && docker run -p 8765:8765 -e OPENROUTER_API_KEY=... aic`. The image bakes in the public sample dataset; to add the test set, mount it and set `DATA_DIRS="/data/sample-data /data/extra"`.
+* **Docker:** `docker build -t aic . && docker run -p 8000:8000 -e OPENROUTER_API_KEY=... aic`. The image bakes in the public sample dataset; to add the test set, mount it and set `DATA_DIRS="/data/sample-data /data/extra"`.
 * **Render (one step):** New → Blueprint → pick this repo (`render.yaml`), set `OPENROUTER_API_KEY`. Health check: `/api/healthz`.
 * Any Docker host (Fly, Railway, Cloud Run) works the same way: the container listens on `$PORT`.
 
@@ -120,7 +120,7 @@ The loader is idempotent and accepts several folders (same layout as `sample-dat
 
 ```bash
 python -m copilot.loader /path/to/sample-data /path/to/test-data   # or just the test folder
-AIC_TODAY=2026-10-17 python -m uvicorn copilot.server:app --port 8765   # set "today" if the test data says otherwise
+AIC_TODAY=2026-10-17 python -m uvicorn copilot.server:app --port 8000   # set "today" if the test data says otherwise
 # final questions: one per line in a .txt, or a JSON list of {id, q, user, chat, day}
 python -m eval.run_questions final_questions.txt --out results/final
 ```
