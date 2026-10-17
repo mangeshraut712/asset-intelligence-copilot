@@ -136,7 +136,7 @@ Real spills in 2026 by area and month (corrected detections removed). Totals: So
 ## Q11 — Michael Turner
 **Q:** For the three wells we discussed yesterday, what have repairs cost this year?
 
-From your earlier conversation (2026-10-18T06:13: "Which 3 wells in Northeast Block 7 had the most downtime in the last 4 months? Show a bar chart.") the wells were WELL-0121, WELL-0107, WELL-0138. **Repair costs in 2026:** WELL-0121: USD 25,794 (7 jobs) · WELL-0107: USD 5,176 (6 jobs) · WELL-0138: USD 46,942 (10 jobs)
+From your earlier conversation (2026-10-18T06:23: "Which 3 wells in Northeast Block 7 had the most downtime in the last 4 months? Show a bar chart.") the wells were WELL-0121, WELL-0107, WELL-0138. **Repair costs in 2026:** WELL-0121: USD 25,794 (7 jobs) · WELL-0107: USD 5,176 (6 jobs) · WELL-0138: USD 46,942 (10 jobs)
 
 *Visual:* bar · *Citations:* MNT-0121-029, MNT-0121-030, MNT-0121-031, MNT-0121-032, MNT-0121-033, MNT-0121-034, MNT-0121-035, MNT-0107-025, MNT-0107-026, MNT-0107-027, MNT-0107-028, MNT-0107-029, MNT-0107-030, MNT-0138-026, MNT-0138-027, MNT-0138-028, MNT-0138-029, MNT-0138-030, MNT-0138-031, MNT-0138-032, MNT-0138-033, MNT-0138-034, MNT-0138-035
 
@@ -225,7 +225,7 @@ Latest inspection INS-0164-0205 on 15 Oct 2026, by manual, by Tyler Hughes. Well
 
 Inspector note on that inspection: "Pump jack not moving." — this disagrees with the corrected reading; please confirm.
 
-*Visual:* card · *Citations:* INS-0164-0205, T200 manual, memory_corrections#19
+*Visual:* card · *Citations:* INS-0164-0205, T200 manual, memory_corrections#1
 
 *Check:* PASS   
 
@@ -255,7 +255,7 @@ Noted for everyone: "FYI for everyone: WELL-0007 will be shut in from 17 Oct for
 **Yes, downtime is planned for WELL-0007:**
 - FYI for everyone: WELL-0007 will be shut in from 17 Oct for a 10-day planned workover. — according to Jake Morales (2026-10-19, shared note)
 
-*Visual:* None · *Citations:* memory_well_facts#39
+*Visual:* None · *Citations:* memory_well_facts#1
 
 *Check:* PASS   
 

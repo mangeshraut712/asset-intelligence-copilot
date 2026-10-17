@@ -1,0 +1,29 @@
+Read these lines in your own voice; start each at its timestamp (mm:ss).
+
+[00:02–00:08] Hi, I'm Mangesh. Operators lose hours digging through inspections, repair reports and SOPs.
+[00:08–00:14] I built a copilot that answers in seconds, with the evidence and the right visual.
+[00:14–00:21] The core idea: the language model never does arithmetic. A loader puts every dataset into SQLite.
+[00:21–00:28] It extracts the rules from the manuals and SOPs, even containment times hidden in free-text repair reports.
+[00:28–00:35] Deterministic, tested tools compute every number, and one composable query covers unseen questions.
+[00:35–00:42] Open-weight Gemma 4 plans when the rules aren't sure, writes summaries, and reads inspection photos.
+[00:42–00:48] Memory is scoped with provenance, and the copilot is honest when people disagree with the data.
+[00:48–00:55] This is the app. On the right, a proactive field briefing: breaches, open fines, long downtime, stale status.
+[00:55–00:59] Every alert cites the record it came from.
+[00:59–01:03] Let's run one question end to end, as Michael Turner, a production supervisor.
+[01:25–01:32] Four breaches, all from the 11 June spill: SR-01 reported after 41 hours, SR-03 and RC-04 overdue.
+[01:32–01:37] SR-02: contained after about 7 hours. That fact only exists in the repair report. Let's open it.
+[01:38–01:45] The evidence drawer shows the raw record and highlights the exact sentence in the report.
+[01:45–01:52] 'How I got this' shows the tool that ran and each rule with the document it came from.
+[01:52–01:58] Gemma 4 adds a plain-language summary. It's rejected if it invents any number.
+[02:00–02:06] A bar chart when you compare wells: WELL-0121 at 49 days, then WELL-0138 and WELL-0107 at 42.
+[02:06–02:10] Now feedback. The AI estimated a spill at 4.5 barrels; the crew measured 5.4.
+[02:12–02:18] It keeps the AI's estimate, records who corrected it and why, and re-checks the SOP rules.
+[02:18–02:24] At 5.4 barrels the spill is reportable, no notice was filed, so it flags a possible SR-01 breach.
+[02:25–02:28] Switch to Laura Simmons, the HSE officer. The correction reaches her too.
+[02:30–02:36] WELL-0151 is now listed because of Michael's correction, and the missing notice is flagged as overdue.
+[02:38–02:44] Private memory: Jessica has no such conversation, so it never borrows Michael's history.
+[02:45–02:52] Tyler says WELL-0175 is running. The latest inspection says otherwise, so it's flagged as a data conflict.
+[02:52–02:57] Both statements stay on record; his is marked unconfirmed and it asks him to confirm.
+[03:25–03:32] Gemma 4 is multimodal: it reads an inspection photo, and its notes stay advisory next to the records.
+[03:32–03:39] For the final hour, one command loads the test data, answers every question and fills in my results page.
+[03:39–03:46] Deterministic tools, rules from documents, scoped memory with provenance, and honesty. Thanks for watching.

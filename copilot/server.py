@@ -1,6 +1,6 @@
 """FastAPI server: chat API + static UI."""
 import os, json
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from .agent import Copilot, llm_available, llm_config
@@ -18,8 +18,47 @@ class Ask(BaseModel):
 @app.get("/")
 def index(): return FileResponse(os.path.join(WEB, "index.html"))
 
+@app.get("/samples/{name}")
+def sample(name: str):
+    p = os.path.join(WEB, "samples", os.path.basename(name))
+    return FileResponse(p)
+
 @app.get("/api/users")
 def users(): return [dict(r) for r in db().execute("SELECT * FROM users ORDER BY user_id")]
+
+@app.get("/api/briefing")
+def get_briefing():
+    from .insights import briefing
+    return briefing()
+
+@app.get("/api/evidence")
+def get_evidence(ref: str):
+    from .insights import evidence
+    return json.loads(json.dumps(evidence(ref), default=str))
+
+class Phrase(BaseModel):
+    question: str
+    text: str
+
+@app.post("/api/phrase")
+def api_phrase(p: Phrase):
+    from .gemma import phrase
+    try: return phrase(p.question, p.text)
+    except Exception as e: return {"ok": False, "reason": str(e)[:200]}
+
+@app.post("/api/vision")
+async def api_vision(file: UploadFile = File(...), well: str = Form(""), user: str = Form("U-201")):
+    from .gemma import describe_image
+    data = await file.read()
+    if len(data) > 6_000_000: return {"ok": False, "reason": "image too large (max 6 MB)"}
+    ctx = ""
+    if well:
+        from .tools import well_status
+        s = well_status(well.upper())
+        if "error" not in s: ctx = f"Context from records: {well.upper()} latest inspection {s['last_inspection_id']} shows {'producing' if s['producing'] else 'not producing'}."
+    try:
+        r = describe_image(data, file.content_type or "image/jpeg", ctx); r["context"] = ctx; return r
+    except Exception as e: return {"ok": False, "reason": str(e)[:200]}
 
 @app.get("/api/healthz")
 def healthz(): return {"ok": True}

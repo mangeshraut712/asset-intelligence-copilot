@@ -1,10 +1,24 @@
 # Asset Intelligence Copilot
 
-FlytBase challenge · AI Hackers Collective × Hacktoberfest 2026 Hack Day.
+FlytBase challenge · AI Hackers Collective × Hacktoberfest 2026 Hack Day · **open source (MIT) · powered by open-weight Gemma 4**
 
-A chat copilot for oil-field operators. It answers plain-English questions about wells with **grounded numbers, citations to record IDs and documents, and a generated visual** (status card, table, line chart, bar chart, map, heatmap). It remembers shared facts about wells, keeps each user's conversations private, learns from corrections at the right scope, and says so when people disagree with the data or with each other.
+A chat copilot for oil-field operators. It answers plain-English questions about wells with **numbers computed by deterministic tools, citations to record IDs and SOP passages, and a generated visual** (status card, table, line chart, bar chart, map, heatmap). It remembers shared facts about wells, keeps each user's conversations private, learns from corrections at the right scope (one inspection, or every well of a type) with provenance, and says so when people disagree with the data or with each other.
 
-**Example-question score: 27/27 checks (all 18 scenarios) in both rule-only and LLM-forced mode**: see `results/examples_rules.md` and `results/examples_llm.md`. Novel questions: `results/novel_auto.md`. Design write-up: `docs/writeup.md`.
+| Check | Result |
+|---|---|
+| 18 example scenarios (27 checks) | **27/27** (`results/examples_rules.md`) |
+| 46 unseen questions, expected answers computed independently from raw files (`eval/gen_unseen.py`) | **46/46** (`results/unseen_rules.md`) |
+| pytest | **94 passed** |
+| Final-hour command on a synthetic 400-well test set | **~2 s** end to end |
+
+Docs: [system design (page 1)](docs/writeup.md) · [results template (page 2)](docs/results_template.md) · [video script](docs/video-script.md)
+
+## Gemma 4 (open-weight) in the LLM layer
+* **Default model:** Gemma 4 31B (`gemma-4-31b-it`), with Gemma 4 26B as fallback. Provider order: **Gemini API** (`GEMINI_API_KEY`), then OpenRouter (`OPENROUTER_API_KEY`, `google/gemma-4-31b-it:free`), then local Ollama (`AIC_LLM_BASE=http://localhost:11434/v1`, `gemma4:*`).
+* **Planner:** when the rule router isn't confident, Gemma 4 fills a structured query (metric × scope × window × group-by) through function calling, with a JSON fallback for endpoints without tools. Arguments are validated; an empty or invalid result triggers one retry via the rule router. The rule router stays authoritative when it's confident.
+* **Answer phrasing:** Gemma 4 writes a short plain-language summary under each answer. It's rejected automatically if it contains any number not present in the tool output.
+* **Multimodal:** upload an inspection photo (📷) and Gemma 4 describes the equipment, any staining and the % of pad, alongside the well's records. This is advisory only and never overrides data. A sample photo is included.
+* Numbers never come from the model. Every LLM failure falls back to the deterministic router, and planner picks are cached, so rate limits can't block a run.
 
 ## Architecture
 
@@ -36,6 +50,12 @@ dataset folder(s) ──► copilot/loader.py ──► SQLite (data/copilot.db)
 * **Spill rules** from the Spill Response SOP: reportable ≥ 5 bbl, written notice ≤ 24 h (2 h major), containment ≤ 4 h, agency verification ≤ 60 days; RC-04 NOV response ≤ 30 days. Containment times are parsed from the free-text repair reports.
 * **Periods**: "today" = `AIC_TODAY` (default 2026-10-17); "last N months/days" end yesterday; repairs belong to a period by start date.
 
+## Composable query, planner and self-check
+`copilot/query.py` turns any question into **metric × scope × window × group-by** (metrics: downtime, spills, spill_volume, repairs, repair_cost, fines, reg_events, not_producing, stale_status, notes; scope: well/area/type/team/field; windows: right now, last N days/weeks/months, season, month, quarter, half, between dates, a year; groups: well/area/type/team/month/equipment). The LLM planner (used only when the rule router isn't confident) fills the same structure; args are validated and an empty or invalid result triggers one retry through the rule router.
+
+## Demo features
+Field briefing panel (`/api/briefing`), evidence drawer (`/api/evidence?ref=MNT-0001-029` → raw record + highlighted report/SOP passage), "How I got this" trace (tools, args, rules with source docs), confidence/conflict badge, follow-up chips, step progress, dark/light theme.
+
 ## Memory and corrections
 
 | Level | Table | Scope | Example |
@@ -55,17 +75,17 @@ pip install -r requirements.txt
 cp .env.example .env   # optional: add OPENROUTER_API_KEY, then `set -a; . ./.env; set +a`
 python -m copilot.loader ../dataset/sample-data           # builds data/copilot.db
 python -m uvicorn copilot.server:app --port 8765          # open http://localhost:8765
-python -m pytest -q tests                                  # 44 tests
+python -m pytest -q tests                                  # 94 tests
 python -m eval.run_questions eval/examples.json --fresh    # 18 examples → results/examples.{md,json} + score
 ```
 
-Optional LLM (OpenAI-compatible tool calling; numbers always come from the tools): set one of `OPENROUTER_API_KEY`, `OPENAI_API_KEY`, `XAI_API_KEY`, `GROQ_API_KEY`, `GEMINI_API_KEY` (or `AIC_LLM_BASE=http://localhost:11434/v1` for Ollama), optionally `AIC_LLM_MODEL`, and `pip install openai`. Routing policy (`AIC_LLM`): `auto` (default) means the rule router is authoritative when it matches confidently and the LLM is only asked when it is unsure; `force` sends every question through the LLM; `0` means rules only. LLM picks are cached in `data/llm_cache.json`, a free-model fallback chain is tried (`AIC_LLM_FALLBACKS`), the timeout is `AIC_LLM_TIMEOUT` (20 s), and any error falls back to the rule router, so rate limits cannot block a run.
+LLM (Gemma 4 by default; numbers always come from the tools): set `GEMINI_API_KEY` (Gemma 4 via the Gemini API) or `OPENROUTER_API_KEY`, or point `AIC_LLM_BASE` at Ollama. Optional: `AIC_LLM_MODEL`, `AIC_LLM_PROVIDER`, `AIC_LLM_FALLBACKS`. Routing policy (`AIC_LLM`): `auto` (default) means the rule router is authoritative when it matches confidently and the LLM is only asked when it is unsure; `force` sends every question through the LLM; `0` means rules only. LLM picks are cached in `data/llm_cache.json`, a free-model fallback chain is tried (`AIC_LLM_FALLBACKS`), the timeout is `AIC_LLM_TIMEOUT` (20 s), and any error falls back to the rule router, so rate limits cannot block a run.
 
 ## Tests
 
 ```bash
 pip install -r requirements-dev.txt
-AIC_DATA=/path/to/sample-data python -m pytest -q tests   # 44 tests: tools, raw-data recomputation, memory scopes, corrections, 18 examples, API
+AIC_DATA=/path/to/sample-data python -m pytest -q tests   # 94 tests: tools, raw-data recomputation, memory scopes, corrections, 18 examples, API
 ```
 `tests/test_raw_recompute.py` recomputes key expected answers straight from the raw JSON (no copilot code), so the example checker is not just matching strings. Tests use a temporary DB and never touch the running server's memory.
 
@@ -74,6 +94,12 @@ AIC_DATA=/path/to/sample-data python -m pytest -q tests   # 44 tests: tools, raw
 * **Docker:** `docker build -t aic . && docker run -p 8765:8765 -e OPENROUTER_API_KEY=... aic`. The image bakes in the public sample dataset; to add the test set, mount it and set `DATA_DIRS="/data/sample-data /data/extra"`.
 * **Render (one step):** New → Blueprint → pick this repo (`render.yaml`), set `OPENROUTER_API_KEY`. Health check: `/api/healthz`.
 * Any Docker host (Fly, Railway, Cloud Run) works the same way: the container listens on `$PORT`.
+
+## Final hour (one command)
+```bash
+python scripts/final_run.py --data /path/to/test-data --questions final_questions.txt   # add --today YYYY-MM-DD if needed, --no-llm for rules only
+```
+It loads sample + test data (memory reset), answers every question (`.txt` lines may start with `User Name:`) and writes `results/final.md`, `results/final.json` and `docs/results.md`, filled from `docs/results_template.md` (summary, answer table, what worked, what didn't). A rehearsal output is in `docs/results_rehearsal_synthetic.md`. Rehearsed on the synthetic 400-well set with 15 questions: **1.6 s end to end**.
 
 ## Loading the test dataset
 
@@ -90,6 +116,9 @@ To dry-run this step: `python scripts/make_synthetic_dataset.py <sample-data> /t
 
 ## Models and cost
 Deterministic core: no model, $0. Optional LLM routing uses one small tool-call per question (free Gemma 4 on OpenRouter/AI Studio by default).
+
+## Demo video
+`python scripts/record_demo.py <out-dir>` drives the real UI with Playwright (1280×720), burns in captions, and writes `demo.mp4`, `demo.srt` and `narration.txt` (timed lines for the presenter's own voice). See `docs/video-script.md` for the timed script and the ffmpeg command to add the voiceover.
 
 ## Next steps
 Embedding retrieval over reports, LLM-written prose on top of tool JSON, richer statement parsing for arbitrary feedback, per-chat context for follow-ups.

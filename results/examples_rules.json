@@ -11,6 +11,23 @@
    "CTX-0001-003"
   ],
   "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "status",
+     "args": [
+      "WELL-0001"
+     ]
+    }
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
+   ],
+   "citations": 3
+  },
   "visual_data": {
    "type": "card",
    "data": {
@@ -62,6 +79,23 @@
    "T200/T350 manual production rule"
   ],
   "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "area_status",
+     "args": [
+      "NE-08"
+     ]
+    }
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
+   ],
+   "citations": 5
+  },
   "visual_data": {
    "type": "table",
    "columns": [
@@ -81,7 +115,9 @@
      "Wellhead above air (\u00b0C)": 4.1,
      "Recorded status": "active (out of date)",
      "Reason": "No recorded reason. Inspector noted \"Pump jack not moving.\" \u2014 suggest a site check",
-     "Inspection": "INS-0164-0205"
+     "Inspection": "INS-0164-0205",
+     "Lat": 32.1452,
+     "Lon": -102.1788
     },
     {
      "Well": "WELL-0170",
@@ -90,7 +126,9 @@
      "Wellhead above air (\u00b0C)": 2.9,
      "Recorded status": "down",
      "Reason": "Repair MNT-0170-031: Walking beam bearing wear (started 19 Sep 2026, still open)",
-     "Inspection": "INS-0170-0206"
+     "Inspection": "INS-0170-0206",
+     "Lat": 32.15939,
+     "Lon": -102.1766
     },
     {
      "Well": "WELL-0172",
@@ -99,7 +137,9 @@
      "Wellhead above air (\u00b0C)": 5.7,
      "Recorded status": "active (out of date)",
      "Reason": "Repair MNT-0172-028: Flowline corrosion pinhole leak (started 3 Oct 2026, still open)",
-     "Inspection": "INS-0172-0206"
+     "Inspection": "INS-0172-0206",
+     "Lat": 32.15584,
+     "Lon": -102.19308
     },
     {
      "Well": "WELL-0175",
@@ -108,7 +148,9 @@
      "Wellhead above air (\u00b0C)": 0.4,
      "Recorded status": "active (out of date)",
      "Reason": "No recorded reason \u2014 suggest a site check",
-     "Inspection": "INS-0175-0204"
+     "Inspection": "INS-0175-0204",
+     "Lat": 32.1802,
+     "Lon": -102.1479
     }
    ]
   },
@@ -127,6 +169,23 @@
    "INS-0001-0191 \u2026 INS-0001-0203"
   ],
   "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "temps",
+     "args": [
+      "WELL-0001"
+     ]
+    }
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
+   ],
+   "citations": 1
+  },
   "visual_data": {
    "type": "line",
    "x": [
@@ -210,6 +269,23 @@
    "Dataset Guide: correction notes override detections"
   ],
   "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "spills",
+     "args": [
+      "How many oil spills has WELL-0001 had in the last 4 years, and how much oil in total? List them in a table.",
+      [
+       "WELL-0001"
+      ]
+     ]
+    }
+   ],
+   "rules": [],
+   "citations": 8
+  },
   "visual_data": {
    "type": "table",
    "columns": [
@@ -288,6 +364,26 @@
    "well-type manual"
   ],
   "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "downtime",
+     "args": [
+      "How many days was WELL-0001 down in 2025?",
+      [
+       "WELL-0001"
+      ]
+     ]
+    }
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
+   ],
+   "citations": 5
+  },
   "visual_data": null,
   "missing": [],
   "unexpected": [],
@@ -323,6 +419,25 @@
    "Dataset Guide (downtime = 7 d per non-producing inspection)"
   ],
   "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "downtime",
+     "args": [
+      "Which 3 wells in Northeast Block 7 had the most downtime in the last 4 months? Show a bar chart.",
+      [],
+      "NE-07"
+     ]
+    }
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
+   ],
+   "citations": 20
+  },
   "visual_data": {
    "type": "bar",
    "x": [
@@ -362,6 +477,22 @@
    "Dataset Guide: correction notes override detections"
   ],
   "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "spills",
+     "args": [
+      "Show on a map every well in Northeast Block 8 with a real spill in the last 90 days.",
+      [],
+      "NE-08"
+     ]
+    }
+   ],
+   "rules": [],
+   "citations": 7
+  },
   "visual_data": {
    "type": "map",
    "points": [
@@ -403,6 +534,20 @@
    "context.jsonl correction notes"
   ],
   "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "heatmap",
+     "args": [
+      "Show a heatmap of 2026 spills by geographic area and month."
+     ]
+    }
+   ],
+   "rules": [],
+   "citations": 2
+  },
   "visual_data": {
    "type": "heatmap",
    "x": [
@@ -500,6 +645,28 @@
    "Regulatory Compliance SOP"
   ],
   "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "compliance",
+     "args": [
+      "WELL-0001"
+     ]
+    }
+   ],
+   "rules": [
+    "SR-01.hours = 24 (Spill Response SOP SR-01)",
+    "SR-02.hours = 4 (Spill Response SOP SR-02)",
+    "SR-03.days = 60 (Spill Response SOP SR-03)",
+    "RC-04.days = 30 (Regulatory Compliance SOP RC-04)",
+    "spill.reportable_bbl = 5 (Spill Response SOP \u00a73)",
+    "T200.rca_repairs = 3 (T200 manual (maintenance escalation, RCA))",
+    "T350.rca_repairs = 3 (T350 manual (maintenance escalation, RCA))"
+   ],
+   "citations": 12
+  },
   "visual_data": {
    "type": "table",
    "columns": [
@@ -564,6 +731,23 @@
    "Spill Response SOP SR-02"
   ],
   "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "containment",
+     "args": [
+      "In Southwest Block 24, which spills in the last 90 days were not contained within the SOP time limit?",
+      "SW-24"
+     ]
+    }
+   ],
+   "rules": [
+    "SR-02.hours = 4 (Spill Response SOP SR-02)"
+   ],
+   "citations": 5
+  },
   "visual_data": {
    "type": "table",
    "columns": [
@@ -624,6 +808,25 @@
    "Dataset Guide (downtime = 7 d per non-producing inspection)"
   ],
   "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "downtime",
+     "args": [
+      "Which 3 wells in Northeast Block 7 had the most downtime in the last 4 months? Show a bar chart.",
+      [],
+      "NE-07"
+     ]
+    }
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
+   ],
+   "citations": 20
+  },
   "visual_data": {
    "type": "bar",
    "x": [
@@ -651,7 +854,7 @@
   "id": "Q11",
   "user": "Michael Turner",
   "question": "For the three wells we discussed yesterday, what have repairs cost this year?",
-  "answer": "From your earlier conversation (2026-10-18T06:13: \"Which 3 wells in Northeast Block 7 had the most downtime in the last 4 months? Show a bar chart.\") the wells were WELL-0121, WELL-0107, WELL-0138. **Repair costs in 2026:** WELL-0121: USD 25,794 (7 jobs) \u00b7 WELL-0107: USD 5,176 (6 jobs) \u00b7 WELL-0138: USD 46,942 (10 jobs)",
+  "answer": "From your earlier conversation (2026-10-18T06:23: \"Which 3 wells in Northeast Block 7 had the most downtime in the last 4 months? Show a bar chart.\") the wells were WELL-0121, WELL-0107, WELL-0138. **Repair costs in 2026:** WELL-0121: USD 25,794 (7 jobs) \u00b7 WELL-0107: USD 5,176 (6 jobs) \u00b7 WELL-0138: USD 46,942 (10 jobs)",
   "visual": "bar",
   "citations": [
    "MNT-0121-029",
@@ -679,6 +882,25 @@
    "MNT-0138-035"
   ],
   "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "costs",
+     "args": [
+      [
+       "WELL-0121",
+       "WELL-0107",
+       "WELL-0138"
+      ],
+      "For the three wells we discussed yesterday, what have repairs cost this year?"
+     ]
+    }
+   ],
+   "rules": [],
+   "citations": 23
+  },
   "visual_data": {
    "type": "bar",
    "x": [
@@ -712,6 +934,27 @@
    "INS-0164-0205"
   ],
   "engine": "rules",
+  "confidence": "conflict",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "correction",
+     "args": [
+      "U-201",
+      "WELL-0164"
+     ]
+    }
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))",
+    "spill.reportable_bbl = 5 (Spill Response SOP \u00a73)",
+    "SR-01.hours = 24 (Spill Response SOP SR-01)",
+    "SR-03.days = 60 (Spill Response SOP SR-03)"
+   ],
+   "citations": 1
+  },
   "visual_data": null,
   "missing": [],
   "unexpected": [],
@@ -731,6 +974,23 @@
    "T200/T350 manual production rule"
   ],
   "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "area_status",
+     "args": [
+      "NE-08"
+     ]
+    }
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
+   ],
+   "citations": 4
+  },
   "visual_data": {
    "type": "table",
    "columns": [
@@ -750,7 +1010,9 @@
      "Wellhead above air (\u00b0C)": 2.9,
      "Recorded status": "down",
      "Reason": "Repair MNT-0170-031: Walking beam bearing wear (started 19 Sep 2026, still open)",
-     "Inspection": "INS-0170-0206"
+     "Inspection": "INS-0170-0206",
+     "Lat": 32.15939,
+     "Lon": -102.1766
     },
     {
      "Well": "WELL-0172",
@@ -759,7 +1021,9 @@
      "Wellhead above air (\u00b0C)": 5.7,
      "Recorded status": "active (out of date)",
      "Reason": "Repair MNT-0172-028: Flowline corrosion pinhole leak (started 3 Oct 2026, still open)",
-     "Inspection": "INS-0172-0206"
+     "Inspection": "INS-0172-0206",
+     "Lat": 32.15584,
+     "Lon": -102.19308
     },
     {
      "Well": "WELL-0175",
@@ -768,7 +1032,9 @@
      "Wellhead above air (\u00b0C)": 0.4,
      "Recorded status": "active (out of date)",
      "Reason": "No recorded reason \u2014 suggest a site check",
-     "Inspection": "INS-0175-0204"
+     "Inspection": "INS-0175-0204",
+     "Lat": 32.1802,
+     "Lon": -102.1479
     }
    ]
   },
@@ -790,6 +1056,28 @@
    "Spill Response SOP"
   ],
   "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "correction",
+     "args": [
+      "The AI estimated the 24 Sep spill at WELL-0151 as 4.5 bbl. The field crew measured 5.4 bbl.",
+      "U-201",
+      "WELL-0151"
+     ]
+    }
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))",
+    "spill.reportable_bbl = 5 (Spill Response SOP \u00a73)",
+    "SR-01.hours = 24 (Spill Response SOP SR-01)",
+    "SR-03.days = 60 (Spill Response SOP SR-03)"
+   ],
+   "citations": 3
+  },
   "visual_data": null,
   "missing": [],
   "unexpected": [],
@@ -816,6 +1104,25 @@
    "T350 manual \u00a76"
   ],
   "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "rca",
+     "args": [
+      "Which wells in Northeast Block 7 need a root-cause analysis on their pump jack?",
+      "NE-07",
+      []
+     ]
+    }
+   ],
+   "rules": [
+    "T200.rca_repairs = 3 (T200 manual (maintenance escalation, RCA))",
+    "T350.rca_repairs = 3 (T350 manual (maintenance escalation, RCA))"
+   ],
+   "citations": 11
+  },
   "visual_data": {
    "type": "table",
    "columns": [
@@ -872,6 +1179,21 @@
    "T350 manual (maintenance escalation, RCA)"
   ],
   "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "type_rule",
+     "args": [
+      "Note for all T350 wells: our team now wants a pump jack root-cause analysis after 2 repairs, not 3.",
+      "U-201"
+     ]
+    }
+   ],
+   "rules": [],
+   "citations": 1
+  },
   "visual_data": null,
   "missing": [],
   "unexpected": [],
@@ -900,6 +1222,25 @@
    "T350 manual \u00a76"
   ],
   "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "rca",
+     "args": [
+      "Which wells in Northeast Block 7 need a root-cause analysis on their pump jack?",
+      "NE-07",
+      []
+     ]
+    }
+   ],
+   "rules": [
+    "T200.rca_repairs = 3 (T200 manual (maintenance escalation, RCA))",
+    "T350.rca_repairs = 3 (T350 manual (maintenance escalation, RCA))"
+   ],
+   "citations": 13
+  },
   "visual_data": {
    "type": "table",
    "columns": [
@@ -964,9 +1305,26 @@
   "citations": [
    "INS-0164-0205",
    "T200 manual",
-   "memory_corrections#19"
+   "memory_corrections#1"
   ],
   "engine": "rules",
+  "confidence": "conflict",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "status",
+     "args": [
+      "WELL-0164"
+     ]
+    }
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
+   ],
+   "citations": 3
+  },
   "visual_data": {
    "type": "card",
    "data": {
@@ -988,7 +1346,7 @@
     "reasons": [],
     "corrections": [
      {
-      "source": "memory_corrections#19",
+      "source": "memory_corrections#1",
       "field": "wellhead_temp_c",
       "original": "24.0",
       "corrected": "41.0",
@@ -1023,6 +1381,25 @@
    "MNT-0151-025"
   ],
   "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "reportable",
+     "args": [
+      "Which spills in Northeast Block 8 in the last 90 days needed a report to the regulator?",
+      "NE-08"
+     ]
+    }
+   ],
+   "rules": [
+    "spill.reportable_bbl = 5 (Spill Response SOP \u00a73)",
+    "SR-01.hours = 24 (Spill Response SOP SR-01)",
+    "SR-03.days = 60 (Spill Response SOP SR-03)"
+   ],
+   "citations": 3
+  },
   "visual_data": {
    "type": "table",
    "columns": [
@@ -1055,6 +1432,25 @@
    "INS-0007-0203"
   ],
   "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "statement",
+     "args": [
+      "FYI for everyone: WELL-0007 will be shut in from 17 Oct for a 10-day planned workover.",
+      "U-102",
+      "WELL-0007"
+     ]
+    }
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
+   ],
+   "citations": 1
+  },
   "visual_data": null,
   "missing": [],
   "unexpected": [],
@@ -1068,9 +1464,23 @@
   "answer": "**Yes, downtime is planned for WELL-0007:**\n- FYI for everyone: WELL-0007 will be shut in from 17 Oct for a 10-day planned workover. \u2014 according to Jake Morales (2026-10-19, shared note)",
   "visual": null,
   "citations": [
-   "memory_well_facts#39"
+   "memory_well_facts#1"
   ],
   "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "planned",
+     "args": [
+      "WELL-0007"
+     ]
+    }
+   ],
+   "rules": [],
+   "citations": 1
+  },
   "visual_data": null,
   "missing": [],
   "unexpected": [],
@@ -1085,6 +1495,13 @@
   "visual": null,
   "citations": [],
   "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [],
+   "rules": [],
+   "citations": 0
+  },
   "visual_data": null,
   "missing": [],
   "unexpected": [],
@@ -1101,6 +1518,25 @@
    "INS-0175-0204"
   ],
   "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "statement",
+     "args": [
+      "WELL-0175 has been shut in for planned work since 14 Oct.",
+      "U-201",
+      "WELL-0175"
+     ]
+    }
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
+   ],
+   "citations": 1
+  },
   "visual_data": null,
   "missing": [],
   "unexpected": [],
@@ -1117,6 +1553,25 @@
    "INS-0175-0204"
   ],
   "engine": "rules",
+  "confidence": "conflict",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "statement",
+     "args": [
+      "WELL-0175 is running fine.",
+      "U-204",
+      "WELL-0175"
+     ]
+    }
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
+   ],
+   "citations": 1
+  },
   "visual_data": null,
   "missing": [],
   "unexpected": [],
@@ -1133,6 +1588,25 @@
    "INS-0001-0203"
   ],
   "engine": "rules",
+  "confidence": "conflict",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "statement",
+     "args": [
+      "WELL-0001 is back online since 14 Oct.",
+      "U-102",
+      "WELL-0001"
+     ]
+    }
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
+   ],
+   "citations": 1
+  },
   "visual_data": null,
   "missing": [],
   "unexpected": [],
@@ -1152,6 +1626,21 @@
    "MNT-0101-029"
   ],
   "engine": "rules",
+  "confidence": "conflict",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "spill_dispute",
+     "args": [
+      "WELL-0101",
+      "Was the 20 Aug spill at WELL-0101 real oil?"
+     ]
+    }
+   ],
+   "rules": [],
+   "citations": 4
+  },
   "visual_data": {
    "type": "table",
    "columns": [

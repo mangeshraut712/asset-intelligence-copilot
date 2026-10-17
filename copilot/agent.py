@@ -32,6 +32,12 @@ def area_from(c, q):
     return T.area_id(c, m.group(1)) if m else None
 
 def period_from(q):
+    from .query import parse_window
+    w = parse_window(q)
+    if w: return w[0], w[1]
+    return None
+
+def _old_period_from(q):
     ql = q.lower()
     m = re.search(r"last (\d+) (month|day|week|year)s?", ql)
     if m:
@@ -44,9 +50,24 @@ def period_from(q):
     if "this year" in ql: return window(year=TODAY.year)
     return None
 
+HANDLERS = ["status", "area_status", "temps", "spills", "downtime", "heatmap", "compliance", "containment", "reportable", "rca", "costs", "spill_dispute",
+            "planned", "repairs", "docs", "correction", "type_rule", "statement"]
+HANDLER_RULES = {"status": ["%.producing_delta_c"], "area_status": ["%.producing_delta_c"], "temps": ["%.producing_delta_c"], "downtime": ["%.producing_delta_c"],
+                 "compliance": ["SR-0%", "RC-04.days", "spill.reportable_bbl", "%.rca_repairs"], "containment": ["SR-02.hours"], "reportable": ["spill.reportable_bbl", "SR-01.hours", "SR-03.days"],
+                 "rca": ["%.rca_repairs"], "correction": ["%.producing_delta_c", "spill.reportable_bbl", "SR-01.hours", "SR-03.days"], "statement": ["%.producing_delta_c"]}
+
 class Copilot:
     def __init__(self):
-        self.c = db()
+        self.c = db(); self.steps = []; self.rules_used = []
+        for h in HANDLERS:
+            f = getattr(self, h)
+            def wrap(*a, _f=f, _h=h, **k):
+                self.steps.append({"tool": _h, "args": [x for x in a if isinstance(x, (str, int, float, list)) and len(str(x)) < 120][:3]})
+                for pat in HANDLER_RULES.get(_h, []):
+                    for r in self.c.execute("SELECT key, value, source FROM rules WHERE key LIKE ?", (pat,)):
+                        self.rules_used.append(f"{r['key']} = {r['value']:g} ({r['source']})")
+                return _f(*a, **k)
+            setattr(self, h, wrap)
 
     # ---------------- memory ----------------
     def remember(self, user, chat, q, ans, wells):
@@ -67,7 +88,7 @@ class Copilot:
         """Rule router first. It is authoritative when it matches confidently; the LLM is only consulted
         (to pick the tool / rewrite the question) when the router falls back. AIC_LLM=force sends every question
         through the LLM (used to evaluate the LLM path); AIC_LLM=0 disables it."""
-        user = T.user_id(self.c, user)
+        user = T.user_id(self.c, user); self.steps = []; self.rules_used = []
         mode = os.environ.get("AIC_LLM", "auto")
         self.confident = True
         res = None if mode == "force" else self.route(question, user, chat)
@@ -86,6 +107,11 @@ class Copilot:
         if v and res.get("visual") and res["visual"]["type"] != v: res["visual"] = convert_visual(res["visual"], v)
         self.remember(user, chat, question, res["text"], res.get("wells", []))
         res["user"] = user_name(self.c, user)
+        txt = res["text"]
+        conflict = bool(re.search(r"⚠|disagree|contradict|unconfirmed|conflict", txt, re.I))
+        res["confidence"] = "conflict" if conflict else ("low" if not self.confident else "medium" if res["engine"].startswith("llm") else "high")
+        res["trace"] = {"engine": res["engine"], "steps": self.steps, "rules": list(dict.fromkeys(self.rules_used)), "citations": len(set(res["citations"]))}
+        res["followups"] = followups(self.steps, res.get("wells", []), question)
         return res
     def route(self, q, user, chat):
         c = self.c; ql = q.lower(); wells = [w.upper() for w in WELL_RE.findall(q)]; area = area_from(c, q)
@@ -115,6 +141,8 @@ class Copilot:
         if "cost" in ql and wells: return self.costs(wells, q)
         if wells and re.search(r"repair|maintenance|problem|issue|fail|broke|flowline|pump jack|rod string|downhole|separator|gearbox|history", ql) and not re.search(r"spill|temperature", ql):
             return self.repairs(q, wells[0])
+        g = self.maybe_generic(q, wells, area)
+        if g: return g
         if re.search(r"down(time)?|days .*down|not producing.*(longest|most)", ql) and re.search(r"how many days|longest|most|downtime|days", ql):
             return self.downtime(q, wells, area)
         if "spill" in ql: return self.spills(q, wells, area)
@@ -125,6 +153,80 @@ class Copilot:
         h = T.search_docs(q)
         return {"text": "I couldn't map this to a data tool. Relevant passages from the manuals/SOPs:\n\n" + "\n\n".join(f"**{x['doc']}**: {x['text']}" for x in h["hits"]),
                 "visual": None, "citations": h["citations"], "wells": []}
+
+    # ---------------- generic composable query ----------------
+    def maybe_generic(self, q, wells, area):
+        from . import query as Q
+        c = self.c; scope = Q.parse_scope(c, q); metric = Q.parse_metric(q); group = Q.parse_group(q); win = Q.parse_window(q); ql = q.lower()
+        if not metric: return None
+        broad = bool(scope.get("well_type") or scope.get("team")) or (not wells and not area)
+        use = broad or group in ("area", "type", "team", "month", "equipment") or metric in ("fines", "reg_events", "stale_status", "notes") \
+              or (metric in ("repairs", "repair_cost") and not wells) or (metric in ("spills", "spill_volume", "downtime") and len(wells) > 1)
+        if metric == "not_producing" and area and not broad and group in (None, "well"): use = False
+        if metric in ("spills", "spill_volume") and re.search(r"\bmap\b|where", ql) and not broad: use = False
+        if not use: return None
+        return self.generic(q, metric, scope, win, group)
+
+    def generic(self, q, metric, scope, win, group, top=None, filters=None):
+        from . import query as Q
+        c = self.c; ql = q.lower(); filters = dict(filters or {})
+        if "corrective" in ql or re.search(r"\bbreaks?\b|broke|fail", ql): filters["maintenance_type"] = "corrective"
+        elif "scheduled" in ql: filters["maintenance_type"] = "scheduled"
+        kind = next((k for k in ["pump_jack", "flowline", "rod_string", "downhole_pump", "separator", "wellhead"] if k.replace("_", " ") in ql), None)
+        if kind: filters["equipment_kind"] = kind
+        if re.search(r"\bopen\b|unpaid|outstanding|still", ql): filters["open"] = True
+        for et in ["notice_of_violation", "spill_report_filed", "site_inspection", "nov_response_filed"]:
+            if et.replace("_", " ").replace("nov ", "")[:12] in ql or (et == "notice_of_violation" and re.search(r"notices? of violation|\bnovs?\b|violation", ql)): filters["event_type"] = et; break
+        if metric in ("not_producing", "stale_status") and group is None: group = "well"
+        if group is None and len(scope.get("wells", [])) > 1: group = "well"
+        if group is None and metric in ("spills", "spill_volume", "fines", "reg_events", "notes", "repairs", "repair_cost", "downtime") and re.search(r"\bwhich\b|\blist\b", ql): group = "well"
+        m = re.search(r"top (\d+)|\b(\d+) wells|\b(three|five|ten) wells", ql)
+        if m: top = int(m[1] or m[2] or {"three": 3, "five": 5, "ten": 10}[m[3]])
+        if metric == "downtime" and win is None: win = (dt.date(1900, 1, 1), TODAY - dt.timedelta(days=1), "all records")
+        args = {"metric": metric, "scope": scope, "window": win, "group_by": group}
+        probs = Q.validate(args)
+        if probs: return {"text": "I couldn't build a valid query: " + "; ".join(probs), "visual": None, "citations": [], "wells": []}
+        r = Q.run_query(metric, scope, win, group, top, filters)
+        if not r["rows"] and r["n_wells"] == 0 and scope:   # self-check: empty scope -> retry once without the narrowest filter
+            sc = dict(scope); sc.pop("team", None) or sc.pop("well_type", None); r = Q.run_query(metric, sc, win, group, top, filters); r["retried"] = True
+        lab = {"downtime": ("downtime", "days"), "spills": ("real spills", ""), "spill_volume": ("spilled oil", "bbl"), "repairs": ("repair jobs", ""), "repair_cost": ("repair cost", "USD"),
+               "fines": ("regulator fines", "USD"), "reg_events": ("regulator events", ""), "not_producing": ("wells not producing oil right now", ""), "stale_status": ("wells with an out-of-date recorded status", ""), "notes": ("human notes", "")}[metric]
+        an = {x["area_id"]: x["name"] for x in c.execute("SELECT * FROM areas")}; tn = {x["team_id"]: x["name"] for x in c.execute("SELECT * FROM teams")}
+        sl = ", ".join(filter(None, [", ".join(scope.get("wells", [])), an.get(scope.get("area"), ""), (scope.get("well_type", "") + " wells") if scope.get("well_type") else "", tn.get(scope.get("team"), "")])) or "the whole field"
+        fl = ", ".join(f"{k.replace('_', ' ')}={v}" for k, v in filters.items())
+        def fv(v): return f"USD {v:,.0f}" if lab[1] == "USD" else (f"{v:g} {lab[1]}".strip())
+        txt = f"**{lab[0].capitalize()} — {sl}" + (f", {win[2]}" if win else "") + (f" ({fl})" if fl else "") + f": {fv(r['total'])} in total**"
+        if metric in ("not_producing", "stale_status"): txt = f"**{int(r['total'])} {lab[0] if r['total'] != 1 else lab[0].replace('wells', 'well')} — {sl}.**"
+        if r.get("retried"): txt += " (no wells matched the full scope; retried with a broader scope)"
+        if group and len(r["rows"]) > 1 and metric not in ("stale_status", "not_producing") and re.search(r"\bwhich\b|most|highest|worst|longest|rank|top|more", ql):
+            txt += f"\n\n**Highest: {r['rows'][0]['key']} ({fv(r['rows'][0]['value'])})**"
+        if group and r["rows"] and metric not in ("stale_status", "not_producing"):
+            txt += "\n\n" + "\n".join(f"- {x['key']}: {fv(x['value'])}" for x in r["rows"][:15]) + (f"\n- … {len(r['rows']) - 15} more" if len(r["rows"]) > 15 else "")
+        if metric == "not_producing":
+            txt += "\n\n" + "\n".join(f"- {t['well']}: {t['delta']} °C above air at {t['inspection']} ({fmt(t['date'])}), recorded status {t['recorded']}" for t in r["trace"][:40])
+        if metric == "stale_status":
+            txt += "\n\n" + "\n".join(f"- {t['well']}: recorded **{t['recorded']}**, but {t['inspection']} ({fmt(t['date'])}) shows {'producing' if t['producing'] else 'not producing'} ({t['delta']} °C above air)" for t in r["trace"][:25])
+        if metric in ("fines", "reg_events") and r["trace"]:
+            txt += "\n\n" + "\n".join(f"- {t['event']} ({t['well']}, {fmt(t['date'])}): {t['type'].replace('_', ' ')}, {t['protocol']}, fine USD {t['fine'] or 0:,.0f}, {t['status']}" for t in r["trace"][:25])
+        if metric == "notes" and r["trace"]:
+            txt += "\n\n" + "\n".join(f"- {t['note']} ({t['well']}, {t['by']}, {t['type']}): {t['text']}" for t in r["trace"][:20])
+        if r["rules"]: txt += "\n\n_Rules applied: " + "; ".join(r["rules"]) + "._"
+        if not r["rows"]: txt += "\n\nNo matching records."
+        # visual
+        rows = r["rows"]
+        if group == "month": vis = {"type": "line", "x": [x["key"] for x in rows], "series": [{"name": lab[0], "data": [x["value"] for x in rows]}]}
+        elif group in ("area", "type", "team", "equipment") or (group == "well" and 1 < len(rows) <= 12 and metric not in ("not_producing", "stale_status")):
+            vis = {"type": "bar", "x": [str(x["key"]) for x in rows], "series": [{"name": lab[0] + (f" ({lab[1]})" if lab[1] else ""), "data": [x["value"] for x in rows]}]}
+        elif group == "well" and rows:
+            wl = {x["asset_id"]: x for x in c.execute("SELECT * FROM wells")}
+            vis = {"type": "table", "columns": ["Well", "Type", "Area", lab[0].capitalize(), "Evidence"], "rows": [{"Well": x["key"], "Type": wl[x["key"]]["well_type"], "Area": an[wl[x["key"]]["area_id"]], lab[0].capitalize(): x["value"], "Evidence": ", ".join(x["citations"][:4]), "Lat": wl[x["key"]]["lat"], "Lon": wl[x["key"]]["lon"]} for x in rows]}
+        elif r["trace"]:
+            cols = list(r["trace"][0].keys()); vis = {"type": "table", "columns": cols, "rows": r["trace"][:200]}
+        else: vis = None
+        self.steps.append({"tool": "run_query", "args": {"metric": metric, "scope": scope, "window": r["window"], "group_by": group, "top": top, "filters": filters}, "result": f"{len(rows)} rows, total {r['total']}"})
+        self.rules_used += r["rules"]
+        ws = [x["key"] for x in rows if str(x["key"]).startswith("WELL-")][:10]
+        return {"text": txt, "visual": vis, "citations": r["citations"], "wells": ws}
 
     # ---------------- answers ----------------
     def status(self, w):
@@ -152,13 +254,13 @@ class Copilot:
             reason = "; ".join(s["reasons"]) or "No recorded reason" + (f". Inspector noted \"{s['inspector_note']}\"" if s["inspector_note"] else "") + " — suggest a site check"
             corr = [f"{x['field']} corrected by {x['by']}" for x in s["corrections"] if x.get("original") is not None]
             rows.append({"Well": s["asset_id"], "Type": s["well_type"], "Last inspected": fmt(s["inspected_at"]), "Wellhead above air (°C)": s["delta_c"],
-                         "Recorded status": s["recorded_status"] + (" (out of date)" if s["recorded_status_stale"] else ""), "Reason": reason, "Inspection": s["last_inspection_id"]})
+                         "Recorded status": s["recorded_status"] + (" (out of date)" if s["recorded_status_stale"] else ""), "Reason": reason, "Inspection": s["last_inspection_id"], "Lat": s["lat"], "Lon": s["lon"]})
         txt = f"**{len(rows)} wells in {r['area']} are not producing oil right now** (latest inspection per well): {', '.join(x['Well'] for x in rows)}."
         corrected = self.c.execute("SELECT mc.*, w.area_id FROM memory_corrections mc JOIN wells w USING(asset_id) WHERE w.area_id=? AND field='wellhead_temp_c'", (T.area_id(self.c, area),)).fetchall()
         for cr in corrected:
             if cr["asset_id"] not in [x["Well"] for x in rows]:
                 txt += f"\n\n{cr['asset_id']} is no longer listed: its {cr['inspection_id']} wellhead reading was corrected by {user_name(self.c, cr['author_user_id'])} from {cr['original_value']} to {cr['corrected_value']} °C ({cr['reason']}), so it now counts as producing."
-        return {"text": txt, "visual": {"type": "table", "columns": list(rows[0].keys()) if rows else [], "rows": rows}, "citations": r["citations"] + ["T200/T350 manual production rule"], "wells": [x["Well"] for x in rows]}
+        return {"text": txt, "visual": {"type": "table", "columns": [k for k in rows[0].keys() if k not in ("Lat", "Lon")] if rows else [], "rows": rows}, "citations": r["citations"] + ["T200/T350 manual production rule"], "wells": [x["Well"] for x in rows]}
 
     def temps(self, q, w):
         m = re.search(r"(\d+)\s*weeks", q.lower()); n = int(m.group(1)) if m else 13
@@ -374,6 +476,15 @@ class Copilot:
                     txt.append(f"⚠ Note: {f['author']} said \"{f['text']}\" — these statements disagree.")
         return {"text": "\n\n".join(txt), "visual": None, "citations": cites, "wells": [w]}
 
+def followups(steps, wells, q):
+    h = steps[0]["tool"] if steps else ""; w = wells[0] if wells else "WELL-0001"; out = []
+    if h in ("status", "statement", "correction"): out = [f"How many days was {w} down this year?", f"Which rules has {w} broken in the last 12 months?", f"Show {w}'s temperature for the last 13 weeks"]
+    elif h in ("area_status", "downtime", "run_query"): out = [f"What did repairs cost for {', '.join(wells[:3]) or w} this year?", f"Is {w} producing oil right now?", "Show downtime by area this year as a bar chart"]
+    elif h in ("spills", "heatmap", "reportable", "containment"): out = [f"Which rules has {w} broken in the last 12 months?", "Which spills in the last 90 days needed a report to the regulator?", "Show spills by month in 2026"]
+    elif h == "compliance": out = [f"What repairs were done on {w} in the last 12 months?", "Which wells have open fines?", "Which wells have an out-of-date recorded status?"]
+    else: out = ["Which wells have an out-of-date recorded status?", "Show downtime by area this year", "Which wells have open fines?"]
+    return [x for x in out if x.lower() != q.lower()][:3]
+
 def convert_visual(v, to):
     """Honor a user-requested visual type when the data allows it."""
     if to == "table":
@@ -389,9 +500,12 @@ def convert_visual(v, to):
 
 # ---------------- optional LLM tool-calling layer ----------------
 def llm_config():
-    for k, base, model in [("OPENROUTER_API_KEY", "https://openrouter.ai/api/v1", "google/gemma-4-31b-it:free"), ("OPENAI_API_KEY", None, "gpt-4o-mini"),
-                           ("XAI_API_KEY", "https://api.x.ai/v1", "grok-4-fast"), ("GROQ_API_KEY", "https://api.groq.com/openai/v1", "llama-3.3-70b-versatile"),
-                           ("GEMINI_API_KEY", "https://generativelanguage.googleapis.com/v1beta/openai/", "gemma-4-31b-it")]:
+    """Open-weight Gemma 4 is the default: Gemini API (GEMINI_API_KEY) first, then OpenRouter, then Ollama; others only if set explicitly."""
+    pref = os.environ.get("AIC_LLM_PROVIDER")
+    provs = [("GEMINI_API_KEY", "https://generativelanguage.googleapis.com/v1beta/openai/", "gemma-4-31b-it"), ("OPENROUTER_API_KEY", "https://openrouter.ai/api/v1", "google/gemma-4-31b-it:free"),
+             ("OPENAI_API_KEY", None, "gpt-4o-mini"), ("XAI_API_KEY", "https://api.x.ai/v1", "grok-4-fast"), ("GROQ_API_KEY", "https://api.groq.com/openai/v1", "llama-3.3-70b-versatile")]
+    if pref: provs.sort(key=lambda p: p[0] != pref)
+    for k, base, model in provs:
         if os.environ.get(k): return os.environ[k], os.environ.get("AIC_LLM_BASE", base), os.environ.get("AIC_LLM_MODEL", model)
     if os.environ.get("AIC_LLM_BASE"): return "ollama", os.environ["AIC_LLM_BASE"], os.environ.get("AIC_LLM_MODEL", "gemma4:e4b")
     return None
@@ -401,7 +515,7 @@ def llm_available():
     except ImportError: return False
     return llm_config() is not None
 
-INTENTS = ["status", "area_status", "temps", "spills", "downtime", "heatmap", "compliance", "containment", "reportable", "rca", "costs", "spill_dispute", "planned", "feedback", "memory_recall", "docs"]
+INTENTS = ["query", "status", "area_status", "temps", "spills", "downtime", "heatmap", "compliance", "containment", "reportable", "rca", "costs", "spill_dispute", "planned", "feedback", "memory_recall", "docs"]
 
 CACHE_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "llm_cache.json")
 
@@ -416,9 +530,14 @@ def llm_pick(q):
     if key in cache: return cache[key]
     from openai import OpenAI
     k, base, model = llm_config(); cl = OpenAI(api_key=k, base_url=base, max_retries=0)
-    models = [model] + [m for m in os.environ.get("AIC_LLM_FALLBACKS", "google/gemma-4-26b-a4b-it:free,nvidia/nemotron-3-super-120b-a12b:free").split(",") if m and base and "openrouter" in base]
+    fb = "google/gemma-4-26b-a4b-it:free,nvidia/nemotron-3-super-120b-a12b:free" if base and "openrouter" in base else "gemma-4-26b-a4b-it" if base and "googleapis" in base else ""
+    models = [model] + [m for m in os.environ.get("AIC_LLM_FALLBACKS", fb).split(",") if m]
     tool = {"type": "function", "function": {"name": "route", "description": "Pick the copilot tool for the question.",
-            "parameters": {"type": "object", "properties": {"intent": {"type": "string", "enum": INTENTS}, "rewritten_question": {"type": "string", "description": "The question rewritten in plain words for a keyword router: keep exact well IDs (WELL-0001), write areas as 'Northeast Block 7' / 'Southwest Block 23', write periods as 'last N months', 'last N days' or 'in 2025', and keep any requested visual (table, bar chart, line chart, map, heatmap)."}}, "required": ["intent", "rewritten_question"]}}}
+            "parameters": {"type": "object", "properties": {"intent": {"type": "string", "enum": INTENTS},
+                "metric": {"type": "string", "enum": ["downtime", "spills", "spill_volume", "repairs", "repair_cost", "fines", "reg_events", "not_producing", "stale_status", "notes"], "description": "for intent=query"},
+                "well_ids": {"type": "array", "items": {"type": "string"}}, "area": {"type": "string", "description": "area name or id"}, "well_type": {"type": "string", "enum": ["T200", "T350"]},
+                "team": {"type": "string", "enum": ["TEAM-SW", "TEAM-NE"]}, "start": {"type": "string", "description": "YYYY-MM-DD"}, "end": {"type": "string", "description": "YYYY-MM-DD"},
+                "group_by": {"type": "string", "enum": ["well", "area", "type", "team", "month", "equipment"]}, "top": {"type": "integer"}, "rewritten_question": {"type": "string", "description": "The question rewritten in plain words for a keyword router: keep exact well IDs (WELL-0001), write areas as 'Northeast Block 7' / 'Southwest Block 23', write periods as 'last N months', 'last N days' or 'in 2025', and keep any requested visual (table, bar chart, line chart, map, heatmap)."}}, "required": ["intent", "rewritten_question"]}}}
     sysmsg = ("You route oil-field operator questions to deterministic tools. Never compute numbers. Intents: status (one well now), area_status (wells not producing in an area), "
               "temps (temperature over time), spills, downtime, heatmap, compliance (rules broken), containment (spill containment time), reportable (spills needing regulator report), "
               "rca (root-cause analysis), costs (repair cost), spill_dispute (was a spill real), repairs (repair/maintenance history of a well), planned (planned downtime), feedback (user states a fact/correction), memory_recall, docs (manual/SOP rule). "
@@ -426,9 +545,13 @@ def llm_pick(q):
     err = None
     for m in models:
         try:
-            r = cl.chat.completions.create(model=m, messages=[{"role": "system", "content": sysmsg}, {"role": "user", "content": q}], tools=[tool], tool_choice="required", timeout=float(os.environ.get('AIC_LLM_TIMEOUT', 20)))
-            tc = r.choices[0].message.tool_calls
-            args = json.loads(tc[0].function.arguments) if tc else {}
+            try:
+                r = cl.chat.completions.create(model=m, messages=[{"role": "system", "content": sysmsg}, {"role": "user", "content": q}], tools=[tool], tool_choice="required", timeout=float(os.environ.get('AIC_LLM_TIMEOUT', 20)))
+                tc = r.choices[0].message.tool_calls
+                args = json.loads(tc[0].function.arguments) if tc else {}
+            except Exception as e1:   # endpoints without tool calling: ask for the same JSON in plain text
+                r = cl.chat.completions.create(model=m, messages=[{"role": "system", "content": sysmsg + " Reply ONLY with a JSON object with keys matching this schema: " + json.dumps(tool["function"]["parameters"]["properties"])}, {"role": "user", "content": q}], timeout=float(os.environ.get('AIC_LLM_TIMEOUT', 20)))
+                mm = re.search(r"\{.*\}", r.choices[0].message.content or "", re.S); args = json.loads(mm.group(0)) if mm else {}
             if args.get("intent"):
                 args["model"] = m; cache[key] = args
                 json.dump(cache, open(CACHE_PATH, "w"), indent=1); return args
@@ -436,7 +559,32 @@ def llm_pick(q):
     raise RuntimeError(f"all LLM models failed: {err}")
 
 def llm_route(cp, q, user, chat):
-    args = llm_pick(q)
-    rq = q if args.get("intent") == "feedback" else (args.get("rewritten_question") or q)
-    res = cp.route(rq, user, chat); res["engine"] = f"llm:{args.get('model')} -> {args.get('intent')}"
+    """LLM as planner: either a structured composable query (validated, self-checked) or a tool intent + rewritten question."""
+    from . import query as Q
+    args = llm_pick(q); intent = args.get("intent"); eng = f"llm:{args.get('model')} -> {intent}"
+    if intent == "query" and args.get("metric") in Q.METRICS and re.match(r"^(is|are|was|were|which|what|how|show|list|when|who|why|did|does|do|give|find|can|could|plot|compare|rank|count|tell|where|total)\b", q.lower()):
+        cp.confident = True; probe = cp.route(q, user, chat)
+        if cp.confident:   # rule router is authoritative when it matches confidently
+            probe["engine"] = eng + " (rule router confident; used its tool)"; return probe
+        cp.steps.clear()
+    if intent == "query" and args.get("metric") in Q.METRICS:
+        scope = {}
+        if args.get("well_ids"): scope["wells"] = [w.upper() for w in args["well_ids"]]
+        if args.get("area"): scope["area"] = T.area_id(cp.c, args["area"]) or args["area"]
+        if args.get("well_type"): scope["well_type"] = args["well_type"]
+        if args.get("team"): scope["team"] = args["team"]
+        win = None
+        try:
+            if args.get("start") and args.get("end"):
+                s, e = dt.date.fromisoformat(args["start"]), min(dt.date.fromisoformat(args["end"]), TODAY - dt.timedelta(days=1)); win = (s, e, f"{fmt(s)} to {fmt(e)}")
+        except ValueError: win = None
+        win = Q.parse_window(q) or win   # deterministic parse wins when it finds a window
+        plan = {"metric": args["metric"], "scope": scope, "window": win, "group_by": args.get("group_by") or Q.parse_group(q)}
+        if not Q.validate(plan) and (not scope.get("area") or scope["area"] in [r["area_id"] for r in cp.c.execute("SELECT area_id FROM areas")]):
+            res = cp.generic(q, args["metric"], scope, win, plan["group_by"], args.get("top"))
+            if res.get("visual") or "No matching records" not in res["text"]:
+                res["engine"] = eng; return res
+        cp.steps.append({"tool": "self_check", "result": "planner query invalid or empty; retrying with rewritten question"})
+    rq = q if intent == "feedback" else (args.get("rewritten_question") or q)
+    res = cp.route(rq, user, chat); res["engine"] = eng
     return res

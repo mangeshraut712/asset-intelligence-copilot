@@ -1,0 +1,520 @@
+[
+ {
+  "id": "U1",
+  "user": "Emily Carter",
+  "chat": "u1",
+  "q": "Is WELL-0050 producing oil right now?",
+  "expect": [
+   "is producing",
+   "INS-0050-0206",
+   "Sarah Mitchell"
+  ],
+  "visual": "card"
+ },
+ {
+  "id": "U2",
+  "user": "Emily Carter",
+  "chat": "u2",
+  "q": "Is WELL-0013 producing oil right now?",
+  "expect": [
+   "is not producing",
+   "INS-0013-0206",
+   "Ryan Brooks"
+  ],
+  "visual": "card"
+ },
+ {
+  "id": "U3",
+  "user": "Emily Carter",
+  "chat": "u3",
+  "q": "Is WELL-0172 producing oil right now?",
+  "expect": [
+   "is not producing",
+   "INS-0172-0206",
+   "Jessica Reed"
+  ],
+  "visual": "card"
+ },
+ {
+  "id": "U4",
+  "user": "Emily Carter",
+  "chat": "u4",
+  "q": "Is WELL-0120 producing oil right now?",
+  "expect": [
+   "is producing",
+   "INS-0120-0207",
+   "Ashley Bennett"
+  ],
+  "visual": "card"
+ },
+ {
+  "id": "U5",
+  "user": "Emily Carter",
+  "chat": "u5",
+  "q": "Which wells in Southwest Block 23 are not producing oil right now?",
+  "expect": [
+   "2 wells",
+   "WELL-0001",
+   "WELL-0013"
+  ],
+  "visual": "table"
+ },
+ {
+  "id": "U6",
+  "user": "Emily Carter",
+  "chat": "u6",
+  "q": "Which wells in Southwest Block 24 are not producing oil right now?",
+  "expect": [
+   "3 wells",
+   "WELL-0060",
+   "WELL-0066",
+   "WELL-0079"
+  ],
+  "visual": "table"
+ },
+ {
+  "id": "U7",
+  "user": "Emily Carter",
+  "chat": "u7",
+  "q": "Which wells in Northeast Block 7 are not producing oil right now?",
+  "expect": [
+   "6 wells",
+   "WELL-0101",
+   "WELL-0110",
+   "WELL-0115",
+   "WELL-0121",
+   "WELL-0123",
+   "WELL-0128"
+  ],
+  "visual": "table"
+ },
+ {
+  "id": "U8",
+  "user": "Emily Carter",
+  "chat": "u8",
+  "q": "How many wells across the whole field are not producing oil right now?",
+  "expect": [
+   "15"
+  ]
+ },
+ {
+  "id": "U9",
+  "user": "Emily Carter",
+  "chat": "u9",
+  "q": "Which wells have an out-of-date recorded status?",
+  "expect": [
+   "21",
+   "WELL-0001",
+   "WELL-0002",
+   "WELL-0013",
+   "WELL-0060",
+   "WELL-0061"
+  ]
+ },
+ {
+  "id": "U10",
+  "user": "Emily Carter",
+  "chat": "u10",
+  "q": "Which wells in Southwest Block 24 have a stale recorded status?",
+  "expect": [
+   "7",
+   "WELL-0060",
+   "WELL-0061",
+   "WELL-0066",
+   "WELL-0071",
+   "WELL-0079",
+   "WELL-0084",
+   "WELL-0093"
+  ]
+ },
+ {
+  "id": "U11",
+  "user": "Emily Carter",
+  "chat": "u11",
+  "q": "How many days was WELL-0121 down in 2025?",
+  "expect": [
+   "28 days"
+  ]
+ },
+ {
+  "id": "U12",
+  "user": "Emily Carter",
+  "chat": "u12",
+  "q": "How many days was WELL-0005 down in 2026?",
+  "expect": [
+   "42 days"
+  ]
+ },
+ {
+  "id": "U13",
+  "user": "Emily Carter",
+  "chat": "u13",
+  "q": "How many days was WELL-0164 down in 2024?",
+  "expect": [
+   "7 days"
+  ]
+ },
+ {
+  "id": "U14",
+  "user": "Emily Carter",
+  "chat": "u14",
+  "q": "Which 3 wells in Southwest Block 24 were down the longest this summer, and why?",
+  "expect": [
+   "WELL-0069: 42 days",
+   "WELL-0080: 28 days",
+   "WELL-0058: 21 days"
+  ],
+  "visual": "bar"
+ },
+ {
+  "id": "U15",
+  "user": "Emily Carter",
+  "chat": "u15",
+  "q": "Show downtime by area this summer as a bar chart.",
+  "expect": [
+   "Southwest Block 23: 203 days",
+   "Southwest Block 24: 245 days",
+   "Northeast Block 7: 266 days",
+   "Northeast Block 8: 259 days"
+  ],
+  "visual": "bar"
+ },
+ {
+  "id": "U16",
+  "user": "Emily Carter",
+  "chat": "u16",
+  "q": "What was the total downtime of T200 wells in 2025?",
+  "expect": [
+   "2457 days"
+  ]
+ },
+ {
+  "id": "U17",
+  "user": "Emily Carter",
+  "chat": "u17",
+  "q": "How much downtime did the Northeast Production team have in the last 3 months?",
+  "expect": [
+   "630 days"
+  ]
+ },
+ {
+  "id": "U18",
+  "user": "Emily Carter",
+  "chat": "u18",
+  "q": "Top 5 wells in Northeast Block 8 by downtime this year",
+  "expect": [
+   "WELL-0170: 49 days",
+   "WELL-0172: 49 days",
+   "WELL-0182: 49 days",
+   "WELL-0183: 49 days",
+   "WELL-0160: 42 days"
+  ]
+ },
+ {
+  "id": "U19",
+  "user": "Emily Carter",
+  "chat": "u19",
+  "q": "Compare downtime of WELL-0001, WELL-0005 and WELL-0121 in 2026 as a bar chart.",
+  "expect": [
+   "WELL-0001: 21 days",
+   "WELL-0005: 42 days",
+   "WELL-0121: 70 days"
+  ],
+  "visual": "bar"
+ },
+ {
+  "id": "U20",
+  "user": "Emily Carter",
+  "chat": "u20",
+  "q": "How many oil spills has WELL-0082 had in total, and how much oil?",
+  "expect": [
+   "3 real spills",
+   "2.9"
+  ],
+  "visual": "table"
+ },
+ {
+  "id": "U21",
+  "user": "Emily Carter",
+  "chat": "u21",
+  "q": "How many oil spills has WELL-0151 had in total, and how much oil?",
+  "expect": [
+   "3 real spills",
+   "10.2"
+  ],
+  "visual": "table"
+ },
+ {
+  "id": "U22",
+  "user": "Emily Carter",
+  "chat": "u22",
+  "q": "How many spills were there in Northeast Block 7 in March 2026?",
+  "expect": [
+   "2 real spills"
+  ]
+ },
+ {
+  "id": "U23",
+  "user": "Emily Carter",
+  "chat": "u23",
+  "q": "How many spills did T350 wells have in March 2026?",
+  "expect": [
+   "8 in total"
+  ]
+ },
+ {
+  "id": "U24",
+  "user": "Emily Carter",
+  "chat": "u24",
+  "q": "How much oil did the Southwest Production team spill in 2025?",
+  "expect": [
+   "118.7 bbl"
+  ]
+ },
+ {
+  "id": "U25",
+  "user": "Emily Carter",
+  "chat": "u25",
+  "q": "Show spills by month in 2026",
+  "expect": [
+   "2026-01: 20",
+   "2026-02: 14",
+   "2026-03: 14",
+   "2026-04: 19",
+   "2026-05: 16",
+   "2026-06: 19",
+   "2026-07: 13",
+   "2026-08: 8",
+   "2026-09: 13",
+   "2026-10: 5"
+  ],
+  "visual": "line"
+ },
+ {
+  "id": "U26",
+  "user": "Emily Carter",
+  "chat": "u26",
+  "q": "Compare spills by well type in 2025",
+  "expect": [
+   "T200: 82",
+   "T350: 56"
+  ],
+  "visual": "bar"
+ },
+ {
+  "id": "U27",
+  "user": "Emily Carter",
+  "chat": "u27",
+  "q": "How many spills were there in Southwest Block 23 between 1 May 2026 and 31 Jul 2026?",
+  "expect": [
+   "11 real spills"
+  ]
+ },
+ {
+  "id": "U28",
+  "user": "Emily Carter",
+  "chat": "u28",
+  "q": "Show on a map the wells in Southwest Block 24 with a real spill in the last 60 days.",
+  "expect": [
+   "WELL-0077",
+   "WELL-0080",
+   "WELL-0082",
+   "WELL-0091",
+   "WELL-0097",
+   "WELL-0100"
+  ],
+  "visual": "map"
+ },
+ {
+  "id": "U29",
+  "user": "Emily Carter",
+  "chat": "u29",
+  "q": "What did repairs on WELL-0001 cost in 2025?",
+  "expect": [
+   "USD 6,935"
+  ]
+ },
+ {
+  "id": "U30",
+  "user": "Emily Carter",
+  "chat": "u30",
+  "q": "What did repairs on WELL-0170 cost in 2026?",
+  "expect": [
+   "USD 27,598"
+  ]
+ },
+ {
+  "id": "U31",
+  "user": "Emily Carter",
+  "chat": "u31",
+  "q": "Compare repair cost by area in 2025",
+  "expect": [
+   "Southwest Block 23: USD 841,077",
+   "Southwest Block 24: USD 1,246,369",
+   "Northeast Block 7: USD 1,080,231",
+   "Northeast Block 8: USD 863,216"
+  ],
+  "visual": "bar"
+ },
+ {
+  "id": "U32",
+  "user": "Emily Carter",
+  "chat": "u32",
+  "q": "How many corrective flowline repairs were there in Northeast Block 8 in the last 12 months?",
+  "expect": [
+   "48 in total"
+  ]
+ },
+ {
+  "id": "U33",
+  "user": "Emily Carter",
+  "chat": "u33",
+  "q": "What did T350 wells spend on repairs in 2026?",
+  "expect": [
+   "USD 1,481,391"
+  ]
+ },
+ {
+  "id": "U34",
+  "user": "Emily Carter",
+  "chat": "u34",
+  "q": "What was the total repair cost for the Northeast Production team between 1 Jan 2026 and 30 Jun 2026?",
+  "expect": [
+   "USD 1,119,981"
+  ]
+ },
+ {
+  "id": "U35",
+  "user": "Emily Carter",
+  "chat": "u35",
+  "q": "How much have we been fined in total across the field?",
+  "expect": [
+   "USD 52,500"
+  ]
+ },
+ {
+  "id": "U36",
+  "user": "Emily Carter",
+  "chat": "u36",
+  "q": "Which wells have open fines?",
+  "expect": [
+   "WELL-0001",
+   "WELL-0160"
+  ]
+ },
+ {
+  "id": "U37",
+  "user": "Emily Carter",
+  "chat": "u37",
+  "q": "How many notices of violation did we receive in 2025?",
+  "expect": [
+   "2 in total"
+  ]
+ },
+ {
+  "id": "U38",
+  "user": "Emily Carter",
+  "chat": "u38",
+  "q": "What fines did the Southwest Production team get in 2026?",
+  "expect": [
+   "USD 22,500"
+  ]
+ },
+ {
+  "id": "U39",
+  "user": "Emily Carter",
+  "chat": "u39",
+  "q": "In Northeast Block 7, which spills in the last 90 days were not contained within the SOP time limit?",
+  "expect": [
+   "6 spills",
+   "WELL-0128",
+   "WELL-0133",
+   "WELL-0141",
+   "WELL-0145",
+   "WELL-0149"
+  ],
+  "visual": "table"
+ },
+ {
+  "id": "U40",
+  "user": "Emily Carter",
+  "chat": "u40",
+  "q": "In Southwest Block 23, which spills in the last 365 days were not contained within the SOP time limit?",
+  "expect": [
+   "14 spills",
+   "WELL-0001",
+   "WELL-0005",
+   "WELL-0010",
+   "WELL-0013",
+   "WELL-0015",
+   "WELL-0017",
+   "WELL-0023",
+   "WELL-0030",
+   "WELL-0042",
+   "WELL-0044",
+   "WELL-0047",
+   "WELL-0048",
+   "WELL-0050"
+  ],
+  "visual": "table"
+ },
+ {
+  "id": "U41",
+  "user": "Emily Carter",
+  "chat": "u41",
+  "q": "Which spills in Southwest Block 23 in the last 90 days needed a report to the regulator?",
+  "expect": [
+   "1 spill(s)",
+   "WELL-0042"
+  ]
+ },
+ {
+  "id": "U42",
+  "user": "Emily Carter",
+  "chat": "u42",
+  "q": "Which spills in Northeast Block 7 in the last 90 days needed a report to the regulator?",
+  "expect": [
+   "1 spill(s)",
+   "WELL-0123"
+  ]
+ },
+ {
+  "id": "U43",
+  "user": "Emily Carter",
+  "chat": "u43",
+  "q": "What notes do we have on WELL-0101?",
+  "expect": [
+   "CTX-0101-001",
+   "CTX-0101-002",
+   "CTX-0101-003"
+  ]
+ },
+ {
+  "id": "U44",
+  "user": "Emily Carter",
+  "chat": "u44",
+  "q": "What notes do we have on WELL-0013?",
+  "expect": []
+ },
+ {
+  "id": "U45",
+  "user": "Emily Carter",
+  "chat": "u45",
+  "q": "Is any downtime planned for WELL-0001?",
+  "expect": [
+   "Yes",
+   "CTX-0001-003",
+   "20 Oct"
+  ]
+ },
+ {
+  "id": "U46",
+  "user": "Emily Carter",
+  "chat": "u46",
+  "q": "Which rules has WELL-0082 broken in the last 12 months?",
+  "expect": [
+   "SR-02",
+   "MNT-0082-028"
+  ]
+ }
+]

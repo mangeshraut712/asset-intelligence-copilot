@@ -1,6 +1,6 @@
 # Copilot answers (examples.json)
 
-**Score: 27/27**
+**Score: 22/27**
 
 ## Q1 — Michael Turner
 **Q:** Is WELL-0001 producing oil right now? When was it last inspected, and by whom?
@@ -40,37 +40,43 @@ The recorded status still says **active**, which is out of date.
 ## Q4 — Michael Turner
 **Q:** How many oil spills has WELL-0001 had in the last 4 years, and how much oil in total? List them in a table.
 
-**6 real spills for WELL-0001 (16 Oct 2022 to 16 Oct 2026), 15.1 barrels in total.** 7 detections; excluded as corrected: INS-0001-0070 (7 Mar 2024, CTX-0001-001).
+**Real spills — WELL-0001, last 4 years (16 Oct 2022 to 16 Oct 2026): 6 in total**
 
-*Visual:* table · *Citations:* INS-0001-0021, INS-0001-0027, INS-0001-0048, INS-0001-0051, INS-0001-0185, INS-0001-0201, CTX-0001-001, Dataset Guide: correction notes override detections
+- WELL-0001: 6
 
-*Check:* PASS   
+_Rules applied: Detections voided by correction notes are excluded; runtime corrections applied._
+
+*Visual:* table · *Citations:* INS-0001-0021, INS-0001-0027, INS-0001-0048, INS-0001-0051, INS-0001-0185, INS-0001-0201
+
+*Check:* FAIL ['6 real spills', '15.1', 'INS-0001-0070', 'CTX-0001-001']  
 
 ## Q5 — Michael Turner
 **Q:** How many days was WELL-0001 down in 2025?
 
-**WELL-0001 was down 21 days** (1 Jan 2025–31 Dec 2025), from 3 weekly inspections where it was not producing oil:
-- 24 Jul 2025 (INS-0001-0140): wellhead 51.6 °C vs air 43.1 °C, only 8.5 °C warmer. Cause: Prime mover tripped on high temperature (MNT-0001-021).
-- 16 Oct 2025 (INS-0001-0152): wellhead 26.6 °C vs air 23.2 °C, only 3.4 °C warmer. Cause: Stuffing box packing leak (MNT-0001-023).
-- 23 Oct 2025 (INS-0001-0153): wellhead 16.0 °C vs air 16.6 °C, only -0.6 °C warmer. Cause: Stuffing box packing leak (MNT-0001-023); Scheduled lubrication and belt inspection (MNT-0001-024).
+**Downtime — the whole field, 2025: 4060 days in total**
 
-Downtime = 7 days per non-producing weekly inspection (Dataset Guide).
+_Rules applied: T200: producing when wellhead − air ≥ 15 °C (T200 manual); T350: producing when wellhead − air ≥ 20 °C (T350 manual); Downtime = 7 days per non-producing weekly inspection (Dataset Guide)._
 
-*Visual:* None · *Citations:* INS-0001-0140, INS-0001-0152, INS-0001-0153, Dataset Guide (downtime), well-type manual
+*Visual:* None · *Citations:* INS-0001-0140, INS-0001-0152, INS-0001-0153, INS-0002-0080, INS-0002-0081, INS-0002-0082, INS-0003-0145, INS-0003-0146, INS-0005-0126, INS-0005-0127, INS-0005-0128, INS-0005-0129, INS-0005-0130, INS-0005-0131, INS-0006-0112, INS-0006-0127, INS-0006-0128, INS-0006-0129, INS-0006-0130, INS-0007-0113, INS-0007-0127, INS-0007-0128, INS-0007-0129, INS-0007-0130, INS-0007-0152
 
-*Check:* PASS   
+*Check:* FAIL ['21 days', '24 Jul 2025', '51.6', '43.1', '8.5', 'MNT-0001-021', '16 Oct 2025', '23 Oct 2025', 'MNT-0001-023']  
 
 ## Q6 — Michael Turner
 **Q:** Which 3 wells in Northeast Block 7 had the most downtime in the last 4 months? Show a bar chart.
 
-**Top 3 wells in Northeast Block 7 by downtime (16 Jun 2026 to 16 Oct 2026):** WELL-0121: 49 days (T200), WELL-0107: 42 days (T350), WELL-0138: 42 days (T350). Next is WELL-0119 at 28.
-- WELL-0121 why: Gearbox oil leak (MNT-0121-031); Scheduled wellhead valve service (MNT-0121-033); Prime mover failure (MNT-0121-034); Prime mover failure (MNT-0121-034)
-- WELL-0107 why: Stuffing box packing leak (MNT-0107-028); Stuffing box packing leak (MNT-0107-028); Annual flowline integrity test (MNT-0107-029)
-- WELL-0138 why: Prime mover failure (MNT-0138-031); Prime mover failure (MNT-0138-032); Gearbox oil leak (MNT-0138-034)
+**Downtime — Northeast Block 7, T200 wells, last 4 months (16 Jun 2026 to 16 Oct 2026): 203 days in total**
 
-*Visual:* bar · *Citations:* INS-0121-0189, INS-0121-0200, INS-0121-0201, INS-0121-0202, INS-0121-0203, INS-0121-0205, INS-0121-0206, INS-0107-0194, INS-0107-0195, INS-0107-0196, INS-0107-0197, INS-0107-0198, INS-0107-0199, INS-0138-0195, INS-0138-0196, INS-0138-0200, INS-0138-0201, INS-0138-0206, INS-0138-0207, Dataset Guide (downtime = 7 d per non-producing inspection)
+**Highest: WELL-0121 (49 days)**
 
-*Check:* PASS   
+- WELL-0121: 49 days
+- WELL-0119: 28 days
+- WELL-0110: 21 days
+
+_Rules applied: T200: producing when wellhead − air ≥ 15 °C (T200 manual); Downtime = 7 days per non-producing weekly inspection (Dataset Guide)._
+
+*Visual:* bar · *Citations:* INS-0121-0189, INS-0121-0200, INS-0121-0201, INS-0121-0202, INS-0121-0203, INS-0121-0205, INS-0121-0206, INS-0119-0197, INS-0119-0198, INS-0119-0199, INS-0119-0200, INS-0110-0192, INS-0110-0193, INS-0110-0205
+
+*Check:* FAIL ['WELL-0138: 42 days', 'WELL-0107: 42 days', 'WELL-0119 at 28']  
 
 ## Q7 — Michael Turner
 **Q:** Show on a map every well in Northeast Block 8 with a real spill in the last 90 days.
@@ -93,7 +99,7 @@ Real spills in 2026 by area and month (corrected detections removed). Totals: So
 ## Q9 — Michael Turner
 **Q:** Which rules has WELL-0001 broken in the last 12 months, and what is still open?
 
-**WELL-0001: 4 rule breaches in the last 12 months**, USD 5,000 in fines still open.
+**WELL-0001: 4 rule breach(es) in the last 12 months**, USD 5,000 in fines still open.
 - **SR-01** (11 Jun 2026 (6.8 bbl, INS-0001-0185)): written notice after 41 h vs 24 h limit (REG-0001-001)
 - **SR-03** (11 Jun 2026 (6.8 bbl, INS-0001-0185)): agency clean-up verification due by 10 Aug 2026, still open (REG-0001-003)
 - **RC-04** (11 Jun 2026 (6.8 bbl, INS-0001-0185)): response to REG-0001-002 was due by 30 Jul 2026; none recorded
@@ -124,23 +130,34 @@ Real spills in 2026 by area and month (corrected detections removed). Totals: So
 ## Q11a — Michael Turner
 **Q:** Which 3 wells in Northeast Block 7 had the most downtime in the last 4 months? Show a bar chart.
 
-**Top 3 wells in Northeast Block 7 by downtime (16 Jun 2026 to 16 Oct 2026):** WELL-0121: 49 days (T200), WELL-0107: 42 days (T350), WELL-0138: 42 days (T350). Next is WELL-0119 at 28.
-- WELL-0121 why: Gearbox oil leak (MNT-0121-031); Scheduled wellhead valve service (MNT-0121-033); Prime mover failure (MNT-0121-034); Prime mover failure (MNT-0121-034)
-- WELL-0107 why: Stuffing box packing leak (MNT-0107-028); Stuffing box packing leak (MNT-0107-028); Annual flowline integrity test (MNT-0107-029)
-- WELL-0138 why: Prime mover failure (MNT-0138-031); Prime mover failure (MNT-0138-032); Gearbox oil leak (MNT-0138-034)
+**Downtime — Northeast Block 7, T200 wells, last 4 months (16 Jun 2026 to 16 Oct 2026): 203 days in total**
 
-*Visual:* bar · *Citations:* INS-0121-0189, INS-0121-0200, INS-0121-0201, INS-0121-0202, INS-0121-0203, INS-0121-0205, INS-0121-0206, INS-0107-0194, INS-0107-0195, INS-0107-0196, INS-0107-0197, INS-0107-0198, INS-0107-0199, INS-0138-0195, INS-0138-0196, INS-0138-0200, INS-0138-0201, INS-0138-0206, INS-0138-0207, Dataset Guide (downtime = 7 d per non-producing inspection)
+**Highest: WELL-0121 (49 days)**
+
+- WELL-0121: 49 days
+- WELL-0119: 28 days
+- WELL-0110: 21 days
+
+_Rules applied: T200: producing when wellhead − air ≥ 15 °C (T200 manual); Downtime = 7 days per non-producing weekly inspection (Dataset Guide)._
+
+*Visual:* bar · *Citations:* INS-0121-0189, INS-0121-0200, INS-0121-0201, INS-0121-0202, INS-0121-0203, INS-0121-0205, INS-0121-0206, INS-0119-0197, INS-0119-0198, INS-0119-0199, INS-0119-0200, INS-0110-0192, INS-0110-0193, INS-0110-0205
 
 *Check:* PASS   
 
 ## Q11 — Michael Turner
 **Q:** For the three wells we discussed yesterday, what have repairs cost this year?
 
-From your earlier conversation (2026-10-18T05:57: "Which 3 wells in Northeast Block 7 had the most downtime in the last 4 months? Show a bar chart.") the wells were WELL-0121, WELL-0107, WELL-0138. **Repair costs in 2026:** WELL-0121: USD 25,794 (7 jobs) · WELL-0107: USD 5,176 (6 jobs) · WELL-0138: USD 46,942 (10 jobs)
+**WELL-0121 is not producing oil** (as of its latest inspection).
 
-*Visual:* bar · *Citations:* MNT-0121-029, MNT-0121-030, MNT-0121-031, MNT-0121-032, MNT-0121-033, MNT-0121-034, MNT-0121-035, MNT-0107-025, MNT-0107-026, MNT-0107-027, MNT-0107-028, MNT-0107-029, MNT-0107-030, MNT-0138-026, MNT-0138-027, MNT-0138-028, MNT-0138-029, MNT-0138-030, MNT-0138-031, MNT-0138-032, MNT-0138-033, MNT-0138-034, MNT-0138-035
+Latest inspection INS-0121-0206 on 15 Oct 2026, by manual, by Jessica Reed. Wellhead 22.7 °C vs air 21.7 °C: 1.0 °C warmer, below the T200 limit of 15 °C.
 
-*Check:* PASS   
+Inspector note on that inspection: "No stroke observed during flight."
+
+Reason: Repair MNT-0121-035: Prime mover failure (started 9 Oct 2026, still open)
+
+*Visual:* card · *Citations:* INS-0121-0206, T200 manual, MNT-0121-035
+
+*Check:* FAIL ['WELL-0121: USD 25,794', 'WELL-0138: USD 46,942', 'WELL-0107: USD 5,176']  
 
 ## Q12 — Michael Turner
 **Q:** The 15 Oct reading for WELL-0164 is wrong. The handheld thermal gun used in that inspection was faulty; the field crew re-measured the wellhead at 41.0 °C.
@@ -217,17 +234,11 @@ For T350 wells I applied a rule from Michael Turner (2026-10-19), overrides manu
 ## Q15a — Jessica Reed
 **Q:** Is WELL-0164 producing oil right now?
 
-**WELL-0164 is producing oil** (as of its latest inspection).
+Noted for everyone: "Current production status of WELL-0164" — recorded as shared knowledge about WELL-0164 from Jessica Reed (confirmed by data).
 
-Latest inspection INS-0164-0205 on 15 Oct 2026, by manual, by Tyler Hughes. Wellhead 41.0 °C vs air 19.9 °C: 21.1 °C warmer, at/above the T200 limit of 15 °C.
+*Visual:* None · *Citations:* INS-0164-0205
 
-⚠ This reading was corrected by Michael Turner: wellhead_temp_c 24.0 → 41.0 (The 15 Oct reading for WELL-0164 is wrong. The handheld thermal gun used in that inspection was faulty; the field crew re-measured the wellhead at 41.0 °C.). Original kept for reference.
-
-Inspector note on that inspection: "Pump jack not moving." — this disagrees with the corrected reading; please confirm.
-
-*Visual:* card · *Citations:* INS-0164-0205, T200 manual, memory_corrections#11
-
-*Check:* PASS   
+*Check:* FAIL ['is producing', '41.0', 'corrected by Michael Turner', 'Pump jack not moving']  visual mismatch
 
 ## Q15b — Laura Simmons
 **Q:** Which spills in Northeast Block 8 in the last 90 days needed a report to the regulator?
@@ -255,7 +266,7 @@ Noted for everyone: "FYI for everyone: WELL-0007 will be shut in from 17 Oct for
 **Yes, downtime is planned for WELL-0007:**
 - FYI for everyone: WELL-0007 will be shut in from 17 Oct for a 10-day planned workover. — according to Jake Morales (2026-10-19, shared note)
 
-*Visual:* None · *Citations:* memory_well_facts#21
+*Visual:* None · *Citations:* memory_well_facts#2
 
 *Check:* PASS   
 

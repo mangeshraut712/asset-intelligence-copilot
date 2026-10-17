@@ -19,7 +19,7 @@ def main():
         agent.SIM_DAY = x.get("day", 0)
         r = cp.ask(x["q"], x.get("user", "Michael Turner"), x.get("chat", x["id"]))
         blob = r["text"] + "\n" + json.dumps(r.get("visual"), default=str)
-        item = {"id": x["id"], "user": r["user"], "question": x["q"], "answer": r["text"], "visual": (r.get("visual") or {}).get("type"), "citations": r["citations"], "engine": r["engine"], "visual_data": r.get("visual")}
+        item = {"id": x["id"], "user": r["user"], "question": x["q"], "answer": r["text"], "visual": (r.get("visual") or {}).get("type"), "citations": r["citations"], "engine": r["engine"], "confidence": r.get("confidence"), "trace": r.get("trace"), "visual_data": r.get("visual")}
         if "expect" in x:
             miss = [e for e in x["expect"] if e.lower() not in blob.lower()]
             bad = [e for e in x.get("reject", []) if e.lower() in r["text"].lower()]

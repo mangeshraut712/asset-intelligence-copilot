@@ -10,7 +10,24 @@
    "T200 manual",
    "CTX-0001-003"
   ],
-  "engine": "llm:google/gemma-4-31b-it:free -> status",
+  "engine": "llm:nvidia/nemotron-3-super-120b-a12b:free -> status",
+  "confidence": "medium",
+  "trace": {
+   "engine": "llm:nvidia/nemotron-3-super-120b-a12b:free -> status",
+   "steps": [
+    {
+     "tool": "status",
+     "args": [
+      "WELL-0001"
+     ]
+    }
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
+   ],
+   "citations": 3
+  },
   "visual_data": {
    "type": "card",
    "data": {
@@ -61,7 +78,24 @@
    "INS-0175-0204",
    "T200/T350 manual production rule"
   ],
-  "engine": "llm:google/gemma-4-31b-it:free -> area_status",
+  "engine": "llm:nvidia/nemotron-3-super-120b-a12b:free -> area_status",
+  "confidence": "medium",
+  "trace": {
+   "engine": "llm:nvidia/nemotron-3-super-120b-a12b:free -> area_status",
+   "steps": [
+    {
+     "tool": "area_status",
+     "args": [
+      "NE-08"
+     ]
+    }
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
+   ],
+   "citations": 5
+  },
   "visual_data": {
    "type": "table",
    "columns": [
@@ -81,7 +115,9 @@
      "Wellhead above air (\u00b0C)": 4.1,
      "Recorded status": "active (out of date)",
      "Reason": "No recorded reason. Inspector noted \"Pump jack not moving.\" \u2014 suggest a site check",
-     "Inspection": "INS-0164-0205"
+     "Inspection": "INS-0164-0205",
+     "Lat": 32.1452,
+     "Lon": -102.1788
     },
     {
      "Well": "WELL-0170",
@@ -90,7 +126,9 @@
      "Wellhead above air (\u00b0C)": 2.9,
      "Recorded status": "down",
      "Reason": "Repair MNT-0170-031: Walking beam bearing wear (started 19 Sep 2026, still open)",
-     "Inspection": "INS-0170-0206"
+     "Inspection": "INS-0170-0206",
+     "Lat": 32.15939,
+     "Lon": -102.1766
     },
     {
      "Well": "WELL-0172",
@@ -99,7 +137,9 @@
      "Wellhead above air (\u00b0C)": 5.7,
      "Recorded status": "active (out of date)",
      "Reason": "Repair MNT-0172-028: Flowline corrosion pinhole leak (started 3 Oct 2026, still open)",
-     "Inspection": "INS-0172-0206"
+     "Inspection": "INS-0172-0206",
+     "Lat": 32.15584,
+     "Lon": -102.19308
     },
     {
      "Well": "WELL-0175",
@@ -108,7 +148,9 @@
      "Wellhead above air (\u00b0C)": 0.4,
      "Recorded status": "active (out of date)",
      "Reason": "No recorded reason \u2014 suggest a site check",
-     "Inspection": "INS-0175-0204"
+     "Inspection": "INS-0175-0204",
+     "Lat": 32.1802,
+     "Lon": -102.1479
     }
    ]
   },
@@ -126,7 +168,24 @@
   "citations": [
    "INS-0001-0191 \u2026 INS-0001-0203"
   ],
-  "engine": "llm:google/gemma-4-26b-a4b-it:free -> temps",
+  "engine": "llm:nvidia/nemotron-3-super-120b-a12b:free -> temps",
+  "confidence": "medium",
+  "trace": {
+   "engine": "llm:nvidia/nemotron-3-super-120b-a12b:free -> temps",
+   "steps": [
+    {
+     "tool": "temps",
+     "args": [
+      "WELL-0001"
+     ]
+    }
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
+   ],
+   "citations": 1
+  },
   "visual_data": {
    "type": "line",
    "x": [
@@ -197,7 +256,7 @@
   "id": "Q4",
   "user": "Michael Turner",
   "question": "How many oil spills has WELL-0001 had in the last 4 years, and how much oil in total? List them in a table.",
-  "answer": "**6 real spills for WELL-0001 (16 Oct 2022 to 16 Oct 2026), 15.1 barrels in total.** 7 detections; excluded as corrected: INS-0001-0070 (7 Mar 2024, CTX-0001-001).",
+  "answer": "**Real spills \u2014 WELL-0001, last 4 years (16 Oct 2022 to 16 Oct 2026): 6 in total**\n\n- WELL-0001: 6\n\n_Rules applied: Detections voided by correction notes are excluded; runtime corrections applied._",
   "visual": "table",
   "citations": [
    "INS-0001-0021",
@@ -205,100 +264,326 @@
    "INS-0001-0048",
    "INS-0001-0051",
    "INS-0001-0185",
-   "INS-0001-0201",
-   "CTX-0001-001",
-   "Dataset Guide: correction notes override detections"
+   "INS-0001-0201"
   ],
-  "engine": "llm:google/gemma-4-31b-it:free -> spills",
+  "engine": "llm:nvidia/nemotron-3-super-120b-a12b:free -> query",
+  "confidence": "medium",
+  "trace": {
+   "engine": "llm:nvidia/nemotron-3-super-120b-a12b:free -> query",
+   "steps": [
+    {
+     "tool": "run_query",
+     "args": {
+      "metric": "spills",
+      "scope": {
+       "wells": [
+        "WELL-0001"
+       ]
+      },
+      "window": [
+       "2022-10-16",
+       "2026-10-16"
+      ],
+      "group_by": "well",
+      "top": null,
+      "filters": {}
+     },
+     "result": "1 rows, total 6.0"
+    }
+   ],
+   "rules": [
+    "Detections voided by correction notes are excluded; runtime corrections applied"
+   ],
+   "citations": 6
+  },
   "visual_data": {
    "type": "table",
    "columns": [
     "Well",
-    "Date",
-    "Barrels",
-    "Inspection"
+    "Type",
+    "Area",
+    "Real spills",
+    "Evidence"
    ],
    "rows": [
     {
      "Well": "WELL-0001",
-     "Date": "16 Mar 2023",
-     "Barrels": 0.5,
-     "Inspection": "INS-0001-0021",
-     "Lat": 31.85425,
-     "Lon": -102.50232
-    },
-    {
-     "Well": "WELL-0001",
-     "Date": "27 Apr 2023",
-     "Barrels": 2.6,
-     "Inspection": "INS-0001-0027",
-     "Lat": 31.85425,
-     "Lon": -102.50232
-    },
-    {
-     "Well": "WELL-0001",
-     "Date": "28 Sep 2023",
-     "Barrels": 3.3,
-     "Inspection": "INS-0001-0048",
-     "Lat": 31.85425,
-     "Lon": -102.50232
-    },
-    {
-     "Well": "WELL-0001",
-     "Date": "19 Oct 2023",
-     "Barrels": 0.3,
-     "Inspection": "INS-0001-0051",
-     "Lat": 31.85425,
-     "Lon": -102.50232
-    },
-    {
-     "Well": "WELL-0001",
-     "Date": "11 Jun 2026",
-     "Barrels": 6.8,
-     "Inspection": "INS-0001-0185",
-     "Lat": 31.85425,
-     "Lon": -102.50232
-    },
-    {
-     "Well": "WELL-0001",
-     "Date": "1 Oct 2026",
-     "Barrels": 1.6,
-     "Inspection": "INS-0001-0201",
+     "Type": "T200",
+     "Area": "Southwest Block 23",
+     "Real spills": 6.0,
+     "Evidence": "INS-0001-0021, INS-0001-0027, INS-0001-0048, INS-0001-0051",
      "Lat": 31.85425,
      "Lon": -102.50232
     }
    ]
   },
-  "missing": [],
+  "missing": [
+   "6 real spills",
+   "15.1",
+   "INS-0001-0070",
+   "CTX-0001-001"
+  ],
   "unexpected": [],
   "visual_ok": true,
-  "pass": true
+  "pass": false
  },
  {
   "id": "Q5",
   "user": "Michael Turner",
   "question": "How many days was WELL-0001 down in 2025?",
-  "answer": "**WELL-0001 was down 21 days** (1 Jan 2025\u201331 Dec 2025), from 3 weekly inspections where it was not producing oil:\n- 24 Jul 2025 (INS-0001-0140): wellhead 51.6 \u00b0C vs air 43.1 \u00b0C, only 8.5 \u00b0C warmer. Cause: Prime mover tripped on high temperature (MNT-0001-021).\n- 16 Oct 2025 (INS-0001-0152): wellhead 26.6 \u00b0C vs air 23.2 \u00b0C, only 3.4 \u00b0C warmer. Cause: Stuffing box packing leak (MNT-0001-023).\n- 23 Oct 2025 (INS-0001-0153): wellhead 16.0 \u00b0C vs air 16.6 \u00b0C, only -0.6 \u00b0C warmer. Cause: Stuffing box packing leak (MNT-0001-023); Scheduled lubrication and belt inspection (MNT-0001-024).\n\nDowntime = 7 days per non-producing weekly inspection (Dataset Guide).",
+  "answer": "**Downtime \u2014 the whole field, 2025: 4060 days in total**\n\n_Rules applied: T200: producing when wellhead \u2212 air \u2265 15 \u00b0C (T200 manual); T350: producing when wellhead \u2212 air \u2265 20 \u00b0C (T350 manual); Downtime = 7 days per non-producing weekly inspection (Dataset Guide)._",
   "visual": null,
   "citations": [
    "INS-0001-0140",
    "INS-0001-0152",
    "INS-0001-0153",
-   "Dataset Guide (downtime)",
-   "well-type manual"
+   "INS-0002-0080",
+   "INS-0002-0081",
+   "INS-0002-0082",
+   "INS-0003-0145",
+   "INS-0003-0146",
+   "INS-0005-0126",
+   "INS-0005-0127",
+   "INS-0005-0128",
+   "INS-0005-0129",
+   "INS-0005-0130",
+   "INS-0005-0131",
+   "INS-0006-0112",
+   "INS-0006-0127",
+   "INS-0006-0128",
+   "INS-0006-0129",
+   "INS-0006-0130",
+   "INS-0007-0113",
+   "INS-0007-0127",
+   "INS-0007-0128",
+   "INS-0007-0129",
+   "INS-0007-0130",
+   "INS-0007-0152",
+   "INS-0009-0125",
+   "INS-0009-0126",
+   "INS-0009-0127",
+   "INS-0009-0128",
+   "INS-0009-0129",
+   "INS-0009-0130",
+   "INS-0009-0149",
+   "INS-0012-0162",
+   "INS-0018-0125",
+   "INS-0019-0157",
+   "INS-0020-0158",
+   "INS-0021-0156",
+   "INS-0021-0157",
+   "INS-0022-0139",
+   "INS-0022-0140",
+   "INS-0022-0141",
+   "INS-0023-0143",
+   "INS-0023-0144",
+   "INS-0024-0154",
+   "INS-0025-0121",
+   "INS-0025-0122",
+   "INS-0025-0123",
+   "INS-0025-0124",
+   "INS-0025-0125",
+   "INS-0025-0126",
+   "INS-0025-0127",
+   "INS-0025-0133",
+   "INS-0025-0158",
+   "INS-0026-0113",
+   "INS-0026-0114",
+   "INS-0026-0115",
+   "INS-0026-0138",
+   "INS-0026-0142",
+   "INS-0027-0117",
+   "INS-0027-0118",
+   "INS-0027-0136",
+   "INS-0027-0137",
+   "INS-0027-0154",
+   "INS-0027-0155",
+   "INS-0029-0025",
+   "INS-0029-0026",
+   "INS-0029-0027",
+   "INS-0029-0028",
+   "INS-0029-0029",
+   "INS-0029-0030",
+   "INS-0030-0126",
+   "INS-0030-0127",
+   "INS-0030-0128",
+   "INS-0030-0129",
+   "INS-0031-0115",
+   "INS-0031-0116",
+   "INS-0031-0117",
+   "INS-0032-0148",
+   "INS-0032-0149",
+   "INS-0032-0150",
+   "INS-0035-0125",
+   "INS-0035-0126",
+   "INS-0035-0138",
+   "INS-0035-0139",
+   "INS-0035-0140",
+   "INS-0035-0141",
+   "INS-0035-0161",
+   "INS-0035-0162",
+   "INS-0036-0127",
+   "INS-0036-0128",
+   "INS-0036-0129",
+   "INS-0036-0130",
+   "INS-0036-0131",
+   "INS-0036-0132",
+   "INS-0036-0154",
+   "INS-0036-0155",
+   "INS-0036-0156",
+   "INS-0036-0157",
+   "INS-0037-0139",
+   "INS-0037-0141",
+   "INS-0038-0156",
+   "INS-0038-0157",
+   "INS-0041-0140",
+   "INS-0041-0141",
+   "INS-0041-0142",
+   "INS-0041-0143",
+   "INS-0041-0144",
+   "INS-0041-0145",
+   "INS-0043-0118",
+   "INS-0043-0119",
+   "INS-0043-0120",
+   "INS-0043-0121",
+   "INS-0044-0129",
+   "INS-0044-0130",
+   "INS-0045-0115",
+   "INS-0045-0150",
+   "INS-0045-0151",
+   "INS-0046-0131",
+   "INS-0048-0117",
+   "INS-0048-0126",
+   "INS-0048-0127",
+   "INS-0048-0128",
+   "INS-0048-0129",
+   "INS-0049-0121",
+   "INS-0049-0122",
+   "INS-0049-0147",
+   "INS-0049-0148",
+   "INS-0051-0117",
+   "INS-0051-0118",
+   "INS-0051-0119",
+   "INS-0051-0123",
+   "INS-0051-0128",
+   "INS-0051-0129",
+   "INS-0052-0145",
+   "INS-0052-0146",
+   "INS-0052-0147",
+   "INS-0052-0150",
+   "INS-0052-0151",
+   "INS-0053-0127",
+   "INS-0053-0128",
+   "INS-0053-0129",
+   "INS-0053-0130",
+   "INS-0053-0131",
+   "INS-0053-0132",
+   "INS-0053-0139",
+   "INS-0053-0140",
+   "INS-0053-0152",
+   "INS-0053-0153",
+   "INS-0055-0146",
+   "INS-0055-0147",
+   "INS-0055-0157",
+   "INS-0055-0158",
+   "INS-0055-0159",
+   "INS-0055-0160",
+   "INS-0056-0125",
+   "INS-0056-0126",
+   "INS-0056-0131",
+   "INS-0056-0157",
+   "INS-0056-0158",
+   "INS-0056-0159",
+   "INS-0057-0127",
+   "INS-0057-0128",
+   "INS-0058-0117",
+   "INS-0058-0118",
+   "INS-0058-0119",
+   "INS-0058-0120",
+   "INS-0058-0145",
+   "INS-0058-0147",
+   "INS-0058-0148",
+   "INS-0058-0149",
+   "INS-0058-0150",
+   "INS-0058-0151",
+   "INS-0058-0152",
+   "INS-0059-0142",
+   "INS-0059-0143",
+   "INS-0059-0144",
+   "INS-0059-0145",
+   "INS-0059-0146",
+   "INS-0059-0147",
+   "INS-0059-0164",
+   "INS-0059-0165",
+   "INS-0059-0166",
+   "INS-0060-0123",
+   "INS-0060-0124",
+   "INS-0060-0125",
+   "INS-0060-0126",
+   "INS-0060-0127",
+   "INS-0060-0128",
+   "INS-0061-0118",
+   "INS-0061-0126",
+   "INS-0061-0159",
+   "INS-0062-0161",
+   "INS-0062-0162",
+   "INS-0063-0114",
+   "INS-0063-0129",
+   "INS-0065-0121",
+   "INS-0065-0122",
+   "INS-0065-0123",
+   "INS-0065-0137",
+   "INS-0066-0114"
   ],
-  "engine": "llm:nvidia/nemotron-3-super-120b-a12b:free -> downtime",
+  "engine": "llm:google/gemma-4-26b-a4b-it:free -> query",
+  "confidence": "medium",
+  "trace": {
+   "engine": "llm:google/gemma-4-26b-a4b-it:free -> query",
+   "steps": [
+    {
+     "tool": "run_query",
+     "args": {
+      "metric": "downtime",
+      "scope": {},
+      "window": [
+       "2025-01-01",
+       "2025-12-31"
+      ],
+      "group_by": null,
+      "top": null,
+      "filters": {}
+     },
+     "result": "1 rows, total 4060.0"
+    }
+   ],
+   "rules": [
+    "T200: producing when wellhead \u2212 air \u2265 15 \u00b0C (T200 manual)",
+    "T350: producing when wellhead \u2212 air \u2265 20 \u00b0C (T350 manual)",
+    "Downtime = 7 days per non-producing weekly inspection (Dataset Guide)"
+   ],
+   "citations": 200
+  },
   "visual_data": null,
-  "missing": [],
+  "missing": [
+   "21 days",
+   "24 Jul 2025",
+   "51.6",
+   "43.1",
+   "8.5",
+   "MNT-0001-021",
+   "16 Oct 2025",
+   "23 Oct 2025",
+   "MNT-0001-023"
+  ],
   "unexpected": [],
   "visual_ok": true,
-  "pass": true
+  "pass": false
  },
  {
   "id": "Q6",
   "user": "Michael Turner",
   "question": "Which 3 wells in Northeast Block 7 had the most downtime in the last 4 months? Show a bar chart.",
-  "answer": "**Top 3 wells in Northeast Block 7 by downtime (16 Jun 2026 to 16 Oct 2026):** WELL-0121: 49 days (T200), WELL-0107: 42 days (T350), WELL-0138: 42 days (T350). Next is WELL-0119 at 28.\n- WELL-0121 why: Gearbox oil leak (MNT-0121-031); Scheduled wellhead valve service (MNT-0121-033); Prime mover failure (MNT-0121-034); Prime mover failure (MNT-0121-034)\n- WELL-0107 why: Stuffing box packing leak (MNT-0107-028); Stuffing box packing leak (MNT-0107-028); Annual flowline integrity test (MNT-0107-029)\n- WELL-0138 why: Prime mover failure (MNT-0138-031); Prime mover failure (MNT-0138-032); Gearbox oil leak (MNT-0138-034)",
+  "answer": "**Downtime \u2014 Northeast Block 7, T200 wells, last 4 months (16 Jun 2026 to 16 Oct 2026): 203 days in total**\n\n**Highest: WELL-0121 (49 days)**\n\n- WELL-0121: 49 days\n- WELL-0119: 28 days\n- WELL-0110: 21 days\n\n_Rules applied: T200: producing when wellhead \u2212 air \u2265 15 \u00b0C (T200 manual); Downtime = 7 days per non-producing weekly inspection (Dataset Guide)._",
   "visual": "bar",
   "citations": [
    "INS-0121-0189",
@@ -308,43 +593,70 @@
    "INS-0121-0203",
    "INS-0121-0205",
    "INS-0121-0206",
-   "INS-0107-0194",
-   "INS-0107-0195",
-   "INS-0107-0196",
-   "INS-0107-0197",
-   "INS-0107-0198",
-   "INS-0107-0199",
-   "INS-0138-0195",
-   "INS-0138-0196",
-   "INS-0138-0200",
-   "INS-0138-0201",
-   "INS-0138-0206",
-   "INS-0138-0207",
-   "Dataset Guide (downtime = 7 d per non-producing inspection)"
+   "INS-0119-0197",
+   "INS-0119-0198",
+   "INS-0119-0199",
+   "INS-0119-0200",
+   "INS-0110-0192",
+   "INS-0110-0193",
+   "INS-0110-0205"
   ],
-  "engine": "llm:google/gemma-4-31b-it:free -> downtime",
+  "engine": "llm:google/gemma-4-26b-a4b-it:free -> query",
+  "confidence": "medium",
+  "trace": {
+   "engine": "llm:google/gemma-4-26b-a4b-it:free -> query",
+   "steps": [
+    {
+     "tool": "run_query",
+     "args": {
+      "metric": "downtime",
+      "scope": {
+       "area": "NE-07",
+       "well_type": "T200"
+      },
+      "window": [
+       "2026-06-16",
+       "2026-10-16"
+      ],
+      "group_by": "well",
+      "top": 3,
+      "filters": {}
+     },
+     "result": "3 rows, total 203.0"
+    }
+   ],
+   "rules": [
+    "T200: producing when wellhead \u2212 air \u2265 15 \u00b0C (T200 manual)",
+    "Downtime = 7 days per non-producing weekly inspection (Dataset Guide)"
+   ],
+   "citations": 14
+  },
   "visual_data": {
    "type": "bar",
    "x": [
     "WELL-0121",
-    "WELL-0107",
-    "WELL-0138"
+    "WELL-0119",
+    "WELL-0110"
    ],
    "series": [
     {
-     "name": "Downtime (days)",
+     "name": "downtime (days)",
      "data": [
-      49,
-      42,
-      42
+      49.0,
+      28.0,
+      21.0
      ]
     }
    ]
   },
-  "missing": [],
+  "missing": [
+   "WELL-0138: 42 days",
+   "WELL-0107: 42 days",
+   "WELL-0119 at 28"
+  ],
   "unexpected": [],
   "visual_ok": true,
-  "pass": true
+  "pass": false
  },
  {
   "id": "Q7",
@@ -361,7 +673,23 @@
    "CTX-0199-002",
    "Dataset Guide: correction notes override detections"
   ],
-  "engine": "llm:google/gemma-4-31b-it:free -> spills",
+  "engine": "llm:nvidia/nemotron-3-super-120b-a12b:free -> heatmap",
+  "confidence": "medium",
+  "trace": {
+   "engine": "llm:nvidia/nemotron-3-super-120b-a12b:free -> heatmap",
+   "steps": [
+    {
+     "tool": "spills",
+     "args": [
+      "Show on a map every well in Northeast Block 8 with a real spill in the last 90 days.",
+      [],
+      "NE-08"
+     ]
+    }
+   ],
+   "rules": [],
+   "citations": 7
+  },
   "visual_data": {
    "type": "map",
    "points": [
@@ -402,7 +730,21 @@
    "inspections (spill_detected, corrections applied)",
    "context.jsonl correction notes"
   ],
-  "engine": "llm:google/gemma-4-31b-it:free -> heatmap",
+  "engine": "llm:nvidia/nemotron-3-super-120b-a12b:free -> heatmap",
+  "confidence": "medium",
+  "trace": {
+   "engine": "llm:nvidia/nemotron-3-super-120b-a12b:free -> heatmap",
+   "steps": [
+    {
+     "tool": "heatmap",
+     "args": [
+      "Show a heatmap of 2026 spills by geographic area and month."
+     ]
+    }
+   ],
+   "rules": [],
+   "citations": 2
+  },
   "visual_data": {
    "type": "heatmap",
    "x": [
@@ -483,7 +825,7 @@
   "id": "Q9",
   "user": "Michael Turner",
   "question": "Which rules has WELL-0001 broken in the last 12 months, and what is still open?",
-  "answer": "**WELL-0001: 4 rule breaches in the last 12 months**, USD 5,000 in fines still open.\n- **SR-01** (11 Jun 2026 (6.8 bbl, INS-0001-0185)): written notice after 41 h vs 24 h limit (REG-0001-001)\n- **SR-03** (11 Jun 2026 (6.8 bbl, INS-0001-0185)): agency clean-up verification due by 10 Aug 2026, still open (REG-0001-003)\n- **RC-04** (11 Jun 2026 (6.8 bbl, INS-0001-0185)): response to REG-0001-002 was due by 30 Jul 2026; none recorded\n- **SR-02** (11 Jun 2026 (6.8 bbl, INS-0001-0185)): contained after about 7 h vs 4 h limit (report MNT-0001-029)\n\n**Still open / pending:**\n- SR-01: notice of violation REG-0001-002, fine USD 5,000, still open\n- RCA: root-cause analysis due on flowline: 3 corrective repairs in 12 months (MNT-0001-028, MNT-0001-029, MNT-0001-032)\n- Manual \u00a74: planned shut-in not yet recorded in the maintenance system, which the manual requires before work starts (CTX-0001-003)\n\n**Met:**\n- SR-02: contained after about 1.7 h vs 4 h limit (report MNT-0001-032)\n- RC-02: annual flowline integrity test done 7 Mar 2026 (MNT-0001-026)",
+  "answer": "**WELL-0001: 4 rule breach(es) in the last 12 months**, USD 5,000 in fines still open.\n- **SR-01** (11 Jun 2026 (6.8 bbl, INS-0001-0185)): written notice after 41 h vs 24 h limit (REG-0001-001)\n- **SR-03** (11 Jun 2026 (6.8 bbl, INS-0001-0185)): agency clean-up verification due by 10 Aug 2026, still open (REG-0001-003)\n- **RC-04** (11 Jun 2026 (6.8 bbl, INS-0001-0185)): response to REG-0001-002 was due by 30 Jul 2026; none recorded\n- **SR-02** (11 Jun 2026 (6.8 bbl, INS-0001-0185)): contained after about 7 h vs 4 h limit (report MNT-0001-029)\n\n**Still open / pending:**\n- SR-01: notice of violation REG-0001-002, fine USD 5,000, still open\n- RCA: root-cause analysis due on flowline: 3 corrective repairs in 12 months (MNT-0001-028, MNT-0001-029, MNT-0001-032)\n- Manual \u00a74: planned shut-in not yet recorded in the maintenance system, which the manual requires before work starts (CTX-0001-003)\n\n**Met:**\n- SR-02: contained after about 1.7 h vs 4 h limit (report MNT-0001-032)\n- RC-02: annual flowline integrity test done 7 Mar 2026 (MNT-0001-026)",
   "visual": "table",
   "citations": [
    "INS-0001-0185",
@@ -499,7 +841,29 @@
    "Spill Response SOP",
    "Regulatory Compliance SOP"
   ],
-  "engine": "llm:google/gemma-4-31b-it:free -> compliance",
+  "engine": "llm:google/gemma-4-26b-a4b-it:free -> compliance",
+  "confidence": "medium",
+  "trace": {
+   "engine": "llm:google/gemma-4-26b-a4b-it:free -> compliance",
+   "steps": [
+    {
+     "tool": "compliance",
+     "args": [
+      "WELL-0001"
+     ]
+    }
+   ],
+   "rules": [
+    "SR-01.hours = 24 (Spill Response SOP SR-01)",
+    "SR-02.hours = 4 (Spill Response SOP SR-02)",
+    "SR-03.days = 60 (Spill Response SOP SR-03)",
+    "RC-04.days = 30 (Regulatory Compliance SOP RC-04)",
+    "spill.reportable_bbl = 5 (Spill Response SOP \u00a73)",
+    "T200.rca_repairs = 3 (T200 manual (maintenance escalation, RCA))",
+    "T350.rca_repairs = 3 (T350 manual (maintenance escalation, RCA))"
+   ],
+   "citations": 12
+  },
   "visual_data": {
    "type": "table",
    "columns": [
@@ -563,7 +927,24 @@
    "INS-0100-0196",
    "Spill Response SOP SR-02"
   ],
-  "engine": "llm:google/gemma-4-31b-it:free -> containment",
+  "engine": "llm:nvidia/nemotron-3-super-120b-a12b:free -> containment",
+  "confidence": "medium",
+  "trace": {
+   "engine": "llm:nvidia/nemotron-3-super-120b-a12b:free -> containment",
+   "steps": [
+    {
+     "tool": "containment",
+     "args": [
+      "In Southwest Block 24, which spills in the last 90 days were not contained within the SOP time limit?",
+      "SW-24"
+     ]
+    }
+   ],
+   "rules": [
+    "SR-02.hours = 4 (Spill Response SOP SR-02)"
+   ],
+   "citations": 5
+  },
   "visual_data": {
    "type": "table",
    "columns": [
@@ -599,7 +980,7 @@
   "id": "Q11a",
   "user": "Michael Turner",
   "question": "Which 3 wells in Northeast Block 7 had the most downtime in the last 4 months? Show a bar chart.",
-  "answer": "**Top 3 wells in Northeast Block 7 by downtime (16 Jun 2026 to 16 Oct 2026):** WELL-0121: 49 days (T200), WELL-0107: 42 days (T350), WELL-0138: 42 days (T350). Next is WELL-0119 at 28.\n- WELL-0121 why: Gearbox oil leak (MNT-0121-031); Scheduled wellhead valve service (MNT-0121-033); Prime mover failure (MNT-0121-034); Prime mover failure (MNT-0121-034)\n- WELL-0107 why: Stuffing box packing leak (MNT-0107-028); Stuffing box packing leak (MNT-0107-028); Annual flowline integrity test (MNT-0107-029)\n- WELL-0138 why: Prime mover failure (MNT-0138-031); Prime mover failure (MNT-0138-032); Gearbox oil leak (MNT-0138-034)",
+  "answer": "**Downtime \u2014 Northeast Block 7, T200 wells, last 4 months (16 Jun 2026 to 16 Oct 2026): 203 days in total**\n\n**Highest: WELL-0121 (49 days)**\n\n- WELL-0121: 49 days\n- WELL-0119: 28 days\n- WELL-0110: 21 days\n\n_Rules applied: T200: producing when wellhead \u2212 air \u2265 15 \u00b0C (T200 manual); Downtime = 7 days per non-producing weekly inspection (Dataset Guide)._",
   "visual": "bar",
   "citations": [
    "INS-0121-0189",
@@ -609,35 +990,58 @@
    "INS-0121-0203",
    "INS-0121-0205",
    "INS-0121-0206",
-   "INS-0107-0194",
-   "INS-0107-0195",
-   "INS-0107-0196",
-   "INS-0107-0197",
-   "INS-0107-0198",
-   "INS-0107-0199",
-   "INS-0138-0195",
-   "INS-0138-0196",
-   "INS-0138-0200",
-   "INS-0138-0201",
-   "INS-0138-0206",
-   "INS-0138-0207",
-   "Dataset Guide (downtime = 7 d per non-producing inspection)"
+   "INS-0119-0197",
+   "INS-0119-0198",
+   "INS-0119-0199",
+   "INS-0119-0200",
+   "INS-0110-0192",
+   "INS-0110-0193",
+   "INS-0110-0205"
   ],
-  "engine": "llm:google/gemma-4-31b-it:free -> downtime",
+  "engine": "llm:google/gemma-4-26b-a4b-it:free -> query",
+  "confidence": "medium",
+  "trace": {
+   "engine": "llm:google/gemma-4-26b-a4b-it:free -> query",
+   "steps": [
+    {
+     "tool": "run_query",
+     "args": {
+      "metric": "downtime",
+      "scope": {
+       "area": "NE-07",
+       "well_type": "T200"
+      },
+      "window": [
+       "2026-06-16",
+       "2026-10-16"
+      ],
+      "group_by": "well",
+      "top": 3,
+      "filters": {}
+     },
+     "result": "3 rows, total 203.0"
+    }
+   ],
+   "rules": [
+    "T200: producing when wellhead \u2212 air \u2265 15 \u00b0C (T200 manual)",
+    "Downtime = 7 days per non-producing weekly inspection (Dataset Guide)"
+   ],
+   "citations": 14
+  },
   "visual_data": {
    "type": "bar",
    "x": [
     "WELL-0121",
-    "WELL-0107",
-    "WELL-0138"
+    "WELL-0119",
+    "WELL-0110"
    ],
    "series": [
     {
-     "name": "Downtime (days)",
+     "name": "downtime (days)",
      "data": [
-      49,
-      42,
-      42
+      49.0,
+      28.0,
+      21.0
      ]
     }
    ]
@@ -651,56 +1055,71 @@
   "id": "Q11",
   "user": "Michael Turner",
   "question": "For the three wells we discussed yesterday, what have repairs cost this year?",
-  "answer": "From your earlier conversation (2026-10-18T05:57: \"Which 3 wells in Northeast Block 7 had the most downtime in the last 4 months? Show a bar chart.\") the wells were WELL-0121, WELL-0107, WELL-0138. **Repair costs in 2026:** WELL-0121: USD 25,794 (7 jobs) \u00b7 WELL-0107: USD 5,176 (6 jobs) \u00b7 WELL-0138: USD 46,942 (10 jobs)",
-  "visual": "bar",
+  "answer": "**WELL-0121 is not producing oil** (as of its latest inspection).\n\nLatest inspection INS-0121-0206 on 15 Oct 2026, by manual, by Jessica Reed. Wellhead 22.7 \u00b0C vs air 21.7 \u00b0C: 1.0 \u00b0C warmer, below the T200 limit of 15 \u00b0C.\n\nInspector note on that inspection: \"No stroke observed during flight.\"\n\nReason: Repair MNT-0121-035: Prime mover failure (started 9 Oct 2026, still open)",
+  "visual": "card",
   "citations": [
-   "MNT-0121-029",
-   "MNT-0121-030",
-   "MNT-0121-031",
-   "MNT-0121-032",
-   "MNT-0121-033",
-   "MNT-0121-034",
-   "MNT-0121-035",
-   "MNT-0107-025",
-   "MNT-0107-026",
-   "MNT-0107-027",
-   "MNT-0107-028",
-   "MNT-0107-029",
-   "MNT-0107-030",
-   "MNT-0138-026",
-   "MNT-0138-027",
-   "MNT-0138-028",
-   "MNT-0138-029",
-   "MNT-0138-030",
-   "MNT-0138-031",
-   "MNT-0138-032",
-   "MNT-0138-033",
-   "MNT-0138-034",
-   "MNT-0138-035"
+   "INS-0121-0206",
+   "T200 manual",
+   "MNT-0121-035"
   ],
-  "engine": "llm:google/gemma-4-26b-a4b-it:free -> costs",
-  "visual_data": {
-   "type": "bar",
-   "x": [
-    "WELL-0121",
-    "WELL-0107",
-    "WELL-0138"
-   ],
-   "series": [
+  "engine": "llm:google/gemma-4-31b-it:free -> memory_recall",
+  "confidence": "medium",
+  "trace": {
+   "engine": "llm:google/gemma-4-31b-it:free -> memory_recall",
+   "steps": [
     {
-     "name": "Repair cost 2026 (USD)",
-     "data": [
-      25794.0,
-      5176.0,
-      46942.0
+     "tool": "status",
+     "args": [
+      "WELL-0121"
      ]
     }
-   ]
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
+   ],
+   "citations": 3
   },
-  "missing": [],
+  "visual_data": {
+   "type": "card",
+   "data": {
+    "asset_id": "WELL-0121",
+    "well_type": "T200",
+    "area": "Northeast Block 7",
+    "producing": false,
+    "last_inspection_id": "INS-0121-0206",
+    "inspected_at": "2026-10-15T07:45:00Z",
+    "inspector": "Jessica Reed",
+    "method": "manual",
+    "wellhead_c": 22.7,
+    "ambient_c": 21.7,
+    "delta_c": 1.0,
+    "threshold_c": 15.0,
+    "recorded_status": "down",
+    "recorded_status_stale": false,
+    "inspector_note": "No stroke observed during flight.",
+    "reasons": [
+     "Repair MNT-0121-035: Prime mover failure (started 9 Oct 2026, still open)"
+    ],
+    "corrections": [],
+    "shared_facts": [],
+    "lat": 32.14465,
+    "lon": -102.20667,
+    "citations": [
+     "INS-0121-0206",
+     "T200 manual",
+     "MNT-0121-035"
+    ]
+   }
+  },
+  "missing": [
+   "WELL-0121: USD 25,794",
+   "WELL-0138: USD 46,942",
+   "WELL-0107: USD 5,176"
+  ],
   "unexpected": [],
   "visual_ok": true,
-  "pass": true
+  "pass": false
  },
  {
   "id": "Q12",
@@ -711,7 +1130,28 @@
   "citations": [
    "INS-0164-0205"
   ],
-  "engine": "llm:nvidia/nemotron-3-super-120b-a12b:free -> feedback",
+  "engine": "llm:google/gemma-4-26b-a4b-it:free -> feedback",
+  "confidence": "conflict",
+  "trace": {
+   "engine": "llm:google/gemma-4-26b-a4b-it:free -> feedback",
+   "steps": [
+    {
+     "tool": "correction",
+     "args": [
+      "U-201",
+      "WELL-0164"
+     ]
+    }
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))",
+    "spill.reportable_bbl = 5 (Spill Response SOP \u00a73)",
+    "SR-01.hours = 24 (Spill Response SOP SR-01)",
+    "SR-03.days = 60 (Spill Response SOP SR-03)"
+   ],
+   "citations": 1
+  },
   "visual_data": null,
   "missing": [],
   "unexpected": [],
@@ -730,7 +1170,24 @@
    "INS-0175-0204",
    "T200/T350 manual production rule"
   ],
-  "engine": "llm:google/gemma-4-31b-it:free -> area_status",
+  "engine": "llm:nvidia/nemotron-3-super-120b-a12b:free -> area_status",
+  "confidence": "medium",
+  "trace": {
+   "engine": "llm:nvidia/nemotron-3-super-120b-a12b:free -> area_status",
+   "steps": [
+    {
+     "tool": "area_status",
+     "args": [
+      "NE-08"
+     ]
+    }
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
+   ],
+   "citations": 4
+  },
   "visual_data": {
    "type": "table",
    "columns": [
@@ -750,7 +1207,9 @@
      "Wellhead above air (\u00b0C)": 2.9,
      "Recorded status": "down",
      "Reason": "Repair MNT-0170-031: Walking beam bearing wear (started 19 Sep 2026, still open)",
-     "Inspection": "INS-0170-0206"
+     "Inspection": "INS-0170-0206",
+     "Lat": 32.15939,
+     "Lon": -102.1766
     },
     {
      "Well": "WELL-0172",
@@ -759,7 +1218,9 @@
      "Wellhead above air (\u00b0C)": 5.7,
      "Recorded status": "active (out of date)",
      "Reason": "Repair MNT-0172-028: Flowline corrosion pinhole leak (started 3 Oct 2026, still open)",
-     "Inspection": "INS-0172-0206"
+     "Inspection": "INS-0172-0206",
+     "Lat": 32.15584,
+     "Lon": -102.19308
     },
     {
      "Well": "WELL-0175",
@@ -768,7 +1229,9 @@
      "Wellhead above air (\u00b0C)": 0.4,
      "Recorded status": "active (out of date)",
      "Reason": "No recorded reason \u2014 suggest a site check",
-     "Inspection": "INS-0175-0204"
+     "Inspection": "INS-0175-0204",
+     "Lat": 32.1802,
+     "Lon": -102.1479
     }
    ]
   },
@@ -789,7 +1252,29 @@
    "MNT-0151-025",
    "Spill Response SOP"
   ],
-  "engine": "llm:google/gemma-4-26b-a4b-it:free -> feedback",
+  "engine": "llm:google/gemma-4-31b-it:free -> feedback",
+  "confidence": "medium",
+  "trace": {
+   "engine": "llm:google/gemma-4-31b-it:free -> feedback",
+   "steps": [
+    {
+     "tool": "correction",
+     "args": [
+      "The AI estimated the 24 Sep spill at WELL-0151 as 4.5 bbl. The field crew measured 5.4 bbl.",
+      "U-201",
+      "WELL-0151"
+     ]
+    }
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))",
+    "spill.reportable_bbl = 5 (Spill Response SOP \u00a73)",
+    "SR-01.hours = 24 (Spill Response SOP SR-01)",
+    "SR-03.days = 60 (Spill Response SOP SR-03)"
+   ],
+   "citations": 3
+  },
   "visual_data": null,
   "missing": [],
   "unexpected": [],
@@ -816,6 +1301,25 @@
    "T350 manual \u00a76"
   ],
   "engine": "llm:nvidia/nemotron-3-super-120b-a12b:free -> rca",
+  "confidence": "medium",
+  "trace": {
+   "engine": "llm:nvidia/nemotron-3-super-120b-a12b:free -> rca",
+   "steps": [
+    {
+     "tool": "rca",
+     "args": [
+      "Which wells in Northeast Block 7 need a root-cause analysis on their pump jack?",
+      "NE-07",
+      []
+     ]
+    }
+   ],
+   "rules": [
+    "T200.rca_repairs = 3 (T200 manual (maintenance escalation, RCA))",
+    "T350.rca_repairs = 3 (T350 manual (maintenance escalation, RCA))"
+   ],
+   "citations": 11
+  },
   "visual_data": {
    "type": "table",
    "columns": [
@@ -871,7 +1375,22 @@
   "citations": [
    "T350 manual (maintenance escalation, RCA)"
   ],
-  "engine": "llm:google/gemma-4-31b-it:free -> feedback",
+  "engine": "llm:google/gemma-4-26b-a4b-it:free -> feedback",
+  "confidence": "medium",
+  "trace": {
+   "engine": "llm:google/gemma-4-26b-a4b-it:free -> feedback",
+   "steps": [
+    {
+     "tool": "type_rule",
+     "args": [
+      "Note for all T350 wells: our team now wants a pump jack root-cause analysis after 2 repairs, not 3.",
+      "U-201"
+     ]
+    }
+   ],
+   "rules": [],
+   "citations": 1
+  },
   "visual_data": null,
   "missing": [],
   "unexpected": [],
@@ -900,6 +1419,25 @@
    "T350 manual \u00a76"
   ],
   "engine": "llm:nvidia/nemotron-3-super-120b-a12b:free -> rca",
+  "confidence": "medium",
+  "trace": {
+   "engine": "llm:nvidia/nemotron-3-super-120b-a12b:free -> rca",
+   "steps": [
+    {
+     "tool": "rca",
+     "args": [
+      "Which wells in Northeast Block 7 need a root-cause analysis on their pump jack?",
+      "NE-07",
+      []
+     ]
+    }
+   ],
+   "rules": [
+    "T200.rca_repairs = 3 (T200 manual (maintenance escalation, RCA))",
+    "T350.rca_repairs = 3 (T350 manual (maintenance escalation, RCA))"
+   ],
+   "citations": 13
+  },
   "visual_data": {
    "type": "table",
    "columns": [
@@ -959,56 +1497,41 @@
   "id": "Q15a",
   "user": "Jessica Reed",
   "question": "Is WELL-0164 producing oil right now?",
-  "answer": "**WELL-0164 is producing oil** (as of its latest inspection).\n\nLatest inspection INS-0164-0205 on 15 Oct 2026, by manual, by Tyler Hughes. Wellhead 41.0 \u00b0C vs air 19.9 \u00b0C: 21.1 \u00b0C warmer, at/above the T200 limit of 15 \u00b0C.\n\n\u26a0 This reading was corrected by Michael Turner: wellhead_temp_c 24.0 \u2192 41.0 (The 15 Oct reading for WELL-0164 is wrong. The handheld thermal gun used in that inspection was faulty; the field crew re-measured the wellhead at 41.0 \u00b0C.). Original kept for reference.\n\nInspector note on that inspection: \"Pump jack not moving.\" \u2014 this disagrees with the corrected reading; please confirm.",
-  "visual": "card",
+  "answer": "Noted for everyone: \"Current production status of WELL-0164\" \u2014 recorded as shared knowledge about WELL-0164 from Jessica Reed (confirmed by data).",
+  "visual": null,
   "citations": [
-   "INS-0164-0205",
-   "T200 manual",
-   "memory_corrections#11"
+   "INS-0164-0205"
   ],
   "engine": "llm:nvidia/nemotron-3-super-120b-a12b:free -> status",
-  "visual_data": {
-   "type": "card",
-   "data": {
-    "asset_id": "WELL-0164",
-    "well_type": "T200",
-    "area": "Northeast Block 8",
-    "producing": true,
-    "last_inspection_id": "INS-0164-0205",
-    "inspected_at": "2026-10-15T11:45:00Z",
-    "inspector": "Tyler Hughes",
-    "method": "manual",
-    "wellhead_c": 41.0,
-    "ambient_c": 19.9,
-    "delta_c": 21.1,
-    "threshold_c": 15.0,
-    "recorded_status": "active",
-    "recorded_status_stale": false,
-    "inspector_note": "Pump jack not moving.",
-    "reasons": [],
-    "corrections": [
-     {
-      "source": "memory_corrections#11",
-      "field": "wellhead_temp_c",
-      "original": "24.0",
-      "corrected": "41.0",
-      "by": "Michael Turner",
-      "reason": "The 15 Oct reading for WELL-0164 is wrong. The handheld thermal gun used in that inspection was faulty; the field crew re-measured the wellhead at 41.0 \u00b0C."
-     }
-    ],
-    "shared_facts": [],
-    "lat": 32.1452,
-    "lon": -102.1788,
-    "citations": [
-     "INS-0164-0205",
-     "T200 manual"
-    ]
-   }
+  "confidence": "medium",
+  "trace": {
+   "engine": "llm:nvidia/nemotron-3-super-120b-a12b:free -> status",
+   "steps": [
+    {
+     "tool": "statement",
+     "args": [
+      "Current production status of WELL-0164",
+      "U-202",
+      "WELL-0164"
+     ]
+    }
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
+   ],
+   "citations": 1
   },
-  "missing": [],
+  "visual_data": null,
+  "missing": [
+   "is producing",
+   "41.0",
+   "corrected by Michael Turner",
+   "Pump jack not moving"
+  ],
   "unexpected": [],
-  "visual_ok": true,
-  "pass": true
+  "visual_ok": false,
+  "pass": false
  },
  {
   "id": "Q15b",
@@ -1022,7 +1545,26 @@
    "INS-0151-0201",
    "MNT-0151-025"
   ],
-  "engine": "llm:nvidia/nemotron-3-super-120b-a12b:free -> reportable",
+  "engine": "llm:google/gemma-4-26b-a4b-it:free -> reportable",
+  "confidence": "medium",
+  "trace": {
+   "engine": "llm:google/gemma-4-26b-a4b-it:free -> reportable",
+   "steps": [
+    {
+     "tool": "reportable",
+     "args": [
+      "Which spills in Northeast Block 8 in the last 90 days were reportable to the regulator?",
+      "NE-08"
+     ]
+    }
+   ],
+   "rules": [
+    "spill.reportable_bbl = 5 (Spill Response SOP \u00a73)",
+    "SR-01.hours = 24 (Spill Response SOP SR-01)",
+    "SR-03.days = 60 (Spill Response SOP SR-03)"
+   ],
+   "citations": 3
+  },
   "visual_data": {
    "type": "table",
    "columns": [
@@ -1055,6 +1597,25 @@
    "INS-0007-0203"
   ],
   "engine": "llm:google/gemma-4-26b-a4b-it:free -> feedback",
+  "confidence": "medium",
+  "trace": {
+   "engine": "llm:google/gemma-4-26b-a4b-it:free -> feedback",
+   "steps": [
+    {
+     "tool": "statement",
+     "args": [
+      "FYI for everyone: WELL-0007 will be shut in from 17 Oct for a 10-day planned workover.",
+      "U-102",
+      "WELL-0007"
+     ]
+    }
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
+   ],
+   "citations": 1
+  },
   "visual_data": null,
   "missing": [],
   "unexpected": [],
@@ -1068,9 +1629,23 @@
   "answer": "**Yes, downtime is planned for WELL-0007:**\n- FYI for everyone: WELL-0007 will be shut in from 17 Oct for a 10-day planned workover. \u2014 according to Jake Morales (2026-10-19, shared note)",
   "visual": null,
   "citations": [
-   "memory_well_facts#21"
+   "memory_well_facts#2"
   ],
-  "engine": "llm:google/gemma-4-31b-it:free -> planned",
+  "engine": "llm:nvidia/nemotron-3-super-120b-a12b:free -> planned",
+  "confidence": "medium",
+  "trace": {
+   "engine": "llm:nvidia/nemotron-3-super-120b-a12b:free -> planned",
+   "steps": [
+    {
+     "tool": "planned",
+     "args": [
+      "WELL-0007"
+     ]
+    }
+   ],
+   "rules": [],
+   "citations": 1
+  },
   "visual_data": null,
   "missing": [],
   "unexpected": [],
@@ -1084,7 +1659,14 @@
   "answer": "I have no earlier conversation with Jessica Reed that mentions wells, so I can't tell which wells you mean. (Private memory is per user; I don't use other users' chats.) Which wells do you mean?",
   "visual": null,
   "citations": [],
-  "engine": "llm:google/gemma-4-26b-a4b-it:free -> costs",
+  "engine": "llm:google/gemma-4-31b-it:free -> memory_recall",
+  "confidence": "medium",
+  "trace": {
+   "engine": "llm:google/gemma-4-31b-it:free -> memory_recall",
+   "steps": [],
+   "rules": [],
+   "citations": 0
+  },
   "visual_data": null,
   "missing": [],
   "unexpected": [],
@@ -1100,7 +1682,26 @@
   "citations": [
    "INS-0175-0204"
   ],
-  "engine": "llm:nvidia/nemotron-3-super-120b-a12b:free -> feedback",
+  "engine": "llm:google/gemma-4-26b-a4b-it:free -> feedback",
+  "confidence": "medium",
+  "trace": {
+   "engine": "llm:google/gemma-4-26b-a4b-it:free -> feedback",
+   "steps": [
+    {
+     "tool": "statement",
+     "args": [
+      "WELL-0175 has been shut in for planned work since 14 Oct.",
+      "U-201",
+      "WELL-0175"
+     ]
+    }
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
+   ],
+   "citations": 1
+  },
   "visual_data": null,
   "missing": [],
   "unexpected": [],
@@ -1116,7 +1717,26 @@
   "citations": [
    "INS-0175-0204"
   ],
-  "engine": "llm:nvidia/nemotron-3-super-120b-a12b:free -> feedback",
+  "engine": "llm:google/gemma-4-26b-a4b-it:free -> feedback",
+  "confidence": "conflict",
+  "trace": {
+   "engine": "llm:google/gemma-4-26b-a4b-it:free -> feedback",
+   "steps": [
+    {
+     "tool": "statement",
+     "args": [
+      "WELL-0175 is running fine.",
+      "U-204",
+      "WELL-0175"
+     ]
+    }
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
+   ],
+   "citations": 1
+  },
   "visual_data": null,
   "missing": [],
   "unexpected": [],
@@ -1132,7 +1752,26 @@
   "citations": [
    "INS-0001-0203"
   ],
-  "engine": "llm:nvidia/nemotron-3-super-120b-a12b:free -> feedback",
+  "engine": "llm:google/gemma-4-26b-a4b-it:free -> feedback",
+  "confidence": "conflict",
+  "trace": {
+   "engine": "llm:google/gemma-4-26b-a4b-it:free -> feedback",
+   "steps": [
+    {
+     "tool": "statement",
+     "args": [
+      "WELL-0001 is back online since 14 Oct.",
+      "U-102",
+      "WELL-0001"
+     ]
+    }
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
+   ],
+   "citations": 1
+  },
   "visual_data": null,
   "missing": [],
   "unexpected": [],
@@ -1151,7 +1790,22 @@
    "CTX-0101-003",
    "MNT-0101-029"
   ],
-  "engine": "llm:google/gemma-4-31b-it:free -> spill_dispute",
+  "engine": "llm:google/gemma-4-26b-a4b-it:free -> spill_dispute",
+  "confidence": "conflict",
+  "trace": {
+   "engine": "llm:google/gemma-4-26b-a4b-it:free -> spill_dispute",
+   "steps": [
+    {
+     "tool": "spill_dispute",
+     "args": [
+      "WELL-0101",
+      "Was the spill on 2026-08-20 at WELL-0101 real oil?"
+     ]
+    }
+   ],
+   "rules": [],
+   "citations": 4
+  },
   "visual_data": {
    "type": "table",
    "columns": [

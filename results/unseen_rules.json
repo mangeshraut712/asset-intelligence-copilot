@@ -1,0 +1,5356 @@
+[
+ {
+  "id": "U1",
+  "user": "Emily Carter",
+  "question": "Is WELL-0050 producing oil right now?",
+  "answer": "**WELL-0050 is producing oil** (as of its latest inspection).\n\nLatest inspection INS-0050-0206 on 15 Oct 2026, by drone, by Sarah Mitchell. Wellhead 48.5 \u00b0C vs air 25.0 \u00b0C: 23.5 \u00b0C warmer, at/above the T200 limit of 15 \u00b0C.",
+  "visual": "card",
+  "citations": [
+   "INS-0050-0206",
+   "T200 manual"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "status",
+     "args": [
+      "WELL-0050"
+     ]
+    }
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
+   ],
+   "citations": 2
+  },
+  "visual_data": {
+   "type": "card",
+   "data": {
+    "asset_id": "WELL-0050",
+    "well_type": "T200",
+    "area": "Southwest Block 23",
+    "producing": true,
+    "last_inspection_id": "INS-0050-0206",
+    "inspected_at": "2026-10-15T14:15:00Z",
+    "inspector": "Sarah Mitchell",
+    "method": "drone",
+    "wellhead_c": 48.5,
+    "ambient_c": 25.0,
+    "delta_c": 23.5,
+    "threshold_c": 15.0,
+    "recorded_status": "active",
+    "recorded_status_stale": false,
+    "inspector_note": "",
+    "reasons": [],
+    "corrections": [],
+    "shared_facts": [],
+    "lat": 31.84871,
+    "lon": -102.5377,
+    "citations": [
+     "INS-0050-0206",
+     "T200 manual"
+    ]
+   }
+  },
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U2",
+  "user": "Emily Carter",
+  "question": "Is WELL-0013 producing oil right now?",
+  "answer": "**WELL-0013 is not producing oil** (as of its latest inspection).\n\nLatest inspection INS-0013-0206 on 15 Oct 2026, by drone, by Ryan Brooks. Wellhead 21.0 \u00b0C vs air 19.8 \u00b0C: 1.2 \u00b0C warmer, below the T350 limit of 20 \u00b0C.\n\nReason: no recorded reason in repairs or notes. Suggest a site check.\n\nThe recorded status still says **active**, which is out of date.",
+  "visual": "card",
+  "citations": [
+   "INS-0013-0206",
+   "T350 manual"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "status",
+     "args": [
+      "WELL-0013"
+     ]
+    }
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
+   ],
+   "citations": 2
+  },
+  "visual_data": {
+   "type": "card",
+   "data": {
+    "asset_id": "WELL-0013",
+    "well_type": "T350",
+    "area": "Southwest Block 23",
+    "producing": false,
+    "last_inspection_id": "INS-0013-0206",
+    "inspected_at": "2026-10-15T15:45:00Z",
+    "inspector": "Ryan Brooks",
+    "method": "drone",
+    "wellhead_c": 21.0,
+    "ambient_c": 19.8,
+    "delta_c": 1.2,
+    "threshold_c": 20.0,
+    "recorded_status": "active",
+    "recorded_status_stale": true,
+    "inspector_note": "",
+    "reasons": [],
+    "corrections": [],
+    "shared_facts": [],
+    "lat": 31.86965,
+    "lon": -102.50142,
+    "citations": [
+     "INS-0013-0206",
+     "T350 manual"
+    ]
+   }
+  },
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U3",
+  "user": "Emily Carter",
+  "question": "Is WELL-0172 producing oil right now?",
+  "answer": "**WELL-0172 is not producing oil** (as of its latest inspection).\n\nLatest inspection INS-0172-0206 on 15 Oct 2026, by drone, by Jessica Reed. Wellhead 27.2 \u00b0C vs air 21.5 \u00b0C: 5.7 \u00b0C warmer, below the T200 limit of 15 \u00b0C.\n\nInspector note on that inspection: \"No stroke observed during flight.\"\n\nReason: Repair MNT-0172-028: Flowline corrosion pinhole leak (started 3 Oct 2026, still open)\n\nThe recorded status still says **active**, which is out of date.",
+  "visual": "card",
+  "citations": [
+   "INS-0172-0206",
+   "T200 manual",
+   "MNT-0172-028"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "status",
+     "args": [
+      "WELL-0172"
+     ]
+    }
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
+   ],
+   "citations": 3
+  },
+  "visual_data": {
+   "type": "card",
+   "data": {
+    "asset_id": "WELL-0172",
+    "well_type": "T200",
+    "area": "Northeast Block 8",
+    "producing": false,
+    "last_inspection_id": "INS-0172-0206",
+    "inspected_at": "2026-10-15T07:45:00Z",
+    "inspector": "Jessica Reed",
+    "method": "drone",
+    "wellhead_c": 27.2,
+    "ambient_c": 21.5,
+    "delta_c": 5.7,
+    "threshold_c": 15.0,
+    "recorded_status": "active",
+    "recorded_status_stale": true,
+    "inspector_note": "No stroke observed during flight.",
+    "reasons": [
+     "Repair MNT-0172-028: Flowline corrosion pinhole leak (started 3 Oct 2026, still open)"
+    ],
+    "corrections": [],
+    "shared_facts": [],
+    "lat": 32.15584,
+    "lon": -102.19308,
+    "citations": [
+     "INS-0172-0206",
+     "T200 manual",
+     "MNT-0172-028"
+    ]
+   }
+  },
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U4",
+  "user": "Emily Carter",
+  "question": "Is WELL-0120 producing oil right now?",
+  "answer": "**WELL-0120 is producing oil** (as of its latest inspection).\n\nLatest inspection INS-0120-0207 on 15 Oct 2026, by drone, by Ashley Bennett. Wellhead 52.7 \u00b0C vs air 21.2 \u00b0C: 31.5 \u00b0C warmer, at/above the T350 limit of 20 \u00b0C.",
+  "visual": "card",
+  "citations": [
+   "INS-0120-0207",
+   "T350 manual"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "status",
+     "args": [
+      "WELL-0120"
+     ]
+    }
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
+   ],
+   "citations": 2
+  },
+  "visual_data": {
+   "type": "card",
+   "data": {
+    "asset_id": "WELL-0120",
+    "well_type": "T350",
+    "area": "Northeast Block 7",
+    "producing": true,
+    "last_inspection_id": "INS-0120-0207",
+    "inspected_at": "2026-10-15T10:30:00Z",
+    "inspector": "Ashley Bennett",
+    "method": "drone",
+    "wellhead_c": 52.7,
+    "ambient_c": 21.2,
+    "delta_c": 31.5,
+    "threshold_c": 20.0,
+    "recorded_status": "active",
+    "recorded_status_stale": false,
+    "inspector_note": "",
+    "reasons": [],
+    "corrections": [],
+    "shared_facts": [],
+    "lat": 32.11859,
+    "lon": -102.19184,
+    "citations": [
+     "INS-0120-0207",
+     "T350 manual"
+    ]
+   }
+  },
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U5",
+  "user": "Emily Carter",
+  "question": "Which wells in Southwest Block 23 are not producing oil right now?",
+  "answer": "**2 wells in Southwest Block 23 are not producing oil right now** (latest inspection per well): WELL-0001, WELL-0013.",
+  "visual": "table",
+  "citations": [
+   "INS-0001-0203",
+   "INS-0013-0206",
+   "T200/T350 manual production rule"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "area_status",
+     "args": [
+      "SW-23"
+     ]
+    }
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
+   ],
+   "citations": 3
+  },
+  "visual_data": {
+   "type": "table",
+   "columns": [
+    "Well",
+    "Type",
+    "Last inspected",
+    "Wellhead above air (\u00b0C)",
+    "Recorded status",
+    "Reason",
+    "Inspection"
+   ],
+   "rows": [
+    {
+     "Well": "WELL-0001",
+     "Type": "T200",
+     "Last inspected": "15 Oct 2026",
+     "Wellhead above air (\u00b0C)": 3.2,
+     "Recorded status": "active (out of date)",
+     "Reason": "Note CTX-0001-003 by Jake Morales: Well shut in from 7 Oct for planned rod string replacement. Work order not yet in the maintenance system. Expected back online around 20 Oct.",
+     "Inspection": "INS-0001-0203",
+     "Lat": 31.85425,
+     "Lon": -102.50232
+    },
+    {
+     "Well": "WELL-0013",
+     "Type": "T350",
+     "Last inspected": "15 Oct 2026",
+     "Wellhead above air (\u00b0C)": 1.2,
+     "Recorded status": "active (out of date)",
+     "Reason": "No recorded reason \u2014 suggest a site check",
+     "Inspection": "INS-0013-0206",
+     "Lat": 31.86965,
+     "Lon": -102.50142
+    }
+   ]
+  },
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U6",
+  "user": "Emily Carter",
+  "question": "Which wells in Southwest Block 24 are not producing oil right now?",
+  "answer": "**3 wells in Southwest Block 24 are not producing oil right now** (latest inspection per well): WELL-0060, WELL-0066, WELL-0079.",
+  "visual": "table",
+  "citations": [
+   "INS-0060-0207",
+   "INS-0066-0205",
+   "INS-0079-0200",
+   "T200/T350 manual production rule"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "area_status",
+     "args": [
+      "SW-24"
+     ]
+    }
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
+   ],
+   "citations": 4
+  },
+  "visual_data": {
+   "type": "table",
+   "columns": [
+    "Well",
+    "Type",
+    "Last inspected",
+    "Wellhead above air (\u00b0C)",
+    "Recorded status",
+    "Reason",
+    "Inspection"
+   ],
+   "rows": [
+    {
+     "Well": "WELL-0060",
+     "Type": "T200",
+     "Last inspected": "15 Oct 2026",
+     "Wellhead above air (\u00b0C)": 4.9,
+     "Recorded status": "active (out of date)",
+     "Reason": "No recorded reason. Inspector noted \"No stroke observed during flight.\" \u2014 suggest a site check",
+     "Inspection": "INS-0060-0207",
+     "Lat": 31.79387,
+     "Lon": -102.49462
+    },
+    {
+     "Well": "WELL-0066",
+     "Type": "T200",
+     "Last inspected": "15 Oct 2026",
+     "Wellhead above air (\u00b0C)": 1.3,
+     "Recorded status": "active (out of date)",
+     "Reason": "No recorded reason \u2014 suggest a site check",
+     "Inspection": "INS-0066-0205",
+     "Lat": 31.8241,
+     "Lon": -102.43901
+    },
+    {
+     "Well": "WELL-0079",
+     "Type": "T350",
+     "Last inspected": "15 Oct 2026",
+     "Wellhead above air (\u00b0C)": 4.0,
+     "Recorded status": "active (out of date)",
+     "Reason": "No recorded reason. Inspector noted \"Wellhead cold to touch.\" \u2014 suggest a site check",
+     "Inspection": "INS-0079-0200",
+     "Lat": 31.79665,
+     "Lon": -102.44517
+    }
+   ]
+  },
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U7",
+  "user": "Emily Carter",
+  "question": "Which wells in Northeast Block 7 are not producing oil right now?",
+  "answer": "**6 wells in Northeast Block 7 are not producing oil right now** (latest inspection per well): WELL-0101, WELL-0110, WELL-0115, WELL-0121, WELL-0123, WELL-0128.",
+  "visual": "table",
+  "citations": [
+   "INS-0101-0205",
+   "INS-0110-0205",
+   "INS-0115-0208",
+   "INS-0121-0206",
+   "INS-0123-0096",
+   "INS-0128-0203",
+   "T200/T350 manual production rule"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "area_status",
+     "args": [
+      "NE-07"
+     ]
+    }
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
+   ],
+   "citations": 7
+  },
+  "visual_data": {
+   "type": "table",
+   "columns": [
+    "Well",
+    "Type",
+    "Last inspected",
+    "Wellhead above air (\u00b0C)",
+    "Recorded status",
+    "Reason",
+    "Inspection"
+   ],
+   "rows": [
+    {
+     "Well": "WELL-0101",
+     "Type": "T200",
+     "Last inspected": "15 Oct 2026",
+     "Wellhead above air (\u00b0C)": 1.4,
+     "Recorded status": "active (out of date)",
+     "Reason": "No recorded reason \u2014 suggest a site check",
+     "Inspection": "INS-0101-0205",
+     "Lat": 32.12969,
+     "Lon": -102.22385
+    },
+    {
+     "Well": "WELL-0110",
+     "Type": "T200",
+     "Last inspected": "15 Oct 2026",
+     "Wellhead above air (\u00b0C)": 0.3,
+     "Recorded status": "active (out of date)",
+     "Reason": "No recorded reason. Inspector noted \"No stroke observed during flight.\" \u2014 suggest a site check",
+     "Inspection": "INS-0110-0205",
+     "Lat": 32.09364,
+     "Lon": -102.21597
+    },
+    {
+     "Well": "WELL-0115",
+     "Type": "T200",
+     "Last inspected": "15 Oct 2026",
+     "Wellhead above air (\u00b0C)": 3.8,
+     "Recorded status": "active (out of date)",
+     "Reason": "Repair MNT-0115-037: Flowline corrosion pinhole leak (started 10 Oct 2026, still open)",
+     "Inspection": "INS-0115-0208",
+     "Lat": 32.12174,
+     "Lon": -102.22071
+    },
+    {
+     "Well": "WELL-0121",
+     "Type": "T200",
+     "Last inspected": "15 Oct 2026",
+     "Wellhead above air (\u00b0C)": 1.0,
+     "Recorded status": "down",
+     "Reason": "Repair MNT-0121-035: Prime mover failure (started 9 Oct 2026, still open)",
+     "Inspection": "INS-0121-0206",
+     "Lat": 32.14465,
+     "Lon": -102.20667
+    },
+    {
+     "Well": "WELL-0123",
+     "Type": "T200",
+     "Last inspected": "15 Oct 2026",
+     "Wellhead above air (\u00b0C)": 0.3,
+     "Recorded status": "active (out of date)",
+     "Reason": "Repair MNT-0123-015: Downhole pump stuck (started 9 Oct 2026, still open)",
+     "Inspection": "INS-0123-0096",
+     "Lat": 32.11597,
+     "Lon": -102.17947
+    },
+    {
+     "Well": "WELL-0128",
+     "Type": "T350",
+     "Last inspected": "15 Oct 2026",
+     "Wellhead above air (\u00b0C)": 5.5,
+     "Recorded status": "active (out of date)",
+     "Reason": "No recorded reason. Inspector noted \"No stroke observed during flight.\" \u2014 suggest a site check",
+     "Inspection": "INS-0128-0203",
+     "Lat": 32.10752,
+     "Lon": -102.17395
+    }
+   ]
+  },
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U8",
+  "user": "Emily Carter",
+  "question": "How many wells across the whole field are not producing oil right now?",
+  "answer": "**15 wells not producing oil right now \u2014 the whole field.**\n\n- WELL-0001: 3.2 \u00b0C above air at INS-0001-0203 (15 Oct 2026), recorded status active\n- WELL-0013: 1.2 \u00b0C above air at INS-0013-0206 (15 Oct 2026), recorded status active\n- WELL-0060: 4.9 \u00b0C above air at INS-0060-0207 (15 Oct 2026), recorded status active\n- WELL-0066: 1.3 \u00b0C above air at INS-0066-0205 (15 Oct 2026), recorded status active\n- WELL-0079: 4.0 \u00b0C above air at INS-0079-0200 (15 Oct 2026), recorded status active\n- WELL-0101: 1.4 \u00b0C above air at INS-0101-0205 (15 Oct 2026), recorded status active\n- WELL-0110: 0.3 \u00b0C above air at INS-0110-0205 (15 Oct 2026), recorded status active\n- WELL-0115: 3.8 \u00b0C above air at INS-0115-0208 (15 Oct 2026), recorded status active\n- WELL-0121: 1.0 \u00b0C above air at INS-0121-0206 (15 Oct 2026), recorded status down\n- WELL-0123: 0.3 \u00b0C above air at INS-0123-0096 (15 Oct 2026), recorded status active\n- WELL-0128: 5.5 \u00b0C above air at INS-0128-0203 (15 Oct 2026), recorded status active\n- WELL-0164: 4.1 \u00b0C above air at INS-0164-0205 (15 Oct 2026), recorded status active\n- WELL-0170: 2.9 \u00b0C above air at INS-0170-0206 (15 Oct 2026), recorded status down\n- WELL-0172: 5.7 \u00b0C above air at INS-0172-0206 (15 Oct 2026), recorded status active\n- WELL-0175: 0.4 \u00b0C above air at INS-0175-0204 (15 Oct 2026), recorded status active\n\n_Rules applied: T200: producing when wellhead \u2212 air \u2265 15 \u00b0C (T200 manual); T350: producing when wellhead \u2212 air \u2265 20 \u00b0C (T350 manual)._",
+  "visual": "table",
+  "citations": [
+   "INS-0001-0203",
+   "INS-0013-0206",
+   "INS-0060-0207",
+   "INS-0066-0205",
+   "INS-0079-0200",
+   "INS-0101-0205",
+   "INS-0110-0205",
+   "INS-0115-0208",
+   "INS-0121-0206",
+   "INS-0123-0096",
+   "INS-0128-0203",
+   "INS-0164-0205",
+   "INS-0170-0206",
+   "INS-0172-0206",
+   "INS-0175-0204"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "run_query",
+     "args": {
+      "metric": "not_producing",
+      "scope": {},
+      "window": null,
+      "group_by": "well",
+      "top": null,
+      "filters": {}
+     },
+     "result": "15 rows, total 15.0"
+    }
+   ],
+   "rules": [
+    "T200: producing when wellhead \u2212 air \u2265 15 \u00b0C (T200 manual)",
+    "T350: producing when wellhead \u2212 air \u2265 20 \u00b0C (T350 manual)"
+   ],
+   "citations": 15
+  },
+  "visual_data": {
+   "type": "table",
+   "columns": [
+    "Well",
+    "Type",
+    "Area",
+    "Wells not producing oil right now",
+    "Evidence"
+   ],
+   "rows": [
+    {
+     "Well": "WELL-0001",
+     "Type": "T200",
+     "Area": "Southwest Block 23",
+     "Wells not producing oil right now": 1.0,
+     "Evidence": "INS-0001-0203",
+     "Lat": 31.85425,
+     "Lon": -102.50232
+    },
+    {
+     "Well": "WELL-0013",
+     "Type": "T350",
+     "Area": "Southwest Block 23",
+     "Wells not producing oil right now": 1.0,
+     "Evidence": "INS-0013-0206",
+     "Lat": 31.86965,
+     "Lon": -102.50142
+    },
+    {
+     "Well": "WELL-0060",
+     "Type": "T200",
+     "Area": "Southwest Block 24",
+     "Wells not producing oil right now": 1.0,
+     "Evidence": "INS-0060-0207",
+     "Lat": 31.79387,
+     "Lon": -102.49462
+    },
+    {
+     "Well": "WELL-0066",
+     "Type": "T200",
+     "Area": "Southwest Block 24",
+     "Wells not producing oil right now": 1.0,
+     "Evidence": "INS-0066-0205",
+     "Lat": 31.8241,
+     "Lon": -102.43901
+    },
+    {
+     "Well": "WELL-0079",
+     "Type": "T350",
+     "Area": "Southwest Block 24",
+     "Wells not producing oil right now": 1.0,
+     "Evidence": "INS-0079-0200",
+     "Lat": 31.79665,
+     "Lon": -102.44517
+    },
+    {
+     "Well": "WELL-0101",
+     "Type": "T200",
+     "Area": "Northeast Block 7",
+     "Wells not producing oil right now": 1.0,
+     "Evidence": "INS-0101-0205",
+     "Lat": 32.12969,
+     "Lon": -102.22385
+    },
+    {
+     "Well": "WELL-0110",
+     "Type": "T200",
+     "Area": "Northeast Block 7",
+     "Wells not producing oil right now": 1.0,
+     "Evidence": "INS-0110-0205",
+     "Lat": 32.09364,
+     "Lon": -102.21597
+    },
+    {
+     "Well": "WELL-0115",
+     "Type": "T200",
+     "Area": "Northeast Block 7",
+     "Wells not producing oil right now": 1.0,
+     "Evidence": "INS-0115-0208",
+     "Lat": 32.12174,
+     "Lon": -102.22071
+    },
+    {
+     "Well": "WELL-0121",
+     "Type": "T200",
+     "Area": "Northeast Block 7",
+     "Wells not producing oil right now": 1.0,
+     "Evidence": "INS-0121-0206",
+     "Lat": 32.14465,
+     "Lon": -102.20667
+    },
+    {
+     "Well": "WELL-0123",
+     "Type": "T200",
+     "Area": "Northeast Block 7",
+     "Wells not producing oil right now": 1.0,
+     "Evidence": "INS-0123-0096",
+     "Lat": 32.11597,
+     "Lon": -102.17947
+    },
+    {
+     "Well": "WELL-0128",
+     "Type": "T350",
+     "Area": "Northeast Block 7",
+     "Wells not producing oil right now": 1.0,
+     "Evidence": "INS-0128-0203",
+     "Lat": 32.10752,
+     "Lon": -102.17395
+    },
+    {
+     "Well": "WELL-0164",
+     "Type": "T200",
+     "Area": "Northeast Block 8",
+     "Wells not producing oil right now": 1.0,
+     "Evidence": "INS-0164-0205",
+     "Lat": 32.1452,
+     "Lon": -102.1788
+    },
+    {
+     "Well": "WELL-0170",
+     "Type": "T200",
+     "Area": "Northeast Block 8",
+     "Wells not producing oil right now": 1.0,
+     "Evidence": "INS-0170-0206",
+     "Lat": 32.15939,
+     "Lon": -102.1766
+    },
+    {
+     "Well": "WELL-0172",
+     "Type": "T200",
+     "Area": "Northeast Block 8",
+     "Wells not producing oil right now": 1.0,
+     "Evidence": "INS-0172-0206",
+     "Lat": 32.15584,
+     "Lon": -102.19308
+    },
+    {
+     "Well": "WELL-0175",
+     "Type": "T200",
+     "Area": "Northeast Block 8",
+     "Wells not producing oil right now": 1.0,
+     "Evidence": "INS-0175-0204",
+     "Lat": 32.1802,
+     "Lon": -102.1479
+    }
+   ]
+  },
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U9",
+  "user": "Emily Carter",
+  "question": "Which wells have an out-of-date recorded status?",
+  "answer": "**21 wells with an out-of-date recorded status \u2014 the whole field.**\n\n- WELL-0001: recorded **active**, but INS-0001-0203 (15 Oct 2026) shows not producing (3.2 \u00b0C above air)\n- WELL-0002: recorded **down**, but INS-0002-0141 (15 Oct 2026) shows producing (30.5 \u00b0C above air)\n- WELL-0013: recorded **active**, but INS-0013-0206 (15 Oct 2026) shows not producing (1.2 \u00b0C above air)\n- WELL-0060: recorded **active**, but INS-0060-0207 (15 Oct 2026) shows not producing (4.9 \u00b0C above air)\n- WELL-0061: recorded **down**, but INS-0061-0208 (15 Oct 2026) shows producing (33.0 \u00b0C above air)\n- WELL-0066: recorded **active**, but INS-0066-0205 (15 Oct 2026) shows not producing (1.3 \u00b0C above air)\n- WELL-0071: recorded **down**, but INS-0071-0205 (15 Oct 2026) shows producing (31.9 \u00b0C above air)\n- WELL-0079: recorded **active**, but INS-0079-0200 (15 Oct 2026) shows not producing (4.0 \u00b0C above air)\n- WELL-0084: recorded **down**, but INS-0084-0207 (15 Oct 2026) shows producing (31.7 \u00b0C above air)\n- WELL-0093: recorded **down**, but INS-0093-0203 (15 Oct 2026) shows producing (32.2 \u00b0C above air)\n- WELL-0101: recorded **active**, but INS-0101-0205 (15 Oct 2026) shows not producing (1.4 \u00b0C above air)\n- WELL-0109: recorded **down**, but INS-0109-0204 (15 Oct 2026) shows producing (36.5 \u00b0C above air)\n- WELL-0110: recorded **active**, but INS-0110-0205 (15 Oct 2026) shows not producing (0.3 \u00b0C above air)\n- WELL-0115: recorded **active**, but INS-0115-0208 (15 Oct 2026) shows not producing (3.8 \u00b0C above air)\n- WELL-0123: recorded **active**, but INS-0123-0096 (15 Oct 2026) shows not producing (0.3 \u00b0C above air)\n- WELL-0128: recorded **active**, but INS-0128-0203 (15 Oct 2026) shows not producing (5.5 \u00b0C above air)\n- WELL-0164: recorded **active**, but INS-0164-0205 (15 Oct 2026) shows not producing (4.1 \u00b0C above air)\n- WELL-0172: recorded **active**, but INS-0172-0206 (15 Oct 2026) shows not producing (5.7 \u00b0C above air)\n- WELL-0175: recorded **active**, but INS-0175-0204 (15 Oct 2026) shows not producing (0.4 \u00b0C above air)\n- WELL-0188: recorded **down**, but INS-0188-0205 (15 Oct 2026) shows producing (29.2 \u00b0C above air)\n- WELL-0199: recorded **down**, but INS-0199-0205 (15 Oct 2026) shows producing (27.3 \u00b0C above air)\n\n_Rules applied: T200: producing when wellhead \u2212 air \u2265 15 \u00b0C (T200 manual); T350: producing when wellhead \u2212 air \u2265 20 \u00b0C (T350 manual); recorded_status is refreshed monthly and can be stale; the latest inspection is the truth (Dataset Guide)._",
+  "visual": "table",
+  "citations": [
+   "INS-0001-0203",
+   "INS-0002-0141",
+   "INS-0013-0206",
+   "INS-0060-0207",
+   "INS-0061-0208",
+   "INS-0066-0205",
+   "INS-0071-0205",
+   "INS-0079-0200",
+   "INS-0084-0207",
+   "INS-0093-0203",
+   "INS-0101-0205",
+   "INS-0109-0204",
+   "INS-0110-0205",
+   "INS-0115-0208",
+   "INS-0123-0096",
+   "INS-0128-0203",
+   "INS-0164-0205",
+   "INS-0172-0206",
+   "INS-0175-0204",
+   "INS-0188-0205",
+   "INS-0199-0205"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "run_query",
+     "args": {
+      "metric": "stale_status",
+      "scope": {},
+      "window": null,
+      "group_by": "well",
+      "top": null,
+      "filters": {}
+     },
+     "result": "21 rows, total 21.0"
+    }
+   ],
+   "rules": [
+    "T200: producing when wellhead \u2212 air \u2265 15 \u00b0C (T200 manual)",
+    "T350: producing when wellhead \u2212 air \u2265 20 \u00b0C (T350 manual)",
+    "recorded_status is refreshed monthly and can be stale; the latest inspection is the truth (Dataset Guide)"
+   ],
+   "citations": 21
+  },
+  "visual_data": {
+   "type": "table",
+   "columns": [
+    "Well",
+    "Type",
+    "Area",
+    "Wells with an out-of-date recorded status",
+    "Evidence"
+   ],
+   "rows": [
+    {
+     "Well": "WELL-0001",
+     "Type": "T200",
+     "Area": "Southwest Block 23",
+     "Wells with an out-of-date recorded status": 1.0,
+     "Evidence": "INS-0001-0203",
+     "Lat": 31.85425,
+     "Lon": -102.50232
+    },
+    {
+     "Well": "WELL-0002",
+     "Type": "T200",
+     "Area": "Southwest Block 23",
+     "Wells with an out-of-date recorded status": 1.0,
+     "Evidence": "INS-0002-0141",
+     "Lat": 31.83717,
+     "Lon": -102.49042
+    },
+    {
+     "Well": "WELL-0013",
+     "Type": "T350",
+     "Area": "Southwest Block 23",
+     "Wells with an out-of-date recorded status": 1.0,
+     "Evidence": "INS-0013-0206",
+     "Lat": 31.86965,
+     "Lon": -102.50142
+    },
+    {
+     "Well": "WELL-0060",
+     "Type": "T200",
+     "Area": "Southwest Block 24",
+     "Wells with an out-of-date recorded status": 1.0,
+     "Evidence": "INS-0060-0207",
+     "Lat": 31.79387,
+     "Lon": -102.49462
+    },
+    {
+     "Well": "WELL-0061",
+     "Type": "T200",
+     "Area": "Southwest Block 24",
+     "Wells with an out-of-date recorded status": 1.0,
+     "Evidence": "INS-0061-0208",
+     "Lat": 31.8011,
+     "Lon": -102.47371
+    },
+    {
+     "Well": "WELL-0066",
+     "Type": "T200",
+     "Area": "Southwest Block 24",
+     "Wells with an out-of-date recorded status": 1.0,
+     "Evidence": "INS-0066-0205",
+     "Lat": 31.8241,
+     "Lon": -102.43901
+    },
+    {
+     "Well": "WELL-0071",
+     "Type": "T200",
+     "Area": "Southwest Block 24",
+     "Wells with an out-of-date recorded status": 1.0,
+     "Evidence": "INS-0071-0205",
+     "Lat": 31.78587,
+     "Lon": -102.48304
+    },
+    {
+     "Well": "WELL-0079",
+     "Type": "T350",
+     "Area": "Southwest Block 24",
+     "Wells with an out-of-date recorded status": 1.0,
+     "Evidence": "INS-0079-0200",
+     "Lat": 31.79665,
+     "Lon": -102.44517
+    },
+    {
+     "Well": "WELL-0084",
+     "Type": "T200",
+     "Area": "Southwest Block 24",
+     "Wells with an out-of-date recorded status": 1.0,
+     "Evidence": "INS-0084-0207",
+     "Lat": 31.8059,
+     "Lon": -102.46964
+    },
+    {
+     "Well": "WELL-0093",
+     "Type": "T350",
+     "Area": "Southwest Block 24",
+     "Wells with an out-of-date recorded status": 1.0,
+     "Evidence": "INS-0093-0203",
+     "Lat": 31.82588,
+     "Lon": -102.46429
+    },
+    {
+     "Well": "WELL-0101",
+     "Type": "T200",
+     "Area": "Northeast Block 7",
+     "Wells with an out-of-date recorded status": 1.0,
+     "Evidence": "INS-0101-0205",
+     "Lat": 32.12969,
+     "Lon": -102.22385
+    },
+    {
+     "Well": "WELL-0109",
+     "Type": "T350",
+     "Area": "Northeast Block 7",
+     "Wells with an out-of-date recorded status": 1.0,
+     "Evidence": "INS-0109-0204",
+     "Lat": 32.09238,
+     "Lon": -102.20004
+    },
+    {
+     "Well": "WELL-0110",
+     "Type": "T200",
+     "Area": "Northeast Block 7",
+     "Wells with an out-of-date recorded status": 1.0,
+     "Evidence": "INS-0110-0205",
+     "Lat": 32.09364,
+     "Lon": -102.21597
+    },
+    {
+     "Well": "WELL-0115",
+     "Type": "T200",
+     "Area": "Northeast Block 7",
+     "Wells with an out-of-date recorded status": 1.0,
+     "Evidence": "INS-0115-0208",
+     "Lat": 32.12174,
+     "Lon": -102.22071
+    },
+    {
+     "Well": "WELL-0123",
+     "Type": "T200",
+     "Area": "Northeast Block 7",
+     "Wells with an out-of-date recorded status": 1.0,
+     "Evidence": "INS-0123-0096",
+     "Lat": 32.11597,
+     "Lon": -102.17947
+    },
+    {
+     "Well": "WELL-0128",
+     "Type": "T350",
+     "Area": "Northeast Block 7",
+     "Wells with an out-of-date recorded status": 1.0,
+     "Evidence": "INS-0128-0203",
+     "Lat": 32.10752,
+     "Lon": -102.17395
+    },
+    {
+     "Well": "WELL-0164",
+     "Type": "T200",
+     "Area": "Northeast Block 8",
+     "Wells with an out-of-date recorded status": 1.0,
+     "Evidence": "INS-0164-0205",
+     "Lat": 32.1452,
+     "Lon": -102.1788
+    },
+    {
+     "Well": "WELL-0172",
+     "Type": "T200",
+     "Area": "Northeast Block 8",
+     "Wells with an out-of-date recorded status": 1.0,
+     "Evidence": "INS-0172-0206",
+     "Lat": 32.15584,
+     "Lon": -102.19308
+    },
+    {
+     "Well": "WELL-0175",
+     "Type": "T200",
+     "Area": "Northeast Block 8",
+     "Wells with an out-of-date recorded status": 1.0,
+     "Evidence": "INS-0175-0204",
+     "Lat": 32.1802,
+     "Lon": -102.1479
+    },
+    {
+     "Well": "WELL-0188",
+     "Type": "T200",
+     "Area": "Northeast Block 8",
+     "Wells with an out-of-date recorded status": 1.0,
+     "Evidence": "INS-0188-0205",
+     "Lat": 32.17812,
+     "Lon": -102.1722
+    },
+    {
+     "Well": "WELL-0199",
+     "Type": "T200",
+     "Area": "Northeast Block 8",
+     "Wells with an out-of-date recorded status": 1.0,
+     "Evidence": "INS-0199-0205",
+     "Lat": 32.17546,
+     "Lon": -102.15469
+    }
+   ]
+  },
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U10",
+  "user": "Emily Carter",
+  "question": "Which wells in Southwest Block 24 have a stale recorded status?",
+  "answer": "**7 wells with an out-of-date recorded status \u2014 Southwest Block 24.**\n\n- WELL-0060: recorded **active**, but INS-0060-0207 (15 Oct 2026) shows not producing (4.9 \u00b0C above air)\n- WELL-0061: recorded **down**, but INS-0061-0208 (15 Oct 2026) shows producing (33.0 \u00b0C above air)\n- WELL-0066: recorded **active**, but INS-0066-0205 (15 Oct 2026) shows not producing (1.3 \u00b0C above air)\n- WELL-0071: recorded **down**, but INS-0071-0205 (15 Oct 2026) shows producing (31.9 \u00b0C above air)\n- WELL-0079: recorded **active**, but INS-0079-0200 (15 Oct 2026) shows not producing (4.0 \u00b0C above air)\n- WELL-0084: recorded **down**, but INS-0084-0207 (15 Oct 2026) shows producing (31.7 \u00b0C above air)\n- WELL-0093: recorded **down**, but INS-0093-0203 (15 Oct 2026) shows producing (32.2 \u00b0C above air)\n\n_Rules applied: T200: producing when wellhead \u2212 air \u2265 15 \u00b0C (T200 manual); T350: producing when wellhead \u2212 air \u2265 20 \u00b0C (T350 manual); recorded_status is refreshed monthly and can be stale; the latest inspection is the truth (Dataset Guide)._",
+  "visual": "table",
+  "citations": [
+   "INS-0060-0207",
+   "INS-0061-0208",
+   "INS-0066-0205",
+   "INS-0071-0205",
+   "INS-0079-0200",
+   "INS-0084-0207",
+   "INS-0093-0203"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "run_query",
+     "args": {
+      "metric": "stale_status",
+      "scope": {
+       "area": "SW-24"
+      },
+      "window": null,
+      "group_by": "well",
+      "top": null,
+      "filters": {}
+     },
+     "result": "7 rows, total 7.0"
+    }
+   ],
+   "rules": [
+    "T200: producing when wellhead \u2212 air \u2265 15 \u00b0C (T200 manual)",
+    "T350: producing when wellhead \u2212 air \u2265 20 \u00b0C (T350 manual)",
+    "recorded_status is refreshed monthly and can be stale; the latest inspection is the truth (Dataset Guide)"
+   ],
+   "citations": 7
+  },
+  "visual_data": {
+   "type": "table",
+   "columns": [
+    "Well",
+    "Type",
+    "Area",
+    "Wells with an out-of-date recorded status",
+    "Evidence"
+   ],
+   "rows": [
+    {
+     "Well": "WELL-0060",
+     "Type": "T200",
+     "Area": "Southwest Block 24",
+     "Wells with an out-of-date recorded status": 1.0,
+     "Evidence": "INS-0060-0207",
+     "Lat": 31.79387,
+     "Lon": -102.49462
+    },
+    {
+     "Well": "WELL-0061",
+     "Type": "T200",
+     "Area": "Southwest Block 24",
+     "Wells with an out-of-date recorded status": 1.0,
+     "Evidence": "INS-0061-0208",
+     "Lat": 31.8011,
+     "Lon": -102.47371
+    },
+    {
+     "Well": "WELL-0066",
+     "Type": "T200",
+     "Area": "Southwest Block 24",
+     "Wells with an out-of-date recorded status": 1.0,
+     "Evidence": "INS-0066-0205",
+     "Lat": 31.8241,
+     "Lon": -102.43901
+    },
+    {
+     "Well": "WELL-0071",
+     "Type": "T200",
+     "Area": "Southwest Block 24",
+     "Wells with an out-of-date recorded status": 1.0,
+     "Evidence": "INS-0071-0205",
+     "Lat": 31.78587,
+     "Lon": -102.48304
+    },
+    {
+     "Well": "WELL-0079",
+     "Type": "T350",
+     "Area": "Southwest Block 24",
+     "Wells with an out-of-date recorded status": 1.0,
+     "Evidence": "INS-0079-0200",
+     "Lat": 31.79665,
+     "Lon": -102.44517
+    },
+    {
+     "Well": "WELL-0084",
+     "Type": "T200",
+     "Area": "Southwest Block 24",
+     "Wells with an out-of-date recorded status": 1.0,
+     "Evidence": "INS-0084-0207",
+     "Lat": 31.8059,
+     "Lon": -102.46964
+    },
+    {
+     "Well": "WELL-0093",
+     "Type": "T350",
+     "Area": "Southwest Block 24",
+     "Wells with an out-of-date recorded status": 1.0,
+     "Evidence": "INS-0093-0203",
+     "Lat": 31.82588,
+     "Lon": -102.46429
+    }
+   ]
+  },
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U11",
+  "user": "Emily Carter",
+  "question": "How many days was WELL-0121 down in 2025?",
+  "answer": "**WELL-0121 was down 28 days** (1 Jan 2025\u201331 Dec 2025), from 4 weekly inspections where it was not producing oil:\n- 9 Oct 2025 (INS-0121-0153): wellhead 26.7 \u00b0C vs air 27.3 \u00b0C, only -0.6 \u00b0C warmer. Cause: Flowline corrosion pinhole leak (MNT-0121-025).\n- 6 Nov 2025 (INS-0121-0157): wellhead 14.9 \u00b0C vs air 14.7 \u00b0C, only 0.2 \u00b0C warmer. Cause: Flowline corrosion pinhole leak (MNT-0121-027).\n- 13 Nov 2025 (INS-0121-0158): wellhead 17.4 \u00b0C vs air 13.5 \u00b0C, only 3.9 \u00b0C warmer. Cause: Flowline corrosion pinhole leak (MNT-0121-027).\n- 20 Nov 2025 (INS-0121-0159): wellhead 18.6 \u00b0C vs air 17.2 \u00b0C, only 1.4 \u00b0C warmer. Cause: Flowline corrosion pinhole leak (MNT-0121-027).\n\nDowntime = 7 days per non-producing weekly inspection (Dataset Guide).",
+  "visual": null,
+  "citations": [
+   "INS-0121-0153",
+   "INS-0121-0157",
+   "INS-0121-0158",
+   "INS-0121-0159",
+   "Dataset Guide (downtime)",
+   "well-type manual"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "downtime",
+     "args": [
+      "How many days was WELL-0121 down in 2025?",
+      [
+       "WELL-0121"
+      ]
+     ]
+    }
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
+   ],
+   "citations": 6
+  },
+  "visual_data": null,
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U12",
+  "user": "Emily Carter",
+  "question": "How many days was WELL-0005 down in 2026?",
+  "answer": "**WELL-0005 was down 42 days** (1 Jan 2026\u201316 Oct 2026), from 6 weekly inspections where it was not producing oil:\n- 18 Jun 2026 (INS-0005-0188): wellhead 42.0 \u00b0C vs air 33.9 \u00b0C, only 8.1 \u00b0C warmer. Cause: Prime mover failure (MNT-0005-031).\n- 25 Jun 2026 (INS-0005-0189): wellhead 46.8 \u00b0C vs air 39.0 \u00b0C, only 7.8 \u00b0C warmer. Cause: Prime mover failure (MNT-0005-031).\n- 2 Jul 2026 (INS-0005-0190): wellhead 47.8 \u00b0C vs air 38.0 \u00b0C, only 9.8 \u00b0C warmer. Cause: Prime mover failure (MNT-0005-031).\n- 9 Jul 2026 (INS-0005-0191): wellhead 45.1 \u00b0C vs air 34.8 \u00b0C, only 10.3 \u00b0C warmer. Cause: Prime mover failure (MNT-0005-031).\n- 16 Jul 2026 (INS-0005-0192): wellhead 50.3 \u00b0C vs air 39.5 \u00b0C, only 10.8 \u00b0C warmer. Cause: Prime mover failure (MNT-0005-031); Scheduled wellhead valve service (MNT-0005-032).\n- 23 Jul 2026 (INS-0005-0193): wellhead 36.4 \u00b0C vs air 34.4 \u00b0C, only 2.0 \u00b0C warmer. Cause: Prime mover failure (MNT-0005-031).\n\nDowntime = 7 days per non-producing weekly inspection (Dataset Guide).",
+  "visual": null,
+  "citations": [
+   "INS-0005-0188",
+   "INS-0005-0189",
+   "INS-0005-0190",
+   "INS-0005-0191",
+   "INS-0005-0192",
+   "INS-0005-0193",
+   "Dataset Guide (downtime)",
+   "well-type manual"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "downtime",
+     "args": [
+      "How many days was WELL-0005 down in 2026?",
+      [
+       "WELL-0005"
+      ]
+     ]
+    }
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
+   ],
+   "citations": 8
+  },
+  "visual_data": null,
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U13",
+  "user": "Emily Carter",
+  "question": "How many days was WELL-0164 down in 2024?",
+  "answer": "**WELL-0164 was down 7 days** (1 Jan 2024\u201331 Dec 2024), from 1 weekly inspections where it was not producing oil:\n- 16 May 2024 (INS-0164-0081): wellhead 33.8 \u00b0C vs air 29.9 \u00b0C, only 3.9 \u00b0C warmer. Cause: Flowline corrosion pinhole leak (MNT-0164-008).\n\nDowntime = 7 days per non-producing weekly inspection (Dataset Guide).",
+  "visual": null,
+  "citations": [
+   "INS-0164-0081",
+   "Dataset Guide (downtime)",
+   "well-type manual"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "downtime",
+     "args": [
+      "How many days was WELL-0164 down in 2024?",
+      [
+       "WELL-0164"
+      ]
+     ]
+    }
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
+   ],
+   "citations": 3
+  },
+  "visual_data": null,
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U14",
+  "user": "Emily Carter",
+  "question": "Which 3 wells in Southwest Block 24 were down the longest this summer, and why?",
+  "answer": "**Top 3 wells in Southwest Block 24 by downtime (1 Jun 2026 to 31 Aug 2026):** WELL-0069: 42 days (T200), WELL-0080: 28 days (T200), WELL-0058: 21 days (T200). Next is WELL-0062 at 21.\n- WELL-0069 why: Prime mover failure (MNT-0069-034); Prime mover failure (MNT-0069-034); Downhole pump stuck (MNT-0069-035); Downhole pump stuck (MNT-0069-035)\n- WELL-0080 why: Prime mover failure (MNT-0080-025)\n- WELL-0058 why: Stuffing box packing leak (MNT-0058-031)",
+  "visual": "bar",
+  "citations": [
+   "INS-0069-0186",
+   "INS-0069-0187",
+   "INS-0069-0188",
+   "INS-0069-0189",
+   "INS-0069-0190",
+   "INS-0069-0191",
+   "INS-0080-0195",
+   "INS-0080-0196",
+   "INS-0080-0197",
+   "INS-0080-0198",
+   "INS-0058-0195",
+   "INS-0058-0196",
+   "INS-0058-0197",
+   "Dataset Guide (downtime = 7 d per non-producing inspection)"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "downtime",
+     "args": [
+      "Which 3 wells in Southwest Block 24 were down the longest this summer, and why?",
+      [],
+      "SW-24"
+     ]
+    }
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
+   ],
+   "citations": 14
+  },
+  "visual_data": {
+   "type": "bar",
+   "x": [
+    "WELL-0069",
+    "WELL-0080",
+    "WELL-0058"
+   ],
+   "series": [
+    {
+     "name": "Downtime (days)",
+     "data": [
+      42,
+      28,
+      21
+     ]
+    }
+   ]
+  },
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U15",
+  "user": "Emily Carter",
+  "question": "Show downtime by area this summer as a bar chart.",
+  "answer": "**Downtime \u2014 the whole field, summer 2026 (1 Jun 2026 to 31 Aug 2026): 973 days in total**\n\n- Northeast Block 7: 266 days\n- Northeast Block 8: 259 days\n- Southwest Block 24: 245 days\n- Southwest Block 23: 203 days\n\n_Rules applied: T200: producing when wellhead \u2212 air \u2265 15 \u00b0C (T200 manual); T350: producing when wellhead \u2212 air \u2265 20 \u00b0C (T350 manual); Downtime = 7 days per non-producing weekly inspection (Dataset Guide)._",
+  "visual": "bar",
+  "citations": [
+   "INS-0107-0194",
+   "INS-0107-0195",
+   "INS-0107-0196",
+   "INS-0107-0197",
+   "INS-0107-0198",
+   "INS-0107-0199",
+   "INS-0108-0190",
+   "INS-0110-0192",
+   "INS-0110-0193",
+   "INS-0111-0186",
+   "INS-0111-0187",
+   "INS-0112-0196",
+   "INS-0114-0189",
+   "INS-0115-0192",
+   "INS-0118-0198",
+   "INS-0118-0199",
+   "INS-0118-0200",
+   "INS-0119-0197",
+   "INS-0119-0198",
+   "INS-0119-0199",
+   "INS-0120-0198",
+   "INS-0121-0187",
+   "INS-0121-0188",
+   "INS-0121-0189",
+   "INS-0127-0190",
+   "INS-0127-0191",
+   "INS-0127-0192",
+   "INS-0132-0200",
+   "INS-0135-0194",
+   "INS-0135-0195",
+   "INS-0138-0195",
+   "INS-0138-0196",
+   "INS-0138-0200",
+   "INS-0138-0201",
+   "INS-0140-0196",
+   "INS-0140-0197",
+   "INS-0150-0191",
+   "INS-0150-0200",
+   "INS-0151-0197",
+   "INS-0152-0195",
+   "INS-0154-0191",
+   "INS-0156-0190",
+   "INS-0159-0199",
+   "INS-0159-0200",
+   "INS-0160-0192",
+   "INS-0160-0193",
+   "INS-0160-0194",
+   "INS-0160-0195",
+   "INS-0160-0196",
+   "INS-0160-0197",
+   "INS-0161-0140",
+   "INS-0161-0141",
+   "INS-0168-0197",
+   "INS-0170-0198",
+   "INS-0173-0184",
+   "INS-0173-0185",
+   "INS-0174-0186",
+   "INS-0174-0187",
+   "INS-0178-0187",
+   "INS-0179-0199",
+   "INS-0179-0200",
+   "INS-0183-0191",
+   "INS-0183-0192",
+   "INS-0183-0193",
+   "INS-0187-0190",
+   "INS-0187-0193",
+   "INS-0187-0194",
+   "INS-0189-0197",
+   "INS-0189-0198",
+   "INS-0190-0197",
+   "INS-0190-0198",
+   "INS-0191-0186",
+   "INS-0191-0187",
+   "INS-0193-0199",
+   "INS-0195-0199",
+   "INS-0054-0194",
+   "INS-0058-0195",
+   "INS-0058-0196",
+   "INS-0058-0197",
+   "INS-0062-0188",
+   "INS-0062-0189",
+   "INS-0062-0190",
+   "INS-0063-0189",
+   "INS-0063-0190",
+   "INS-0069-0186",
+   "INS-0069-0187",
+   "INS-0069-0188",
+   "INS-0069-0189",
+   "INS-0069-0190",
+   "INS-0069-0191",
+   "INS-0072-0196",
+   "INS-0072-0197",
+   "INS-0072-0198",
+   "INS-0073-0194",
+   "INS-0077-0183",
+   "INS-0078-0190",
+   "INS-0078-0191",
+   "INS-0078-0192",
+   "INS-0080-0195",
+   "INS-0080-0196",
+   "INS-0080-0197",
+   "INS-0080-0198",
+   "INS-0084-0199",
+   "INS-0084-0200",
+   "INS-0087-0197",
+   "INS-0088-0193",
+   "INS-0088-0194",
+   "INS-0097-0193",
+   "INS-0097-0194",
+   "INS-0097-0195",
+   "INS-0004-0192",
+   "INS-0004-0193",
+   "INS-0005-0188",
+   "INS-0005-0189",
+   "INS-0005-0190",
+   "INS-0005-0191",
+   "INS-0005-0192",
+   "INS-0005-0193",
+   "INS-0013-0194",
+   "INS-0014-0106",
+   "INS-0020-0198",
+   "INS-0020-0199",
+   "INS-0020-0200",
+   "INS-0021-0193",
+   "INS-0025-0184",
+   "INS-0025-0185",
+   "INS-0026-0197",
+   "INS-0035-0187",
+   "INS-0035-0188",
+   "INS-0039-0188",
+   "INS-0039-0189",
+   "INS-0039-0190",
+   "INS-0039-0191",
+   "INS-0041-0195",
+   "INS-0041-0196",
+   "INS-0041-0197",
+   "INS-0047-0195",
+   "INS-0047-0196",
+   "INS-0048-0200"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "run_query",
+     "args": {
+      "metric": "downtime",
+      "scope": {},
+      "window": [
+       "2026-06-01",
+       "2026-08-31"
+      ],
+      "group_by": "area",
+      "top": null,
+      "filters": {}
+     },
+     "result": "4 rows, total 973.0"
+    }
+   ],
+   "rules": [
+    "T200: producing when wellhead \u2212 air \u2265 15 \u00b0C (T200 manual)",
+    "T350: producing when wellhead \u2212 air \u2265 20 \u00b0C (T350 manual)",
+    "Downtime = 7 days per non-producing weekly inspection (Dataset Guide)"
+   ],
+   "citations": 139
+  },
+  "visual_data": {
+   "type": "bar",
+   "x": [
+    "Northeast Block 7",
+    "Northeast Block 8",
+    "Southwest Block 24",
+    "Southwest Block 23"
+   ],
+   "series": [
+    {
+     "name": "downtime (days)",
+     "data": [
+      266.0,
+      259.0,
+      245.0,
+      203.0
+     ]
+    }
+   ]
+  },
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U16",
+  "user": "Emily Carter",
+  "question": "What was the total downtime of T200 wells in 2025?",
+  "answer": "**Downtime \u2014 T200 wells, 2025: 2457 days in total**\n\n_Rules applied: T200: producing when wellhead \u2212 air \u2265 15 \u00b0C (T200 manual); Downtime = 7 days per non-producing weekly inspection (Dataset Guide)._",
+  "visual": null,
+  "citations": [
+   "INS-0001-0140",
+   "INS-0001-0152",
+   "INS-0001-0153",
+   "INS-0002-0080",
+   "INS-0002-0081",
+   "INS-0002-0082",
+   "INS-0006-0112",
+   "INS-0006-0127",
+   "INS-0006-0128",
+   "INS-0006-0129",
+   "INS-0006-0130",
+   "INS-0018-0125",
+   "INS-0019-0157",
+   "INS-0020-0158",
+   "INS-0022-0139",
+   "INS-0022-0140",
+   "INS-0022-0141",
+   "INS-0023-0143",
+   "INS-0023-0144",
+   "INS-0026-0113",
+   "INS-0026-0114",
+   "INS-0026-0115",
+   "INS-0026-0138",
+   "INS-0026-0142",
+   "INS-0027-0117",
+   "INS-0027-0118",
+   "INS-0027-0136",
+   "INS-0027-0137",
+   "INS-0027-0154",
+   "INS-0027-0155",
+   "INS-0030-0126",
+   "INS-0030-0127",
+   "INS-0030-0128",
+   "INS-0030-0129",
+   "INS-0031-0115",
+   "INS-0031-0116",
+   "INS-0031-0117",
+   "INS-0035-0125",
+   "INS-0035-0126",
+   "INS-0035-0138",
+   "INS-0035-0139",
+   "INS-0035-0140",
+   "INS-0035-0141",
+   "INS-0035-0161",
+   "INS-0035-0162",
+   "INS-0036-0127",
+   "INS-0036-0128",
+   "INS-0036-0129",
+   "INS-0036-0130",
+   "INS-0036-0131",
+   "INS-0036-0132",
+   "INS-0036-0154",
+   "INS-0036-0155",
+   "INS-0036-0156",
+   "INS-0036-0157",
+   "INS-0037-0139",
+   "INS-0037-0141",
+   "INS-0043-0118",
+   "INS-0043-0119",
+   "INS-0043-0120",
+   "INS-0043-0121",
+   "INS-0044-0129",
+   "INS-0044-0130",
+   "INS-0046-0131",
+   "INS-0048-0117",
+   "INS-0048-0126",
+   "INS-0048-0127",
+   "INS-0048-0128",
+   "INS-0048-0129",
+   "INS-0051-0117",
+   "INS-0051-0118",
+   "INS-0051-0119",
+   "INS-0051-0123",
+   "INS-0051-0128",
+   "INS-0051-0129",
+   "INS-0052-0145",
+   "INS-0052-0146",
+   "INS-0052-0147",
+   "INS-0052-0150",
+   "INS-0052-0151",
+   "INS-0053-0127",
+   "INS-0053-0128",
+   "INS-0053-0129",
+   "INS-0053-0130",
+   "INS-0053-0131",
+   "INS-0053-0132",
+   "INS-0053-0139",
+   "INS-0053-0140",
+   "INS-0053-0152",
+   "INS-0053-0153",
+   "INS-0057-0127",
+   "INS-0057-0128",
+   "INS-0058-0117",
+   "INS-0058-0118",
+   "INS-0058-0119",
+   "INS-0058-0120",
+   "INS-0058-0145",
+   "INS-0058-0147",
+   "INS-0058-0148",
+   "INS-0058-0149",
+   "INS-0058-0150",
+   "INS-0058-0151",
+   "INS-0058-0152",
+   "INS-0060-0123",
+   "INS-0060-0124",
+   "INS-0060-0125",
+   "INS-0060-0126",
+   "INS-0060-0127",
+   "INS-0060-0128",
+   "INS-0061-0118",
+   "INS-0061-0126",
+   "INS-0061-0159",
+   "INS-0062-0161",
+   "INS-0062-0162",
+   "INS-0066-0114",
+   "INS-0066-0115",
+   "INS-0066-0145",
+   "INS-0066-0146",
+   "INS-0067-0116",
+   "INS-0067-0117",
+   "INS-0067-0118",
+   "INS-0067-0119",
+   "INS-0067-0122",
+   "INS-0067-0145",
+   "INS-0067-0146",
+   "INS-0067-0147",
+   "INS-0067-0148",
+   "INS-0068-0120",
+   "INS-0068-0121",
+   "INS-0068-0122",
+   "INS-0069-0138",
+   "INS-0069-0139",
+   "INS-0069-0140",
+   "INS-0069-0141",
+   "INS-0069-0157",
+   "INS-0069-0158",
+   "INS-0070-0136",
+   "INS-0070-0137",
+   "INS-0070-0138",
+   "INS-0070-0139",
+   "INS-0070-0140",
+   "INS-0071-0113",
+   "INS-0071-0114",
+   "INS-0071-0128",
+   "INS-0071-0136",
+   "INS-0071-0137",
+   "INS-0071-0150",
+   "INS-0071-0151",
+   "INS-0072-0146",
+   "INS-0074-0141",
+   "INS-0074-0142",
+   "INS-0074-0143",
+   "INS-0082-0113",
+   "INS-0082-0114",
+   "INS-0082-0118",
+   "INS-0083-0121",
+   "INS-0083-0122",
+   "INS-0083-0138",
+   "INS-0083-0139",
+   "INS-0083-0146",
+   "INS-0083-0147",
+   "INS-0083-0148",
+   "INS-0083-0155",
+   "INS-0084-0114",
+   "INS-0085-0133",
+   "INS-0085-0134",
+   "INS-0085-0135",
+   "INS-0086-0120",
+   "INS-0086-0121",
+   "INS-0086-0132",
+   "INS-0086-0136",
+   "INS-0086-0137",
+   "INS-0086-0138",
+   "INS-0086-0139",
+   "INS-0086-0151",
+   "INS-0086-0153",
+   "INS-0086-0154",
+   "INS-0086-0155",
+   "INS-0089-0136",
+   "INS-0089-0160",
+   "INS-0089-0161",
+   "INS-0094-0052",
+   "INS-0094-0053",
+   "INS-0094-0054",
+   "INS-0094-0055",
+   "INS-0094-0056",
+   "INS-0094-0057",
+   "INS-0096-0145",
+   "INS-0096-0152",
+   "INS-0096-0154",
+   "INS-0096-0155",
+   "INS-0096-0156",
+   "INS-0096-0157",
+   "INS-0100-0112",
+   "INS-0100-0117",
+   "INS-0100-0118",
+   "INS-0100-0125",
+   "INS-0100-0126",
+   "INS-0100-0127",
+   "INS-0100-0128"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "run_query",
+     "args": {
+      "metric": "downtime",
+      "scope": {
+       "well_type": "T200"
+      },
+      "window": [
+       "2025-01-01",
+       "2025-12-31"
+      ],
+      "group_by": null,
+      "top": null,
+      "filters": {}
+     },
+     "result": "1 rows, total 2457.0"
+    }
+   ],
+   "rules": [
+    "T200: producing when wellhead \u2212 air \u2265 15 \u00b0C (T200 manual)",
+    "Downtime = 7 days per non-producing weekly inspection (Dataset Guide)"
+   ],
+   "citations": 200
+  },
+  "visual_data": null,
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U17",
+  "user": "Emily Carter",
+  "question": "How much downtime did the Northeast Production team have in the last 3 months?",
+  "answer": "**Downtime \u2014 Northeast Production, last 3 months (16 Jul 2026 to 16 Oct 2026): 630 days in total**\n\n_Rules applied: T200: producing when wellhead \u2212 air \u2265 15 \u00b0C (T200 manual); T350: producing when wellhead \u2212 air \u2265 20 \u00b0C (T350 manual); Downtime = 7 days per non-producing weekly inspection (Dataset Guide)._",
+  "visual": null,
+  "citations": [
+   "INS-0101-0205",
+   "INS-0103-0203",
+   "INS-0103-0204",
+   "INS-0107-0196",
+   "INS-0107-0197",
+   "INS-0107-0198",
+   "INS-0107-0199",
+   "INS-0109-0201",
+   "INS-0110-0193",
+   "INS-0110-0205",
+   "INS-0112-0196",
+   "INS-0114-0204",
+   "INS-0115-0207",
+   "INS-0115-0208",
+   "INS-0118-0198",
+   "INS-0118-0199",
+   "INS-0118-0200",
+   "INS-0119-0197",
+   "INS-0119-0198",
+   "INS-0119-0199",
+   "INS-0119-0200",
+   "INS-0120-0198",
+   "INS-0121-0200",
+   "INS-0121-0201",
+   "INS-0121-0202",
+   "INS-0121-0203",
+   "INS-0121-0205",
+   "INS-0121-0206",
+   "INS-0123-0095",
+   "INS-0123-0096",
+   "INS-0128-0203",
+   "INS-0132-0200",
+   "INS-0132-0201",
+   "INS-0135-0194",
+   "INS-0135-0195",
+   "INS-0138-0195",
+   "INS-0138-0196",
+   "INS-0138-0200",
+   "INS-0138-0201",
+   "INS-0138-0206",
+   "INS-0138-0207",
+   "INS-0140-0196",
+   "INS-0140-0197",
+   "INS-0140-0198",
+   "INS-0150-0200",
+   "INS-0150-0201",
+   "INS-0151-0197",
+   "INS-0151-0198",
+   "INS-0151-0202",
+   "INS-0152-0195",
+   "INS-0159-0199",
+   "INS-0159-0200",
+   "INS-0159-0201",
+   "INS-0160-0192",
+   "INS-0160-0193",
+   "INS-0160-0194",
+   "INS-0160-0195",
+   "INS-0160-0196",
+   "INS-0160-0197",
+   "INS-0164-0205",
+   "INS-0168-0197",
+   "INS-0170-0198",
+   "INS-0170-0202",
+   "INS-0170-0203",
+   "INS-0170-0204",
+   "INS-0170-0205",
+   "INS-0170-0206",
+   "INS-0172-0204",
+   "INS-0172-0205",
+   "INS-0172-0206",
+   "INS-0175-0204",
+   "INS-0179-0199",
+   "INS-0179-0200",
+   "INS-0179-0201",
+   "INS-0187-0190",
+   "INS-0187-0193",
+   "INS-0187-0194",
+   "INS-0188-0200",
+   "INS-0188-0201",
+   "INS-0188-0202",
+   "INS-0188-0203",
+   "INS-0189-0197",
+   "INS-0189-0198",
+   "INS-0190-0197",
+   "INS-0190-0198",
+   "INS-0193-0199",
+   "INS-0193-0200",
+   "INS-0195-0199",
+   "INS-0199-0202",
+   "INS-0199-0203"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "run_query",
+     "args": {
+      "metric": "downtime",
+      "scope": {
+       "team": "TEAM-NE"
+      },
+      "window": [
+       "2026-07-16",
+       "2026-10-16"
+      ],
+      "group_by": null,
+      "top": null,
+      "filters": {}
+     },
+     "result": "1 rows, total 630.0"
+    }
+   ],
+   "rules": [
+    "T200: producing when wellhead \u2212 air \u2265 15 \u00b0C (T200 manual)",
+    "T350: producing when wellhead \u2212 air \u2265 20 \u00b0C (T350 manual)",
+    "Downtime = 7 days per non-producing weekly inspection (Dataset Guide)"
+   ],
+   "citations": 90
+  },
+  "visual_data": null,
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U18",
+  "user": "Emily Carter",
+  "question": "Top 5 wells in Northeast Block 8 by downtime this year",
+  "answer": "**Top 5 wells in Northeast Block 8 by downtime (1 Jan 2026 to 16 Oct 2026):** WELL-0170: 49 days (T200), WELL-0172: 49 days (T200), WELL-0182: 49 days (T200), WELL-0183: 49 days (T350), WELL-0160: 42 days (T200). Next is WELL-0199 at 35.\n- WELL-0170 why: Gearbox oil leak (MNT-0170-026); Flowline corrosion pinhole leak (MNT-0170-029); Walking beam bearing wear (MNT-0170-031)\n- WELL-0172 why: Flowline corrosion pinhole leak (MNT-0172-023); Flowline corrosion pinhole leak (MNT-0172-023); Annual flowline integrity test (MNT-0172-024); Flowline corrosion pinhole leak (MNT-0172-023); Scheduled lubrication and belt inspection (MNT-0172-025)\n- WELL-0182 why: Walking beam bearing wear (MNT-0182-021); Scheduled wellhead valve service (MNT-0182-022); Prime mover failure (MNT-0182-023); Prime mover failure (MNT-0182-023)\n- WELL-0183 why: Gearbox oil leak (MNT-0183-026); Prime mover failure (MNT-0183-028); Downhole pump stuck (MNT-0183-031)\n- WELL-0160 why: Downhole pump stuck (MNT-0160-028); Downhole pump stuck (MNT-0160-028); Prime mover failure (MNT-0160-029); Prime mover failure (MNT-0160-029)",
+  "visual": "bar",
+  "citations": [
+   "INS-0170-0181",
+   "INS-0170-0198",
+   "INS-0170-0202",
+   "INS-0170-0203",
+   "INS-0170-0204",
+   "INS-0170-0205",
+   "INS-0170-0206",
+   "INS-0172-0174",
+   "INS-0172-0175",
+   "INS-0172-0176",
+   "INS-0172-0177",
+   "INS-0172-0204",
+   "INS-0172-0205",
+   "INS-0172-0206",
+   "INS-0182-0166",
+   "INS-0182-0167",
+   "INS-0182-0168",
+   "INS-0182-0169",
+   "INS-0182-0174",
+   "INS-0182-0175",
+   "INS-0182-0176",
+   "INS-0183-0174",
+   "INS-0183-0175",
+   "INS-0183-0183",
+   "INS-0183-0184",
+   "INS-0183-0191",
+   "INS-0183-0192",
+   "INS-0183-0193",
+   "INS-0160-0192",
+   "INS-0160-0193",
+   "INS-0160-0194",
+   "INS-0160-0195",
+   "INS-0160-0196",
+   "INS-0160-0197",
+   "Dataset Guide (downtime = 7 d per non-producing inspection)"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "downtime",
+     "args": [
+      "Top 5 wells in Northeast Block 8 by downtime this year",
+      [],
+      "NE-08"
+     ]
+    }
+   ],
+   "rules": [
+    "T200.producing_delta_c = 15 (T200 manual (production temperature rule))",
+    "T350.producing_delta_c = 20 (T350 manual (production temperature rule))"
+   ],
+   "citations": 35
+  },
+  "visual_data": {
+   "type": "bar",
+   "x": [
+    "WELL-0170",
+    "WELL-0172",
+    "WELL-0182",
+    "WELL-0183",
+    "WELL-0160"
+   ],
+   "series": [
+    {
+     "name": "Downtime (days)",
+     "data": [
+      49,
+      49,
+      49,
+      49,
+      42
+     ]
+    }
+   ]
+  },
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U19",
+  "user": "Emily Carter",
+  "question": "Compare downtime of WELL-0001, WELL-0005 and WELL-0121 in 2026 as a bar chart.",
+  "answer": "**Downtime \u2014 WELL-0001, WELL-0005, WELL-0121, 2026: 133 days in total**\n\n- WELL-0121: 70 days\n- WELL-0005: 42 days\n- WELL-0001: 21 days\n\n_Rules applied: T200: producing when wellhead \u2212 air \u2265 15 \u00b0C (T200 manual); T350: producing when wellhead \u2212 air \u2265 20 \u00b0C (T350 manual); Downtime = 7 days per non-producing weekly inspection (Dataset Guide)._",
+  "visual": "bar",
+  "citations": [
+   "INS-0121-0186",
+   "INS-0121-0187",
+   "INS-0121-0188",
+   "INS-0121-0189",
+   "INS-0121-0200",
+   "INS-0121-0201",
+   "INS-0121-0202",
+   "INS-0121-0203",
+   "INS-0121-0205",
+   "INS-0121-0206",
+   "INS-0005-0188",
+   "INS-0005-0189",
+   "INS-0005-0190",
+   "INS-0005-0191",
+   "INS-0005-0192",
+   "INS-0005-0193",
+   "INS-0001-0181",
+   "INS-0001-0202",
+   "INS-0001-0203"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "run_query",
+     "args": {
+      "metric": "downtime",
+      "scope": {
+       "wells": [
+        "WELL-0001",
+        "WELL-0005",
+        "WELL-0121"
+       ]
+      },
+      "window": [
+       "2026-01-01",
+       "2026-10-16"
+      ],
+      "group_by": "well",
+      "top": null,
+      "filters": {}
+     },
+     "result": "3 rows, total 133.0"
+    }
+   ],
+   "rules": [
+    "T200: producing when wellhead \u2212 air \u2265 15 \u00b0C (T200 manual)",
+    "T350: producing when wellhead \u2212 air \u2265 20 \u00b0C (T350 manual)",
+    "Downtime = 7 days per non-producing weekly inspection (Dataset Guide)"
+   ],
+   "citations": 19
+  },
+  "visual_data": {
+   "type": "bar",
+   "x": [
+    "WELL-0121",
+    "WELL-0005",
+    "WELL-0001"
+   ],
+   "series": [
+    {
+     "name": "downtime (days)",
+     "data": [
+      70.0,
+      42.0,
+      21.0
+     ]
+    }
+   ]
+  },
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U20",
+  "user": "Emily Carter",
+  "question": "How many oil spills has WELL-0082 had in total, and how much oil?",
+  "answer": "**3 real spills for WELL-0082 (1 Jan 1900 to 16 Oct 2026), 2.9 barrels in total.**",
+  "visual": "table",
+  "citations": [
+   "INS-0082-0083",
+   "INS-0082-0167",
+   "INS-0082-0198",
+   "Dataset Guide: correction notes override detections"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "spills",
+     "args": [
+      "How many oil spills has WELL-0082 had in total, and how much oil?",
+      [
+       "WELL-0082"
+      ]
+     ]
+    }
+   ],
+   "rules": [],
+   "citations": 4
+  },
+  "visual_data": {
+   "type": "table",
+   "columns": [
+    "Well",
+    "Date",
+    "Barrels",
+    "Inspection"
+   ],
+   "rows": [
+    {
+     "Well": "WELL-0082",
+     "Date": "6 Jun 2024",
+     "Barrels": 2.0,
+     "Inspection": "INS-0082-0083",
+     "Lat": 31.80691,
+     "Lon": -102.47894
+    },
+    {
+     "Well": "WELL-0082",
+     "Date": "29 Jan 2026",
+     "Barrels": 0.2,
+     "Inspection": "INS-0082-0167",
+     "Lat": 31.80691,
+     "Lon": -102.47894
+    },
+    {
+     "Well": "WELL-0082",
+     "Date": "10 Sep 2026",
+     "Barrels": 0.7,
+     "Inspection": "INS-0082-0198",
+     "Lat": 31.80691,
+     "Lon": -102.47894
+    }
+   ]
+  },
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U21",
+  "user": "Emily Carter",
+  "question": "How many oil spills has WELL-0151 had in total, and how much oil?",
+  "answer": "**3 real spills for WELL-0151 (1 Jan 1900 to 16 Oct 2026), 10.2 barrels in total.**",
+  "visual": "table",
+  "citations": [
+   "INS-0151-0147",
+   "INS-0151-0170",
+   "INS-0151-0201",
+   "Dataset Guide: correction notes override detections"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "spills",
+     "args": [
+      "How many oil spills has WELL-0151 had in total, and how much oil?",
+      [
+       "WELL-0151"
+      ]
+     ]
+    }
+   ],
+   "rules": [],
+   "citations": 4
+  },
+  "visual_data": {
+   "type": "table",
+   "columns": [
+    "Well",
+    "Date",
+    "Barrels",
+    "Inspection"
+   ],
+   "rows": [
+    {
+     "Well": "WELL-0151",
+     "Date": "21 Aug 2025",
+     "Barrels": 1.8,
+     "Inspection": "INS-0151-0147",
+     "Lat": 32.12246,
+     "Lon": -102.18445
+    },
+    {
+     "Well": "WELL-0151",
+     "Date": "5 Feb 2026",
+     "Barrels": 3.9,
+     "Inspection": "INS-0151-0170",
+     "Lat": 32.12246,
+     "Lon": -102.18445
+    },
+    {
+     "Well": "WELL-0151",
+     "Date": "24 Sep 2026",
+     "Barrels": 4.5,
+     "Inspection": "INS-0151-0201",
+     "Lat": 32.12246,
+     "Lon": -102.18445
+    }
+   ]
+  },
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U22",
+  "user": "Emily Carter",
+  "question": "How many spills were there in Northeast Block 7 in March 2026?",
+  "answer": "**2 real spills for Northeast Block 7 (1 Mar 2026 to 31 Mar 2026), 7.6 barrels in total.**",
+  "visual": "table",
+  "citations": [
+   "INS-0144-0173",
+   "INS-0150-0178",
+   "Dataset Guide: correction notes override detections"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "spills",
+     "args": [
+      "How many spills were there in Northeast Block 7 in March 2026?",
+      [],
+      "NE-07"
+     ]
+    }
+   ],
+   "rules": [],
+   "citations": 3
+  },
+  "visual_data": {
+   "type": "table",
+   "columns": [
+    "Well",
+    "Date",
+    "Barrels",
+    "Inspection"
+   ],
+   "rows": [
+    {
+     "Well": "WELL-0144",
+     "Date": "5 Mar 2026",
+     "Barrels": 4.0,
+     "Inspection": "INS-0144-0173",
+     "Lat": 32.10238,
+     "Lon": -102.18706
+    },
+    {
+     "Well": "WELL-0150",
+     "Date": "19 Mar 2026",
+     "Barrels": 3.6,
+     "Inspection": "INS-0150-0178",
+     "Lat": 32.14075,
+     "Lon": -102.19962
+    }
+   ]
+  },
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U23",
+  "user": "Emily Carter",
+  "question": "How many spills did T350 wells have in March 2026?",
+  "answer": "**Real spills \u2014 T350 wells, March 2026: 8 in total**\n\n_Rules applied: Detections voided by correction notes are excluded; runtime corrections applied._",
+  "visual": "table",
+  "citations": [
+   "INS-0005-0174",
+   "INS-0013-0177",
+   "INS-0088-0178",
+   "INS-0098-0173",
+   "INS-0099-0171",
+   "INS-0144-0173",
+   "INS-0150-0178",
+   "INS-0193-0177"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "run_query",
+     "args": {
+      "metric": "spills",
+      "scope": {
+       "well_type": "T350"
+      },
+      "window": [
+       "2026-03-01",
+       "2026-03-31"
+      ],
+      "group_by": null,
+      "top": null,
+      "filters": {}
+     },
+     "result": "1 rows, total 8.0"
+    }
+   ],
+   "rules": [
+    "Detections voided by correction notes are excluded; runtime corrections applied"
+   ],
+   "citations": 8
+  },
+  "visual_data": {
+   "type": "table",
+   "columns": [
+    "well",
+    "date",
+    "bbl",
+    "inspection"
+   ],
+   "rows": [
+    {
+     "well": "WELL-0005",
+     "date": "2026-03-12",
+     "bbl": 1.6,
+     "inspection": "INS-0005-0174"
+    },
+    {
+     "well": "WELL-0013",
+     "date": "2026-03-26",
+     "bbl": 2.3,
+     "inspection": "INS-0013-0177"
+    },
+    {
+     "well": "WELL-0088",
+     "date": "2026-03-12",
+     "bbl": 2.4,
+     "inspection": "INS-0088-0178"
+    },
+    {
+     "well": "WELL-0098",
+     "date": "2026-03-19",
+     "bbl": 3.4,
+     "inspection": "INS-0098-0173"
+    },
+    {
+     "well": "WELL-0099",
+     "date": "2026-03-12",
+     "bbl": 5.1,
+     "inspection": "INS-0099-0171"
+    },
+    {
+     "well": "WELL-0144",
+     "date": "2026-03-05",
+     "bbl": 4.0,
+     "inspection": "INS-0144-0173"
+    },
+    {
+     "well": "WELL-0150",
+     "date": "2026-03-19",
+     "bbl": 3.6,
+     "inspection": "INS-0150-0178"
+    },
+    {
+     "well": "WELL-0193",
+     "date": "2026-03-26",
+     "bbl": 2.8,
+     "inspection": "INS-0193-0177"
+    }
+   ]
+  },
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U24",
+  "user": "Emily Carter",
+  "question": "How much oil did the Southwest Production team spill in 2025?",
+  "answer": "**Spilled oil \u2014 Southwest Production, 2025: 118.7 bbl in total**\n\n_Rules applied: Detections voided by correction notes are excluded; runtime corrections applied._",
+  "visual": "table",
+  "citations": [
+   "INS-0007-0132",
+   "INS-0009-0133",
+   "INS-0010-0144",
+   "INS-0013-0119",
+   "INS-0013-0163",
+   "INS-0014-0044",
+   "INS-0015-0118",
+   "INS-0015-0144",
+   "INS-0020-0129",
+   "INS-0021-0150",
+   "INS-0021-0153",
+   "INS-0024-0158",
+   "INS-0026-0131",
+   "INS-0026-0132",
+   "INS-0028-0127",
+   "INS-0030-0138",
+   "INS-0037-0144",
+   "INS-0037-0154",
+   "INS-0037-0158",
+   "INS-0039-0126",
+   "INS-0041-0165",
+   "INS-0042-0139",
+   "INS-0044-0131",
+   "INS-0044-0134",
+   "INS-0047-0156",
+   "INS-0051-0125",
+   "INS-0051-0133",
+   "INS-0052-0152",
+   "INS-0052-0165",
+   "INS-0058-0128",
+   "INS-0058-0162",
+   "INS-0061-0130",
+   "INS-0063-0155",
+   "INS-0069-0124",
+   "INS-0069-0149",
+   "INS-0070-0149",
+   "INS-0071-0129",
+   "INS-0072-0137",
+   "INS-0072-0148",
+   "INS-0074-0120",
+   "INS-0075-0136",
+   "INS-0076-0144",
+   "INS-0076-0146",
+   "INS-0080-0118",
+   "INS-0083-0143",
+   "INS-0084-0116",
+   "INS-0084-0138",
+   "INS-0085-0130",
+   "INS-0086-0123",
+   "INS-0089-0123",
+   "INS-0089-0140",
+   "INS-0090-0152",
+   "INS-0090-0161",
+   "INS-0093-0156",
+   "INS-0096-0129",
+   "INS-0096-0151",
+   "INS-0098-0148",
+   "INS-0099-0148",
+   "INS-0099-0161",
+   "INS-0100-0124"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "run_query",
+     "args": {
+      "metric": "spill_volume",
+      "scope": {
+       "team": "TEAM-SW"
+      },
+      "window": [
+       "2025-01-01",
+       "2025-12-31"
+      ],
+      "group_by": null,
+      "top": null,
+      "filters": {}
+     },
+     "result": "1 rows, total 118.7"
+    }
+   ],
+   "rules": [
+    "Detections voided by correction notes are excluded; runtime corrections applied"
+   ],
+   "citations": 60
+  },
+  "visual_data": {
+   "type": "table",
+   "columns": [
+    "well",
+    "date",
+    "bbl",
+    "inspection"
+   ],
+   "rows": [
+    {
+     "well": "WELL-0007",
+     "date": "2025-05-22",
+     "bbl": 2.7,
+     "inspection": "INS-0007-0132"
+    },
+    {
+     "well": "WELL-0009",
+     "date": "2025-05-15",
+     "bbl": 3.6,
+     "inspection": "INS-0009-0133"
+    },
+    {
+     "well": "WELL-0010",
+     "date": "2025-08-07",
+     "bbl": 2.7,
+     "inspection": "INS-0010-0144"
+    },
+    {
+     "well": "WELL-0013",
+     "date": "2025-02-13",
+     "bbl": 1.6,
+     "inspection": "INS-0013-0119"
+    },
+    {
+     "well": "WELL-0013",
+     "date": "2025-12-18",
+     "bbl": 4.8,
+     "inspection": "INS-0013-0163"
+    },
+    {
+     "well": "WELL-0014",
+     "date": "2025-05-15",
+     "bbl": 2.0,
+     "inspection": "INS-0014-0044"
+    },
+    {
+     "well": "WELL-0015",
+     "date": "2025-02-06",
+     "bbl": 3.5,
+     "inspection": "INS-0015-0118"
+    },
+    {
+     "well": "WELL-0015",
+     "date": "2025-08-07",
+     "bbl": 2.7,
+     "inspection": "INS-0015-0144"
+    },
+    {
+     "well": "WELL-0020",
+     "date": "2025-04-10",
+     "bbl": 0.9,
+     "inspection": "INS-0020-0129"
+    },
+    {
+     "well": "WELL-0021",
+     "date": "2025-08-28",
+     "bbl": 0.5,
+     "inspection": "INS-0021-0150"
+    },
+    {
+     "well": "WELL-0021",
+     "date": "2025-09-18",
+     "bbl": 1.8,
+     "inspection": "INS-0021-0153"
+    },
+    {
+     "well": "WELL-0024",
+     "date": "2025-10-30",
+     "bbl": 2.2,
+     "inspection": "INS-0024-0158"
+    },
+    {
+     "well": "WELL-0026",
+     "date": "2025-05-15",
+     "bbl": 0.9,
+     "inspection": "INS-0026-0131"
+    },
+    {
+     "well": "WELL-0026",
+     "date": "2025-05-29",
+     "bbl": 1.2,
+     "inspection": "INS-0026-0132"
+    },
+    {
+     "well": "WELL-0028",
+     "date": "2025-04-10",
+     "bbl": 3.2,
+     "inspection": "INS-0028-0127"
+    },
+    {
+     "well": "WELL-0030",
+     "date": "2025-07-03",
+     "bbl": 4.3,
+     "inspection": "INS-0030-0138"
+    },
+    {
+     "well": "WELL-0037",
+     "date": "2025-08-07",
+     "bbl": 1.4,
+     "inspection": "INS-0037-0144"
+    },
+    {
+     "well": "WELL-0037",
+     "date": "2025-10-16",
+     "bbl": 4.1,
+     "inspection": "INS-0037-0154"
+    },
+    {
+     "well": "WELL-0037",
+     "date": "2025-11-13",
+     "bbl": 1.3,
+     "inspection": "INS-0037-0158"
+    },
+    {
+     "well": "WELL-0039",
+     "date": "2025-04-17",
+     "bbl": 2.8,
+     "inspection": "INS-0039-0126"
+    },
+    {
+     "well": "WELL-0041",
+     "date": "2025-12-25",
+     "bbl": 0.6,
+     "inspection": "INS-0041-0165"
+    },
+    {
+     "well": "WELL-0042",
+     "date": "2025-06-26",
+     "bbl": 2.5,
+     "inspection": "INS-0042-0139"
+    },
+    {
+     "well": "WELL-0044",
+     "date": "2025-05-08",
+     "bbl": 2.9,
+     "inspection": "INS-0044-0131"
+    },
+    {
+     "well": "WELL-0044",
+     "date": "2025-06-05",
+     "bbl": 0.3,
+     "inspection": "INS-0044-0134"
+    },
+    {
+     "well": "WELL-0047",
+     "date": "2025-11-20",
+     "bbl": 3.4,
+     "inspection": "INS-0047-0156"
+    },
+    {
+     "well": "WELL-0051",
+     "date": "2025-03-20",
+     "bbl": 1.1,
+     "inspection": "INS-0051-0125"
+    },
+    {
+     "well": "WELL-0051",
+     "date": "2025-05-22",
+     "bbl": 0.3,
+     "inspection": "INS-0051-0133"
+    },
+    {
+     "well": "WELL-0052",
+     "date": "2025-09-25",
+     "bbl": 6.6,
+     "inspection": "INS-0052-0152"
+    },
+    {
+     "well": "WELL-0052",
+     "date": "2025-12-25",
+     "bbl": 4.4,
+     "inspection": "INS-0052-0165"
+    },
+    {
+     "well": "WELL-0058",
+     "date": "2025-04-10",
+     "bbl": 1.7,
+     "inspection": "INS-0058-0128"
+    },
+    {
+     "well": "WELL-0058",
+     "date": "2025-12-11",
+     "bbl": 1.7,
+     "inspection": "INS-0058-0162"
+    },
+    {
+     "well": "WELL-0061",
+     "date": "2025-04-10",
+     "bbl": 1.0,
+     "inspection": "INS-0061-0130"
+    },
+    {
+     "well": "WELL-0063",
+     "date": "2025-11-06",
+     "bbl": 1.0,
+     "inspection": "INS-0063-0155"
+    },
+    {
+     "well": "WELL-0069",
+     "date": "2025-03-20",
+     "bbl": 1.8,
+     "inspection": "INS-0069-0124"
+    },
+    {
+     "well": "WELL-0069",
+     "date": "2025-09-18",
+     "bbl": 0.7,
+     "inspection": "INS-0069-0149"
+    },
+    {
+     "well": "WELL-0070",
+     "date": "2025-08-28",
+     "bbl": 0.8,
+     "inspection": "INS-0070-0149"
+    },
+    {
+     "well": "WELL-0071",
+     "date": "2025-04-24",
+     "bbl": 0.1,
+     "inspection": "INS-0071-0129"
+    },
+    {
+     "well": "WELL-0072",
+     "date": "2025-06-19",
+     "bbl": 1.0,
+     "inspection": "INS-0072-0137"
+    },
+    {
+     "well": "WELL-0072",
+     "date": "2025-09-04",
+     "bbl": 0.4,
+     "inspection": "INS-0072-0148"
+    },
+    {
+     "well": "WELL-0074",
+     "date": "2025-01-30",
+     "bbl": 2.1,
+     "inspection": "INS-0074-0120"
+    },
+    {
+     "well": "WELL-0075",
+     "date": "2025-05-29",
+     "bbl": 1.2,
+     "inspection": "INS-0075-0136"
+    },
+    {
+     "well": "WELL-0076",
+     "date": "2025-08-07",
+     "bbl": 1.0,
+     "inspection": "INS-0076-0144"
+    },
+    {
+     "well": "WELL-0076",
+     "date": "2025-08-21",
+     "bbl": 5.3,
+     "inspection": "INS-0076-0146"
+    },
+    {
+     "well": "WELL-0080",
+     "date": "2025-01-23",
+     "bbl": 1.0,
+     "inspection": "INS-0080-0118"
+    },
+    {
+     "well": "WELL-0083",
+     "date": "2025-08-21",
+     "bbl": 3.2,
+     "inspection": "INS-0083-0143"
+    },
+    {
+     "well": "WELL-0084",
+     "date": "2025-01-16",
+     "bbl": 1.0,
+     "inspection": "INS-0084-0116"
+    },
+    {
+     "well": "WELL-0084",
+     "date": "2025-06-19",
+     "bbl": 1.0,
+     "inspection": "INS-0084-0138"
+    },
+    {
+     "well": "WELL-0085",
+     "date": "2025-05-15",
+     "bbl": 1.8,
+     "inspection": "INS-0085-0130"
+    },
+    {
+     "well": "WELL-0086",
+     "date": "2025-03-06",
+     "bbl": 1.6,
+     "inspection": "INS-0086-0123"
+    },
+    {
+     "well": "WELL-0089",
+     "date": "2025-04-03",
+     "bbl": 1.2,
+     "inspection": "INS-0089-0123"
+    },
+    {
+     "well": "WELL-0089",
+     "date": "2025-07-31",
+     "bbl": 4.5,
+     "inspection": "INS-0089-0140"
+    },
+    {
+     "well": "WELL-0090",
+     "date": "2025-10-02",
+     "bbl": 1.5,
+     "inspection": "INS-0090-0152"
+    },
+    {
+     "well": "WELL-0090",
+     "date": "2025-12-04",
+     "bbl": 3.7,
+     "inspection": "INS-0090-0161"
+    },
+    {
+     "well": "WELL-0093",
+     "date": "2025-11-13",
+     "bbl": 0.3,
+     "inspection": "INS-0093-0156"
+    },
+    {
+     "well": "WELL-0096",
+     "date": "2025-04-17",
+     "bbl": 1.7,
+     "inspection": "INS-0096-0129"
+    },
+    {
+     "well": "WELL-0096",
+     "date": "2025-09-18",
+     "bbl": 0.9,
+     "inspection": "INS-0096-0151"
+    },
+    {
+     "well": "WELL-0098",
+     "date": "2025-09-25",
+     "bbl": 1.6,
+     "inspection": "INS-0098-0148"
+    },
+    {
+     "well": "WELL-0099",
+     "date": "2025-09-25",
+     "bbl": 0.4,
+     "inspection": "INS-0099-0148"
+    },
+    {
+     "well": "WELL-0099",
+     "date": "2025-12-25",
+     "bbl": 1.4,
+     "inspection": "INS-0099-0161"
+    },
+    {
+     "well": "WELL-0100",
+     "date": "2025-04-17",
+     "bbl": 1.8,
+     "inspection": "INS-0100-0124"
+    }
+   ]
+  },
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U25",
+  "user": "Emily Carter",
+  "question": "Show spills by month in 2026",
+  "answer": "**Real spills \u2014 the whole field, 2026: 141 in total**\n\n- 2026-01: 20\n- 2026-02: 14\n- 2026-03: 14\n- 2026-04: 19\n- 2026-05: 16\n- 2026-06: 19\n- 2026-07: 13\n- 2026-08: 8\n- 2026-09: 13\n- 2026-10: 5\n\n_Rules applied: Detections voided by correction notes are excluded; runtime corrections applied._",
+  "visual": "line",
+  "citations": [
+   "INS-0013-0165",
+   "INS-0015-0166",
+   "INS-0032-0169",
+   "INS-0048-0169",
+   "INS-0053-0167",
+   "INS-0060-0169",
+   "INS-0071-0164",
+   "INS-0074-0171",
+   "INS-0082-0167",
+   "INS-0085-0162",
+   "INS-0098-0165",
+   "INS-0102-0170",
+   "INS-0136-0165",
+   "INS-0137-0169",
+   "INS-0139-0163",
+   "INS-0148-0169",
+   "INS-0155-0163",
+   "INS-0182-0164",
+   "INS-0183-0168",
+   "INS-0192-0166",
+   "INS-0002-0105",
+   "INS-0033-0175",
+   "INS-0045-0167",
+   "INS-0052-0172",
+   "INS-0064-0171",
+   "INS-0069-0171",
+   "INS-0085-0167",
+   "INS-0124-0172",
+   "INS-0125-0169",
+   "INS-0148-0171",
+   "INS-0151-0170",
+   "INS-0162-0173",
+   "INS-0174-0168",
+   "INS-0191-0173",
+   "INS-0005-0174",
+   "INS-0013-0177",
+   "INS-0050-0175",
+   "INS-0074-0176",
+   "INS-0074-0179",
+   "INS-0088-0178",
+   "INS-0098-0173",
+   "INS-0099-0171",
+   "INS-0144-0173",
+   "INS-0150-0178",
+   "INS-0170-0176",
+   "INS-0193-0177",
+   "INS-0196-0174",
+   "INS-0197-0171",
+   "INS-0007-0178",
+   "INS-0010-0181",
+   "INS-0018-0178",
+   "INS-0021-0182",
+   "INS-0023-0181",
+   "INS-0026-0179",
+   "INS-0071-0180",
+   "INS-0073-0180",
+   "INS-0073-0182",
+   "INS-0074-0183",
+   "INS-0081-0179",
+   "INS-0088-0181",
+   "INS-0104-0178",
+   "INS-0131-0179",
+   "INS-0138-0182",
+   "INS-0142-0053",
+   "INS-0180-0180",
+   "INS-0198-0178",
+   "INS-0199-0181",
+   "INS-0005-0183",
+   "INS-0013-0183",
+   "INS-0029-0068",
+   "INS-0071-0184",
+   "INS-0075-0186",
+   "INS-0084-0185",
+   "INS-0096-0184",
+   "INS-0099-0178",
+   "INS-0110-0185",
+   "INS-0113-0187",
+   "INS-0124-0184",
+   "INS-0127-0186",
+   "INS-0135-0185",
+   "INS-0145-0180",
+   "INS-0191-0183",
+   "INS-0199-0185",
+   "INS-0001-0185",
+   "INS-0013-0188",
+   "INS-0017-0188",
+   "INS-0045-0185",
+   "INS-0060-0190",
+   "INS-0060-0191",
+   "INS-0079-0183",
+   "INS-0085-0187",
+   "INS-0090-0187",
+   "INS-0103-0191",
+   "INS-0113-0191",
+   "INS-0133-0190",
+   "INS-0136-0189",
+   "INS-0138-0190",
+   "INS-0141-0185",
+   "INS-0154-0187",
+   "INS-0167-0088",
+   "INS-0168-0190",
+   "INS-0185-0190",
+   "INS-0030-0192",
+   "INS-0034-0145",
+   "INS-0039-0192",
+   "INS-0039-0193",
+   "INS-0073-0195",
+   "INS-0085-0192",
+   "INS-0093-0189",
+   "INS-0105-0190",
+   "INS-0145-0189",
+   "INS-0165-0194",
+   "INS-0175-0193",
+   "INS-0186-0097",
+   "INS-0194-0191",
+   "INS-0017-0198",
+   "INS-0041-0198",
+   "INS-0044-0197",
+   "INS-0098-0192",
+   "INS-0101-0197",
+   "INS-0132-0197",
+   "INS-0133-0198",
+   "INS-0141-0195",
+   "INS-0042-0203",
+   "INS-0042-0204",
+   "INS-0045-0198",
+   "INS-0080-0202",
+   "INS-0080-0203",
+   "INS-0082-0198",
+   "INS-0091-0152",
+   "INS-0100-0196",
+   "INS-0123-0093",
+   "INS-0128-0198",
+   "INS-0141-0198",
+   "INS-0149-0204",
+   "INS-0151-0201",
+   "INS-0001-0201",
+   "INS-0022-0195",
+   "INS-0077-0201",
+   "INS-0097-0201",
+   "INS-0138-0208"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "run_query",
+     "args": {
+      "metric": "spills",
+      "scope": {},
+      "window": [
+       "2026-01-01",
+       "2026-10-16"
+      ],
+      "group_by": "month",
+      "top": null,
+      "filters": {}
+     },
+     "result": "10 rows, total 141.0"
+    }
+   ],
+   "rules": [
+    "Detections voided by correction notes are excluded; runtime corrections applied"
+   ],
+   "citations": 141
+  },
+  "visual_data": {
+   "type": "line",
+   "x": [
+    "2026-01",
+    "2026-02",
+    "2026-03",
+    "2026-04",
+    "2026-05",
+    "2026-06",
+    "2026-07",
+    "2026-08",
+    "2026-09",
+    "2026-10"
+   ],
+   "series": [
+    {
+     "name": "real spills",
+     "data": [
+      20.0,
+      14.0,
+      14.0,
+      19.0,
+      16.0,
+      19.0,
+      13.0,
+      8.0,
+      13.0,
+      5.0
+     ]
+    }
+   ]
+  },
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U26",
+  "user": "Emily Carter",
+  "question": "Compare spills by well type in 2025",
+  "answer": "**Real spills \u2014 the whole field, 2025: 138 in total**\n\n- T200: 82\n- T350: 56\n\n_Rules applied: Detections voided by correction notes are excluded; runtime corrections applied._",
+  "visual": "bar",
+  "citations": [
+   "INS-0010-0144",
+   "INS-0015-0118",
+   "INS-0015-0144",
+   "INS-0020-0129",
+   "INS-0026-0131",
+   "INS-0026-0132",
+   "INS-0030-0138",
+   "INS-0037-0144",
+   "INS-0037-0154",
+   "INS-0037-0158",
+   "INS-0039-0126",
+   "INS-0042-0139",
+   "INS-0044-0131",
+   "INS-0044-0134",
+   "INS-0047-0156",
+   "INS-0051-0125",
+   "INS-0051-0133",
+   "INS-0052-0152",
+   "INS-0052-0165",
+   "INS-0058-0128",
+   "INS-0058-0162",
+   "INS-0061-0130",
+   "INS-0069-0124",
+   "INS-0069-0149",
+   "INS-0070-0149",
+   "INS-0071-0129",
+   "INS-0072-0137",
+   "INS-0072-0148",
+   "INS-0074-0120",
+   "INS-0076-0144",
+   "INS-0076-0146",
+   "INS-0080-0118",
+   "INS-0083-0143",
+   "INS-0084-0116",
+   "INS-0084-0138",
+   "INS-0085-0130",
+   "INS-0086-0123",
+   "INS-0089-0123",
+   "INS-0089-0140",
+   "INS-0096-0129",
+   "INS-0096-0151",
+   "INS-0100-0124",
+   "INS-0102-0139",
+   "INS-0102-0154",
+   "INS-0105-0133",
+   "INS-0106-0078",
+   "INS-0106-0092",
+   "INS-0110-0161",
+   "INS-0112-0144",
+   "INS-0113-0140",
+   "INS-0113-0141",
+   "INS-0115-0135",
+   "INS-0115-0159",
+   "INS-0136-0136",
+   "INS-0136-0156",
+   "INS-0141-0157",
+   "INS-0143-0087",
+   "INS-0143-0126",
+   "INS-0147-0156",
+   "INS-0152-0120",
+   "INS-0155-0123",
+   "INS-0155-0145",
+   "INS-0164-0161",
+   "INS-0168-0144",
+   "INS-0170-0145",
+   "INS-0172-0138",
+   "INS-0172-0139",
+   "INS-0172-0150",
+   "INS-0175-0132",
+   "INS-0177-0114",
+   "INS-0178-0135",
+   "INS-0186-0039",
+   "INS-0186-0043",
+   "INS-0188-0161",
+   "INS-0190-0162",
+   "INS-0194-0117",
+   "INS-0194-0143",
+   "INS-0194-0146",
+   "INS-0195-0134",
+   "INS-0195-0147",
+   "INS-0197-0125",
+   "INS-0199-0117",
+   "INS-0007-0132",
+   "INS-0009-0133",
+   "INS-0013-0119",
+   "INS-0013-0163",
+   "INS-0014-0044",
+   "INS-0021-0150",
+   "INS-0021-0153",
+   "INS-0024-0158",
+   "INS-0028-0127",
+   "INS-0041-0165",
+   "INS-0063-0155",
+   "INS-0075-0136",
+   "INS-0090-0152",
+   "INS-0090-0161",
+   "INS-0093-0156",
+   "INS-0098-0148",
+   "INS-0099-0148",
+   "INS-0099-0161",
+   "INS-0103-0151",
+   "INS-0107-0137",
+   "INS-0108-0146",
+   "INS-0108-0163",
+   "INS-0111-0113",
+   "INS-0111-0128",
+   "INS-0120-0125",
+   "INS-0122-0134",
+   "INS-0122-0152",
+   "INS-0122-0154",
+   "INS-0125-0133",
+   "INS-0127-0122",
+   "INS-0127-0132",
+   "INS-0128-0136",
+   "INS-0128-0143",
+   "INS-0129-0049",
+   "INS-0132-0125",
+   "INS-0134-0142",
+   "INS-0134-0145",
+   "INS-0134-0147",
+   "INS-0137-0130",
+   "INS-0139-0144",
+   "INS-0144-0162",
+   "INS-0149-0145",
+   "INS-0151-0147",
+   "INS-0153-0115",
+   "INS-0161-0100",
+   "INS-0162-0130",
+   "INS-0162-0143",
+   "INS-0171-0106",
+   "INS-0171-0142",
+   "INS-0174-0151",
+   "INS-0176-0130",
+   "INS-0176-0152",
+   "INS-0183-0118",
+   "INS-0183-0133",
+   "INS-0184-0142",
+   "INS-0192-0126"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "run_query",
+     "args": {
+      "metric": "spills",
+      "scope": {},
+      "window": [
+       "2025-01-01",
+       "2025-12-31"
+      ],
+      "group_by": "type",
+      "top": null,
+      "filters": {}
+     },
+     "result": "2 rows, total 138.0"
+    }
+   ],
+   "rules": [
+    "Detections voided by correction notes are excluded; runtime corrections applied"
+   ],
+   "citations": 138
+  },
+  "visual_data": {
+   "type": "bar",
+   "x": [
+    "T200",
+    "T350"
+   ],
+   "series": [
+    {
+     "name": "real spills",
+     "data": [
+      82.0,
+      56.0
+     ]
+    }
+   ]
+  },
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U27",
+  "user": "Emily Carter",
+  "question": "How many spills were there in Southwest Block 23 between 1 May 2026 and 31 Jul 2026?",
+  "answer": "**11 real spills for Southwest Block 23 (1 May 2026 to 31 Jul 2026), 34.0 barrels in total.** 13 detections; excluded as corrected: INS-0003-0183 (28 May 2026, CTX-0003-002), INS-0004-0190 (2 Jul 2026, CTX-0004-001).",
+  "visual": "table",
+  "citations": [
+   "INS-0001-0185",
+   "INS-0005-0183",
+   "INS-0013-0183",
+   "INS-0013-0188",
+   "INS-0017-0188",
+   "INS-0029-0068",
+   "INS-0030-0192",
+   "INS-0034-0145",
+   "INS-0039-0192",
+   "INS-0039-0193",
+   "INS-0045-0185",
+   "CTX-0003-002",
+   "CTX-0004-001",
+   "Dataset Guide: correction notes override detections"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "spills",
+     "args": [
+      "How many spills were there in Southwest Block 23 between 1 May 2026 and 31 Jul 2026?",
+      [],
+      "SW-23"
+     ]
+    }
+   ],
+   "rules": [],
+   "citations": 14
+  },
+  "visual_data": {
+   "type": "table",
+   "columns": [
+    "Well",
+    "Date",
+    "Barrels",
+    "Inspection"
+   ],
+   "rows": [
+    {
+     "Well": "WELL-0001",
+     "Date": "11 Jun 2026",
+     "Barrels": 6.8,
+     "Inspection": "INS-0001-0185",
+     "Lat": 31.85425,
+     "Lon": -102.50232
+    },
+    {
+     "Well": "WELL-0005",
+     "Date": "14 May 2026",
+     "Barrels": 4.9,
+     "Inspection": "INS-0005-0183",
+     "Lat": 31.86352,
+     "Lon": -102.50359
+    },
+    {
+     "Well": "WELL-0013",
+     "Date": "7 May 2026",
+     "Barrels": 0.7,
+     "Inspection": "INS-0013-0183",
+     "Lat": 31.86965,
+     "Lon": -102.50142
+    },
+    {
+     "Well": "WELL-0013",
+     "Date": "11 Jun 2026",
+     "Barrels": 5.2,
+     "Inspection": "INS-0013-0188",
+     "Lat": 31.86965,
+     "Lon": -102.50142
+    },
+    {
+     "Well": "WELL-0017",
+     "Date": "4 Jun 2026",
+     "Barrels": 0.9,
+     "Inspection": "INS-0017-0188",
+     "Lat": 31.84718,
+     "Lon": -102.49253
+    },
+    {
+     "Well": "WELL-0029",
+     "Date": "14 May 2026",
+     "Barrels": 3.5,
+     "Inspection": "INS-0029-0068",
+     "Lat": 31.83152,
+     "Lon": -102.53495
+    },
+    {
+     "Well": "WELL-0030",
+     "Date": "23 Jul 2026",
+     "Barrels": 0.6,
+     "Inspection": "INS-0030-0192",
+     "Lat": 31.827,
+     "Lon": -102.50114
+    },
+    {
+     "Well": "WELL-0034",
+     "Date": "2 Jul 2026",
+     "Barrels": 2.6,
+     "Inspection": "INS-0034-0145",
+     "Lat": 31.8547,
+     "Lon": -102.49532
+    },
+    {
+     "Well": "WELL-0039",
+     "Date": "23 Jul 2026",
+     "Barrels": 1.0,
+     "Inspection": "INS-0039-0192",
+     "Lat": 31.82745,
+     "Lon": -102.529
+    },
+    {
+     "Well": "WELL-0039",
+     "Date": "30 Jul 2026",
+     "Barrels": 3.4,
+     "Inspection": "INS-0039-0193",
+     "Lat": 31.82745,
+     "Lon": -102.529
+    },
+    {
+     "Well": "WELL-0045",
+     "Date": "18 Jun 2026",
+     "Barrels": 4.4,
+     "Inspection": "INS-0045-0185",
+     "Lat": 31.85808,
+     "Lon": -102.52834
+    }
+   ]
+  },
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U28",
+  "user": "Emily Carter",
+  "question": "Show on a map the wells in Southwest Block 24 with a real spill in the last 60 days.",
+  "answer": "**7 real spills for Southwest Block 24 (18 Aug 2026 to 16 Oct 2026), 7.6 barrels in total.** 6 wells: WELL-0077 (15 Oct 2026, 2.5 bbl, 31.81947, -102.44789); WELL-0080 (17 Sep 2026, 1.7 bbl, 31.80271, -102.47819); WELL-0082 (10 Sep 2026, 0.7 bbl, 31.80691, -102.47894); WELL-0091 (17 Sep 2026, 1.1 bbl, 31.81961, -102.49727); WELL-0097 (8 Oct 2026, 1.0 bbl, 31.81867, -102.47578); WELL-0100 (10 Sep 2026, 0.4 bbl, 31.80779, -102.45111)",
+  "visual": "map",
+  "citations": [
+   "INS-0077-0201",
+   "INS-0080-0202",
+   "INS-0080-0203",
+   "INS-0082-0198",
+   "INS-0091-0152",
+   "INS-0097-0201",
+   "INS-0100-0196",
+   "Dataset Guide: correction notes override detections"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "spills",
+     "args": [
+      "Show on a map the wells in Southwest Block 24 with a real spill in the last 60 days.",
+      [],
+      "SW-24"
+     ]
+    }
+   ],
+   "rules": [],
+   "citations": 8
+  },
+  "visual_data": {
+   "type": "map",
+   "points": [
+    {
+     "lat": 31.81947,
+     "lon": -102.44789,
+     "label": "WELL-0077 \u00b7 15 Oct 2026 \u00b7 2.5 bbl"
+    },
+    {
+     "lat": 31.80271,
+     "lon": -102.47819,
+     "label": "WELL-0080 \u00b7 17 Sep 2026 \u00b7 1.7 bbl"
+    },
+    {
+     "lat": 31.80691,
+     "lon": -102.47894,
+     "label": "WELL-0082 \u00b7 10 Sep 2026 \u00b7 0.7 bbl"
+    },
+    {
+     "lat": 31.81961,
+     "lon": -102.49727,
+     "label": "WELL-0091 \u00b7 17 Sep 2026 \u00b7 1.1 bbl"
+    },
+    {
+     "lat": 31.81867,
+     "lon": -102.47578,
+     "label": "WELL-0097 \u00b7 8 Oct 2026 \u00b7 1.0 bbl"
+    },
+    {
+     "lat": 31.80779,
+     "lon": -102.45111,
+     "label": "WELL-0100 \u00b7 10 Sep 2026 \u00b7 0.4 bbl"
+    }
+   ]
+  },
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U29",
+  "user": "Emily Carter",
+  "question": "What did repairs on WELL-0001 cost in 2025?",
+  "answer": "**Repair costs in 2025:** WELL-0001: USD 6,935 (7 jobs)",
+  "visual": "bar",
+  "citations": [
+   "MNT-0001-018",
+   "MNT-0001-019",
+   "MNT-0001-020",
+   "MNT-0001-021",
+   "MNT-0001-022",
+   "MNT-0001-023",
+   "MNT-0001-024"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "costs",
+     "args": [
+      [
+       "WELL-0001"
+      ],
+      "What did repairs on WELL-0001 cost in 2025?"
+     ]
+    }
+   ],
+   "rules": [],
+   "citations": 7
+  },
+  "visual_data": {
+   "type": "bar",
+   "x": [
+    "WELL-0001"
+   ],
+   "series": [
+    {
+     "name": "Repair cost 2025 (USD)",
+     "data": [
+      6935.0
+     ]
+    }
+   ]
+  },
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U30",
+  "user": "Emily Carter",
+  "question": "What did repairs on WELL-0170 cost in 2026?",
+  "answer": "**Repair costs in 2026:** WELL-0170: USD 27,598 (9 jobs)",
+  "visual": "bar",
+  "citations": [
+   "MNT-0170-023",
+   "MNT-0170-024",
+   "MNT-0170-025",
+   "MNT-0170-026",
+   "MNT-0170-027",
+   "MNT-0170-028",
+   "MNT-0170-029",
+   "MNT-0170-030",
+   "MNT-0170-031"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "costs",
+     "args": [
+      [
+       "WELL-0170"
+      ],
+      "What did repairs on WELL-0170 cost in 2026?"
+     ]
+    }
+   ],
+   "rules": [],
+   "citations": 9
+  },
+  "visual_data": {
+   "type": "bar",
+   "x": [
+    "WELL-0170"
+   ],
+   "series": [
+    {
+     "name": "Repair cost 2026 (USD)",
+     "data": [
+      27598.0
+     ]
+    }
+   ]
+  },
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U31",
+  "user": "Emily Carter",
+  "question": "Compare repair cost by area in 2025",
+  "answer": "**Repair cost \u2014 the whole field, 2025: USD 4,030,893 in total**\n\n- Southwest Block 24: USD 1,246,369\n- Northeast Block 7: USD 1,080,231\n- Northeast Block 8: USD 863,216\n- Southwest Block 23: USD 841,077\n\n_Rules applied: A repair belongs to a period by its start date._",
+  "visual": "bar",
+  "citations": [
+   "MNT-0051-021",
+   "MNT-0051-022",
+   "MNT-0051-023",
+   "MNT-0051-024",
+   "MNT-0051-025",
+   "MNT-0051-026",
+   "MNT-0051-027",
+   "MNT-0051-028",
+   "MNT-0051-029",
+   "MNT-0051-030",
+   "MNT-0052-019",
+   "MNT-0052-020",
+   "MNT-0052-021",
+   "MNT-0052-022",
+   "MNT-0052-023",
+   "MNT-0052-024",
+   "MNT-0052-025",
+   "MNT-0052-026",
+   "MNT-0052-027",
+   "MNT-0053-020",
+   "MNT-0053-021",
+   "MNT-0053-022",
+   "MNT-0053-023",
+   "MNT-0053-024",
+   "MNT-0053-025",
+   "MNT-0053-026",
+   "MNT-0053-027",
+   "MNT-0053-028",
+   "MNT-0054-019",
+   "MNT-0054-020",
+   "MNT-0054-021",
+   "MNT-0054-022",
+   "MNT-0054-023",
+   "MNT-0055-016",
+   "MNT-0055-017",
+   "MNT-0055-018",
+   "MNT-0055-019",
+   "MNT-0055-020",
+   "MNT-0055-021",
+   "MNT-0055-022",
+   "MNT-0056-019",
+   "MNT-0056-020",
+   "MNT-0056-021",
+   "MNT-0056-022",
+   "MNT-0056-023",
+   "MNT-0056-024",
+   "MNT-0056-025",
+   "MNT-0056-026",
+   "MNT-0057-015",
+   "MNT-0057-016",
+   "MNT-0057-017",
+   "MNT-0057-018",
+   "MNT-0057-019",
+   "MNT-0057-020",
+   "MNT-0058-016",
+   "MNT-0058-017",
+   "MNT-0058-018",
+   "MNT-0058-019",
+   "MNT-0058-020",
+   "MNT-0058-021",
+   "MNT-0058-022",
+   "MNT-0058-023",
+   "MNT-0058-024",
+   "MNT-0058-025",
+   "MNT-0058-026",
+   "MNT-0059-016",
+   "MNT-0059-017",
+   "MNT-0059-018",
+   "MNT-0059-019",
+   "MNT-0059-020",
+   "MNT-0059-021",
+   "MNT-0059-022",
+   "MNT-0060-021",
+   "MNT-0060-022",
+   "MNT-0060-023",
+   "MNT-0060-024",
+   "MNT-0060-025",
+   "MNT-0060-026",
+   "MNT-0060-027",
+   "MNT-0061-014",
+   "MNT-0061-015",
+   "MNT-0061-016",
+   "MNT-0061-017",
+   "MNT-0061-018",
+   "MNT-0061-019",
+   "MNT-0061-020",
+   "MNT-0061-021",
+   "MNT-0061-022",
+   "MNT-0061-023",
+   "MNT-0062-016",
+   "MNT-0062-017",
+   "MNT-0062-018",
+   "MNT-0062-019",
+   "MNT-0062-020",
+   "MNT-0062-021",
+   "MNT-0062-022",
+   "MNT-0063-018",
+   "MNT-0063-019",
+   "MNT-0063-020",
+   "MNT-0063-021",
+   "MNT-0063-022",
+   "MNT-0063-023",
+   "MNT-0063-024",
+   "MNT-0063-025",
+   "MNT-0063-026",
+   "MNT-0064-018",
+   "MNT-0064-019",
+   "MNT-0064-020",
+   "MNT-0064-021",
+   "MNT-0064-022",
+   "MNT-0065-014",
+   "MNT-0065-015",
+   "MNT-0065-016",
+   "MNT-0065-017",
+   "MNT-0065-018",
+   "MNT-0065-019",
+   "MNT-0065-020",
+   "MNT-0066-020",
+   "MNT-0066-021",
+   "MNT-0066-022",
+   "MNT-0066-023",
+   "MNT-0066-024",
+   "MNT-0066-025",
+   "MNT-0066-026",
+   "MNT-0066-027",
+   "MNT-0067-017",
+   "MNT-0067-018",
+   "MNT-0067-019",
+   "MNT-0067-020",
+   "MNT-0067-021",
+   "MNT-0067-022",
+   "MNT-0067-023",
+   "MNT-0067-024",
+   "MNT-0067-025",
+   "MNT-0068-011",
+   "MNT-0068-012",
+   "MNT-0068-013",
+   "MNT-0068-014",
+   "MNT-0068-015",
+   "MNT-0068-016",
+   "MNT-0069-020",
+   "MNT-0069-021",
+   "MNT-0069-022",
+   "MNT-0069-023",
+   "MNT-0069-024",
+   "MNT-0069-025",
+   "MNT-0069-026",
+   "MNT-0069-027",
+   "MNT-0069-028",
+   "MNT-0070-020",
+   "MNT-0070-021",
+   "MNT-0070-022",
+   "MNT-0070-023",
+   "MNT-0070-024",
+   "MNT-0070-025",
+   "MNT-0070-026",
+   "MNT-0071-019",
+   "MNT-0071-020",
+   "MNT-0071-021",
+   "MNT-0071-022",
+   "MNT-0071-023",
+   "MNT-0071-024",
+   "MNT-0071-025",
+   "MNT-0071-026",
+   "MNT-0071-027",
+   "MNT-0071-028",
+   "MNT-0071-029",
+   "MNT-0072-016",
+   "MNT-0072-017",
+   "MNT-0072-018",
+   "MNT-0072-019",
+   "MNT-0072-020",
+   "MNT-0072-021",
+   "MNT-0072-022",
+   "MNT-0072-023",
+   "MNT-0072-024",
+   "MNT-0073-015",
+   "MNT-0073-016",
+   "MNT-0073-017",
+   "MNT-0073-018",
+   "MNT-0073-019",
+   "MNT-0073-020",
+   "MNT-0073-021",
+   "MNT-0074-020",
+   "MNT-0074-021",
+   "MNT-0074-022",
+   "MNT-0074-023",
+   "MNT-0074-024",
+   "MNT-0074-025",
+   "MNT-0074-026",
+   "MNT-0074-027",
+   "MNT-0075-019",
+   "MNT-0075-020",
+   "MNT-0075-021",
+   "MNT-0075-022",
+   "MNT-0075-023",
+   "MNT-0075-024",
+   "MNT-0075-025",
+   "MNT-0075-026",
+   "MNT-0075-027"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "run_query",
+     "args": {
+      "metric": "repair_cost",
+      "scope": {},
+      "window": [
+       "2025-01-01",
+       "2025-12-31"
+      ],
+      "group_by": "area",
+      "top": null,
+      "filters": {}
+     },
+     "result": "4 rows, total 4030893.0"
+    }
+   ],
+   "rules": [
+    "A repair belongs to a period by its start date"
+   ],
+   "citations": 200
+  },
+  "visual_data": {
+   "type": "bar",
+   "x": [
+    "Southwest Block 24",
+    "Northeast Block 7",
+    "Northeast Block 8",
+    "Southwest Block 23"
+   ],
+   "series": [
+    {
+     "name": "repair cost (USD)",
+     "data": [
+      1246369.0,
+      1080231.0,
+      863216.0,
+      841077.0
+     ]
+    }
+   ]
+  },
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U32",
+  "user": "Emily Carter",
+  "question": "How many corrective flowline repairs were there in Northeast Block 8 in the last 12 months?",
+  "answer": "**Repair jobs \u2014 Northeast Block 8, last 12 months (16 Oct 2025 to 16 Oct 2026) (maintenance type=corrective, equipment kind=flowline): 48 in total**\n\n_Rules applied: A repair belongs to a period by its start date._",
+  "visual": null,
+  "citations": [
+   "MNT-0151-020",
+   "MNT-0151-025",
+   "MNT-0151-026",
+   "MNT-0152-026",
+   "MNT-0154-028",
+   "MNT-0154-029",
+   "MNT-0155-022",
+   "MNT-0155-023",
+   "MNT-0156-024",
+   "MNT-0162-025",
+   "MNT-0164-021",
+   "MNT-0165-025",
+   "MNT-0165-029",
+   "MNT-0167-011",
+   "MNT-0168-024",
+   "MNT-0170-025",
+   "MNT-0170-029",
+   "MNT-0171-017",
+   "MNT-0172-023",
+   "MNT-0172-028",
+   "MNT-0173-026",
+   "MNT-0174-025",
+   "MNT-0174-028",
+   "MNT-0175-028",
+   "MNT-0175-033",
+   "MNT-0177-023",
+   "MNT-0178-029",
+   "MNT-0178-033",
+   "MNT-0180-025",
+   "MNT-0182-020",
+   "MNT-0183-025",
+   "MNT-0185-023",
+   "MNT-0186-014",
+   "MNT-0188-026",
+   "MNT-0190-025",
+   "MNT-0191-021",
+   "MNT-0191-024",
+   "MNT-0192-027",
+   "MNT-0193-020",
+   "MNT-0193-023",
+   "MNT-0194-036",
+   "MNT-0195-027",
+   "MNT-0196-026",
+   "MNT-0197-025",
+   "MNT-0198-023",
+   "MNT-0199-025",
+   "MNT-0199-027",
+   "MNT-0199-028"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "run_query",
+     "args": {
+      "metric": "repairs",
+      "scope": {
+       "area": "NE-08"
+      },
+      "window": [
+       "2025-10-16",
+       "2026-10-16"
+      ],
+      "group_by": null,
+      "top": null,
+      "filters": {
+       "maintenance_type": "corrective",
+       "equipment_kind": "flowline"
+      }
+     },
+     "result": "1 rows, total 48.0"
+    }
+   ],
+   "rules": [
+    "A repair belongs to a period by its start date"
+   ],
+   "citations": 48
+  },
+  "visual_data": null,
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U33",
+  "user": "Emily Carter",
+  "question": "What did T350 wells spend on repairs in 2026?",
+  "answer": "**Repair cost \u2014 T350 wells, 2026: USD 1,481,391 in total**\n\n_Rules applied: A repair belongs to a period by its start date._",
+  "visual": null,
+  "citations": [
+   "MNT-0003-024",
+   "MNT-0003-025",
+   "MNT-0003-026",
+   "MNT-0003-027",
+   "MNT-0004-020",
+   "MNT-0004-021",
+   "MNT-0004-022",
+   "MNT-0004-023",
+   "MNT-0004-024",
+   "MNT-0004-025",
+   "MNT-0004-026",
+   "MNT-0004-027",
+   "MNT-0005-026",
+   "MNT-0005-027",
+   "MNT-0005-028",
+   "MNT-0005-029",
+   "MNT-0005-030",
+   "MNT-0005-031",
+   "MNT-0005-032",
+   "MNT-0005-033",
+   "MNT-0007-026",
+   "MNT-0007-027",
+   "MNT-0007-028",
+   "MNT-0007-029",
+   "MNT-0007-030",
+   "MNT-0009-024",
+   "MNT-0009-025",
+   "MNT-0009-026",
+   "MNT-0009-027",
+   "MNT-0009-028",
+   "MNT-0012-024",
+   "MNT-0012-025",
+   "MNT-0012-026",
+   "MNT-0012-027",
+   "MNT-0013-026",
+   "MNT-0013-027",
+   "MNT-0013-028",
+   "MNT-0013-029",
+   "MNT-0013-030",
+   "MNT-0013-031",
+   "MNT-0013-032",
+   "MNT-0013-033",
+   "MNT-0013-034",
+   "MNT-0013-035",
+   "MNT-0013-036",
+   "MNT-0013-037",
+   "MNT-0014-012",
+   "MNT-0014-013",
+   "MNT-0014-014",
+   "MNT-0014-015",
+   "MNT-0014-016",
+   "MNT-0014-017",
+   "MNT-0017-023",
+   "MNT-0017-024",
+   "MNT-0017-025",
+   "MNT-0017-026",
+   "MNT-0017-027",
+   "MNT-0017-028",
+   "MNT-0017-029",
+   "MNT-0017-030",
+   "MNT-0021-027",
+   "MNT-0021-028",
+   "MNT-0021-029",
+   "MNT-0021-030",
+   "MNT-0021-031",
+   "MNT-0021-032",
+   "MNT-0021-033",
+   "MNT-0021-034",
+   "MNT-0024-023",
+   "MNT-0024-024",
+   "MNT-0024-025",
+   "MNT-0024-026",
+   "MNT-0024-027",
+   "MNT-0025-028",
+   "MNT-0025-029",
+   "MNT-0025-030",
+   "MNT-0025-031",
+   "MNT-0025-032",
+   "MNT-0025-033",
+   "MNT-0028-027",
+   "MNT-0028-028",
+   "MNT-0028-029",
+   "MNT-0028-030",
+   "MNT-0028-031",
+   "MNT-0028-032",
+   "MNT-0029-008",
+   "MNT-0029-009",
+   "MNT-0029-010",
+   "MNT-0029-011",
+   "MNT-0029-012",
+   "MNT-0029-013",
+   "MNT-0032-021",
+   "MNT-0032-022",
+   "MNT-0032-023",
+   "MNT-0032-024",
+   "MNT-0032-025",
+   "MNT-0032-026",
+   "MNT-0033-021",
+   "MNT-0033-022",
+   "MNT-0033-023",
+   "MNT-0033-024",
+   "MNT-0033-025",
+   "MNT-0033-026",
+   "MNT-0033-027",
+   "MNT-0033-028",
+   "MNT-0033-029",
+   "MNT-0033-030",
+   "MNT-0034-014",
+   "MNT-0034-015",
+   "MNT-0034-016",
+   "MNT-0034-017",
+   "MNT-0034-018",
+   "MNT-0034-019",
+   "MNT-0038-025",
+   "MNT-0038-026",
+   "MNT-0038-027",
+   "MNT-0038-028",
+   "MNT-0038-029",
+   "MNT-0041-029",
+   "MNT-0041-030",
+   "MNT-0041-031",
+   "MNT-0041-032",
+   "MNT-0041-033",
+   "MNT-0041-034",
+   "MNT-0041-035",
+   "MNT-0041-036",
+   "MNT-0045-025",
+   "MNT-0045-026",
+   "MNT-0045-027",
+   "MNT-0045-028",
+   "MNT-0045-029",
+   "MNT-0045-030",
+   "MNT-0045-031",
+   "MNT-0045-032",
+   "MNT-0049-025",
+   "MNT-0049-026",
+   "MNT-0049-027",
+   "MNT-0049-028",
+   "MNT-0054-024",
+   "MNT-0054-025",
+   "MNT-0054-026",
+   "MNT-0054-027",
+   "MNT-0054-028",
+   "MNT-0054-029",
+   "MNT-0055-023",
+   "MNT-0055-024",
+   "MNT-0055-025",
+   "MNT-0055-026",
+   "MNT-0055-027",
+   "MNT-0055-028",
+   "MNT-0056-027",
+   "MNT-0056-028",
+   "MNT-0056-029",
+   "MNT-0056-030",
+   "MNT-0059-023",
+   "MNT-0059-024",
+   "MNT-0059-025",
+   "MNT-0059-026",
+   "MNT-0059-027",
+   "MNT-0063-027",
+   "MNT-0063-028",
+   "MNT-0063-029",
+   "MNT-0063-030",
+   "MNT-0063-031",
+   "MNT-0063-032",
+   "MNT-0063-033",
+   "MNT-0065-021",
+   "MNT-0065-022",
+   "MNT-0065-023",
+   "MNT-0065-024",
+   "MNT-0065-025",
+   "MNT-0065-026",
+   "MNT-0065-027",
+   "MNT-0065-028",
+   "MNT-0065-029",
+   "MNT-0073-022",
+   "MNT-0073-023",
+   "MNT-0073-024",
+   "MNT-0073-025",
+   "MNT-0073-026",
+   "MNT-0073-027",
+   "MNT-0073-028",
+   "MNT-0073-029",
+   "MNT-0075-028",
+   "MNT-0075-029",
+   "MNT-0075-030",
+   "MNT-0075-031",
+   "MNT-0075-032",
+   "MNT-0075-033",
+   "MNT-0075-034",
+   "MNT-0079-030",
+   "MNT-0079-031",
+   "MNT-0079-032",
+   "MNT-0079-033",
+   "MNT-0079-034",
+   "MNT-0079-035",
+   "MNT-0079-036",
+   "MNT-0081-025",
+   "MNT-0081-026",
+   "MNT-0081-027"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "run_query",
+     "args": {
+      "metric": "repair_cost",
+      "scope": {
+       "well_type": "T350"
+      },
+      "window": [
+       "2026-01-01",
+       "2026-10-16"
+      ],
+      "group_by": null,
+      "top": null,
+      "filters": {}
+     },
+     "result": "1 rows, total 1481391.0"
+    }
+   ],
+   "rules": [
+    "A repair belongs to a period by its start date"
+   ],
+   "citations": 200
+  },
+  "visual_data": null,
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U34",
+  "user": "Emily Carter",
+  "question": "What was the total repair cost for the Northeast Production team between 1 Jan 2026 and 30 Jun 2026?",
+  "answer": "**Repair cost \u2014 Northeast Production, 1 Jan 2026 to 30 Jun 2026: USD 1,119,981 in total**\n\n_Rules applied: A repair belongs to a period by its start date._",
+  "visual": null,
+  "citations": [
+   "MNT-0101-025",
+   "MNT-0101-026",
+   "MNT-0102-026",
+   "MNT-0102-027",
+   "MNT-0102-028",
+   "MNT-0102-029",
+   "MNT-0102-030",
+   "MNT-0102-031",
+   "MNT-0103-025",
+   "MNT-0103-026",
+   "MNT-0103-027",
+   "MNT-0103-028",
+   "MNT-0103-029",
+   "MNT-0104-020",
+   "MNT-0104-021",
+   "MNT-0104-022",
+   "MNT-0105-027",
+   "MNT-0105-028",
+   "MNT-0105-029",
+   "MNT-0106-018",
+   "MNT-0106-019",
+   "MNT-0106-020",
+   "MNT-0106-021",
+   "MNT-0107-025",
+   "MNT-0107-026",
+   "MNT-0107-027",
+   "MNT-0108-023",
+   "MNT-0108-024",
+   "MNT-0108-025",
+   "MNT-0108-026",
+   "MNT-0108-027",
+   "MNT-0108-028",
+   "MNT-0109-018",
+   "MNT-0109-019",
+   "MNT-0109-020",
+   "MNT-0110-024",
+   "MNT-0110-025",
+   "MNT-0110-026",
+   "MNT-0110-027",
+   "MNT-0111-025",
+   "MNT-0111-026",
+   "MNT-0111-027",
+   "MNT-0111-028",
+   "MNT-0111-029",
+   "MNT-0112-025",
+   "MNT-0112-026",
+   "MNT-0112-027",
+   "MNT-0113-026",
+   "MNT-0113-027",
+   "MNT-0113-028",
+   "MNT-0113-029",
+   "MNT-0113-030",
+   "MNT-0114-020",
+   "MNT-0114-021",
+   "MNT-0114-022",
+   "MNT-0114-023",
+   "MNT-0115-032",
+   "MNT-0115-033",
+   "MNT-0115-034",
+   "MNT-0115-035",
+   "MNT-0116-011",
+   "MNT-0116-012",
+   "MNT-0116-013",
+   "MNT-0117-018",
+   "MNT-0117-019",
+   "MNT-0117-020",
+   "MNT-0118-021",
+   "MNT-0118-022",
+   "MNT-0119-023",
+   "MNT-0119-024",
+   "MNT-0119-025",
+   "MNT-0119-026",
+   "MNT-0120-027",
+   "MNT-0120-028",
+   "MNT-0120-029",
+   "MNT-0121-029",
+   "MNT-0121-030",
+   "MNT-0121-031",
+   "MNT-0122-025",
+   "MNT-0122-026",
+   "MNT-0122-027",
+   "MNT-0122-028",
+   "MNT-0123-008",
+   "MNT-0123-009",
+   "MNT-0123-010",
+   "MNT-0123-011",
+   "MNT-0124-023",
+   "MNT-0124-024",
+   "MNT-0124-025",
+   "MNT-0124-026",
+   "MNT-0124-027",
+   "MNT-0125-024",
+   "MNT-0125-025",
+   "MNT-0125-026",
+   "MNT-0125-027",
+   "MNT-0125-028",
+   "MNT-0126-022",
+   "MNT-0126-023",
+   "MNT-0126-024",
+   "MNT-0127-021",
+   "MNT-0127-022",
+   "MNT-0127-023",
+   "MNT-0127-024",
+   "MNT-0127-025",
+   "MNT-0128-030",
+   "MNT-0128-031",
+   "MNT-0128-032",
+   "MNT-0128-033",
+   "MNT-0128-034",
+   "MNT-0129-010",
+   "MNT-0129-011",
+   "MNT-0129-012",
+   "MNT-0130-019",
+   "MNT-0130-020",
+   "MNT-0131-017",
+   "MNT-0131-018",
+   "MNT-0131-019",
+   "MNT-0131-020",
+   "MNT-0131-021",
+   "MNT-0132-022",
+   "MNT-0132-023",
+   "MNT-0132-024",
+   "MNT-0132-025",
+   "MNT-0133-019",
+   "MNT-0133-020",
+   "MNT-0133-021",
+   "MNT-0133-022",
+   "MNT-0134-028",
+   "MNT-0134-029",
+   "MNT-0135-026",
+   "MNT-0135-027",
+   "MNT-0135-028",
+   "MNT-0135-029",
+   "MNT-0135-030",
+   "MNT-0136-025",
+   "MNT-0136-026",
+   "MNT-0136-027",
+   "MNT-0136-028",
+   "MNT-0136-029",
+   "MNT-0136-030",
+   "MNT-0137-026",
+   "MNT-0137-027",
+   "MNT-0137-028",
+   "MNT-0137-029",
+   "MNT-0137-030",
+   "MNT-0138-026",
+   "MNT-0138-027",
+   "MNT-0138-028",
+   "MNT-0138-029",
+   "MNT-0138-030",
+   "MNT-0139-024",
+   "MNT-0139-025",
+   "MNT-0139-026",
+   "MNT-0140-021",
+   "MNT-0140-022",
+   "MNT-0140-023",
+   "MNT-0140-024",
+   "MNT-0141-024",
+   "MNT-0141-025",
+   "MNT-0141-026",
+   "MNT-0141-027",
+   "MNT-0142-006",
+   "MNT-0142-007",
+   "MNT-0142-008",
+   "MNT-0143-020",
+   "MNT-0143-021",
+   "MNT-0143-022",
+   "MNT-0143-023",
+   "MNT-0143-024",
+   "MNT-0144-025",
+   "MNT-0144-026",
+   "MNT-0144-027",
+   "MNT-0144-028",
+   "MNT-0145-022",
+   "MNT-0145-023",
+   "MNT-0145-024",
+   "MNT-0145-025",
+   "MNT-0146-007",
+   "MNT-0146-008",
+   "MNT-0146-009",
+   "MNT-0147-025",
+   "MNT-0147-026",
+   "MNT-0148-023",
+   "MNT-0148-024",
+   "MNT-0148-025",
+   "MNT-0148-026",
+   "MNT-0149-023",
+   "MNT-0149-024",
+   "MNT-0149-025",
+   "MNT-0149-026",
+   "MNT-0150-023",
+   "MNT-0150-024",
+   "MNT-0150-025",
+   "MNT-0150-026",
+   "MNT-0150-027",
+   "MNT-0151-019",
+   "MNT-0151-020",
+   "MNT-0151-021",
+   "MNT-0151-022",
+   "MNT-0152-023"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "run_query",
+     "args": {
+      "metric": "repair_cost",
+      "scope": {
+       "team": "TEAM-NE"
+      },
+      "window": [
+       "2026-01-01",
+       "2026-06-30"
+      ],
+      "group_by": null,
+      "top": null,
+      "filters": {}
+     },
+     "result": "1 rows, total 1119981.0"
+    }
+   ],
+   "rules": [
+    "A repair belongs to a period by its start date"
+   ],
+   "citations": 200
+  },
+  "visual_data": null,
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U35",
+  "user": "Emily Carter",
+  "question": "How much have we been fined in total across the field?",
+  "answer": "**Regulator fines \u2014 the whole field, all records: USD 52,500 in total**\n\n- REG-0001-002 (WELL-0001, 30 Jun 2026): notice of violation, SR-01, fine USD 5,000, open\n- REG-0008-002 (WELL-0008, 21 Nov 2024): notice of violation, SR-01, fine USD 7,500, closed\n- REG-0013-002 (WELL-0013, 27 Jun 2026): notice of violation, SR-01, fine USD 5,000, closed\n- REG-0033-002 (WELL-0033, 15 Mar 2026): notice of violation, SR-01, fine USD 5,000, closed\n- REG-0052-002 (WELL-0052, 9 Oct 2025): notice of violation, SR-01, fine USD 2,500, closed\n- REG-0090-002 (WELL-0090, 19 Jun 2023): notice of violation, SR-01, fine USD 7,500, closed\n- REG-0099-002 (WELL-0099, 7 Apr 2026): notice of violation, SR-01, fine USD 7,500, closed\n- REG-0160-002 (WELL-0160, 5 May 2023): notice of violation, SR-01, fine USD 2,500, open\n- REG-0168-002 (WELL-0168, 24 Jul 2023): notice of violation, SR-01, fine USD 2,500, closed\n- REG-0168-006 (WELL-0168, 12 Aug 2025): notice of violation, SR-01, fine USD 2,500, closed\n- REG-0190-002 (WELL-0190, 26 Jan 2024): notice of violation, SR-01, fine USD 5,000, closed",
+  "visual": "table",
+  "citations": [
+   "REG-0001-002",
+   "REG-0008-002",
+   "REG-0013-002",
+   "REG-0033-002",
+   "REG-0052-002",
+   "REG-0090-002",
+   "REG-0099-002",
+   "REG-0160-002",
+   "REG-0168-002",
+   "REG-0168-006",
+   "REG-0190-002"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "run_query",
+     "args": {
+      "metric": "fines",
+      "scope": {},
+      "window": [
+       "1900-01-01",
+       "2026-10-16"
+      ],
+      "group_by": null,
+      "top": null,
+      "filters": {}
+     },
+     "result": "1 rows, total 52500.0"
+    }
+   ],
+   "rules": [],
+   "citations": 11
+  },
+  "visual_data": {
+   "type": "table",
+   "columns": [
+    "well",
+    "event",
+    "type",
+    "date",
+    "fine",
+    "status",
+    "protocol"
+   ],
+   "rows": [
+    {
+     "well": "WELL-0001",
+     "event": "REG-0001-002",
+     "type": "notice_of_violation",
+     "date": "2026-06-30",
+     "fine": 5000.0,
+     "status": "open",
+     "protocol": "SR-01"
+    },
+    {
+     "well": "WELL-0008",
+     "event": "REG-0008-002",
+     "type": "notice_of_violation",
+     "date": "2024-11-21",
+     "fine": 7500.0,
+     "status": "closed",
+     "protocol": "SR-01"
+    },
+    {
+     "well": "WELL-0013",
+     "event": "REG-0013-002",
+     "type": "notice_of_violation",
+     "date": "2026-06-27",
+     "fine": 5000.0,
+     "status": "closed",
+     "protocol": "SR-01"
+    },
+    {
+     "well": "WELL-0033",
+     "event": "REG-0033-002",
+     "type": "notice_of_violation",
+     "date": "2026-03-15",
+     "fine": 5000.0,
+     "status": "closed",
+     "protocol": "SR-01"
+    },
+    {
+     "well": "WELL-0052",
+     "event": "REG-0052-002",
+     "type": "notice_of_violation",
+     "date": "2025-10-09",
+     "fine": 2500.0,
+     "status": "closed",
+     "protocol": "SR-01"
+    },
+    {
+     "well": "WELL-0090",
+     "event": "REG-0090-002",
+     "type": "notice_of_violation",
+     "date": "2023-06-19",
+     "fine": 7500.0,
+     "status": "closed",
+     "protocol": "SR-01"
+    },
+    {
+     "well": "WELL-0099",
+     "event": "REG-0099-002",
+     "type": "notice_of_violation",
+     "date": "2026-04-07",
+     "fine": 7500.0,
+     "status": "closed",
+     "protocol": "SR-01"
+    },
+    {
+     "well": "WELL-0160",
+     "event": "REG-0160-002",
+     "type": "notice_of_violation",
+     "date": "2023-05-05",
+     "fine": 2500.0,
+     "status": "open",
+     "protocol": "SR-01"
+    },
+    {
+     "well": "WELL-0168",
+     "event": "REG-0168-002",
+     "type": "notice_of_violation",
+     "date": "2023-07-24",
+     "fine": 2500.0,
+     "status": "closed",
+     "protocol": "SR-01"
+    },
+    {
+     "well": "WELL-0168",
+     "event": "REG-0168-006",
+     "type": "notice_of_violation",
+     "date": "2025-08-12",
+     "fine": 2500.0,
+     "status": "closed",
+     "protocol": "SR-01"
+    },
+    {
+     "well": "WELL-0190",
+     "event": "REG-0190-002",
+     "type": "notice_of_violation",
+     "date": "2024-01-26",
+     "fine": 5000.0,
+     "status": "closed",
+     "protocol": "SR-01"
+    }
+   ]
+  },
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U36",
+  "user": "Emily Carter",
+  "question": "Which wells have open fines?",
+  "answer": "**Regulator fines \u2014 the whole field (open=True): USD 7,500 in total**\n\n**Highest: WELL-0001 (USD 5,000)**\n\n- WELL-0001: USD 5,000\n- WELL-0160: USD 2,500\n\n- REG-0001-002 (WELL-0001, 30 Jun 2026): notice of violation, SR-01, fine USD 5,000, open\n- REG-0160-002 (WELL-0160, 5 May 2023): notice of violation, SR-01, fine USD 2,500, open",
+  "visual": "bar",
+  "citations": [
+   "REG-0001-002",
+   "REG-0160-002"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "run_query",
+     "args": {
+      "metric": "fines",
+      "scope": {},
+      "window": null,
+      "group_by": "well",
+      "top": null,
+      "filters": {
+       "open": true
+      }
+     },
+     "result": "2 rows, total 7500.0"
+    }
+   ],
+   "rules": [],
+   "citations": 2
+  },
+  "visual_data": {
+   "type": "bar",
+   "x": [
+    "WELL-0001",
+    "WELL-0160"
+   ],
+   "series": [
+    {
+     "name": "regulator fines (USD)",
+     "data": [
+      5000.0,
+      2500.0
+     ]
+    }
+   ]
+  },
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U37",
+  "user": "Emily Carter",
+  "question": "How many notices of violation did we receive in 2025?",
+  "answer": "**Regulator events \u2014 the whole field, 2025 (event type=notice_of_violation): 2 in total**\n\n- REG-0052-002 (WELL-0052, 9 Oct 2025): notice of violation, SR-01, fine USD 2,500, closed\n- REG-0168-006 (WELL-0168, 12 Aug 2025): notice of violation, SR-01, fine USD 2,500, closed",
+  "visual": "table",
+  "citations": [
+   "REG-0052-002",
+   "REG-0168-006"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "run_query",
+     "args": {
+      "metric": "reg_events",
+      "scope": {},
+      "window": [
+       "2025-01-01",
+       "2025-12-31"
+      ],
+      "group_by": null,
+      "top": null,
+      "filters": {
+       "event_type": "notice_of_violation"
+      }
+     },
+     "result": "1 rows, total 2.0"
+    }
+   ],
+   "rules": [],
+   "citations": 2
+  },
+  "visual_data": {
+   "type": "table",
+   "columns": [
+    "well",
+    "event",
+    "type",
+    "date",
+    "fine",
+    "status",
+    "protocol"
+   ],
+   "rows": [
+    {
+     "well": "WELL-0052",
+     "event": "REG-0052-002",
+     "type": "notice_of_violation",
+     "date": "2025-10-09",
+     "fine": 2500.0,
+     "status": "closed",
+     "protocol": "SR-01"
+    },
+    {
+     "well": "WELL-0168",
+     "event": "REG-0168-006",
+     "type": "notice_of_violation",
+     "date": "2025-08-12",
+     "fine": 2500.0,
+     "status": "closed",
+     "protocol": "SR-01"
+    }
+   ]
+  },
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U38",
+  "user": "Emily Carter",
+  "question": "What fines did the Southwest Production team get in 2026?",
+  "answer": "**Regulator fines \u2014 Southwest Production, 2026: USD 22,500 in total**\n\n- REG-0001-002 (WELL-0001, 30 Jun 2026): notice of violation, SR-01, fine USD 5,000, open\n- REG-0013-002 (WELL-0013, 27 Jun 2026): notice of violation, SR-01, fine USD 5,000, closed\n- REG-0033-002 (WELL-0033, 15 Mar 2026): notice of violation, SR-01, fine USD 5,000, closed\n- REG-0099-002 (WELL-0099, 7 Apr 2026): notice of violation, SR-01, fine USD 7,500, closed",
+  "visual": "table",
+  "citations": [
+   "REG-0001-002",
+   "REG-0013-002",
+   "REG-0033-002",
+   "REG-0099-002"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "run_query",
+     "args": {
+      "metric": "fines",
+      "scope": {
+       "team": "TEAM-SW"
+      },
+      "window": [
+       "2026-01-01",
+       "2026-10-16"
+      ],
+      "group_by": null,
+      "top": null,
+      "filters": {}
+     },
+     "result": "1 rows, total 22500.0"
+    }
+   ],
+   "rules": [],
+   "citations": 4
+  },
+  "visual_data": {
+   "type": "table",
+   "columns": [
+    "well",
+    "event",
+    "type",
+    "date",
+    "fine",
+    "status",
+    "protocol"
+   ],
+   "rows": [
+    {
+     "well": "WELL-0001",
+     "event": "REG-0001-002",
+     "type": "notice_of_violation",
+     "date": "2026-06-30",
+     "fine": 5000.0,
+     "status": "open",
+     "protocol": "SR-01"
+    },
+    {
+     "well": "WELL-0013",
+     "event": "REG-0013-002",
+     "type": "notice_of_violation",
+     "date": "2026-06-27",
+     "fine": 5000.0,
+     "status": "closed",
+     "protocol": "SR-01"
+    },
+    {
+     "well": "WELL-0033",
+     "event": "REG-0033-002",
+     "type": "notice_of_violation",
+     "date": "2026-03-15",
+     "fine": 5000.0,
+     "status": "closed",
+     "protocol": "SR-01"
+    },
+    {
+     "well": "WELL-0099",
+     "event": "REG-0099-002",
+     "type": "notice_of_violation",
+     "date": "2026-04-07",
+     "fine": 7500.0,
+     "status": "closed",
+     "protocol": "SR-01"
+    }
+   ]
+  },
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U39",
+  "user": "Emily Carter",
+  "question": "In Northeast Block 7, which spills in the last 90 days were not contained within the SOP time limit?",
+  "answer": "**6 spills in Northeast Block 7 were not contained within the 4-hour SOP limit (SR-02):** WELL-0128 after about 4.6 h (report MNT-0128-036, inspection INS-0128-0198); WELL-0133 after about 7.3 h (report MNT-0133-023, inspection INS-0133-0198); WELL-0141 after about 8.1 h (report MNT-0141-029, inspection INS-0141-0195); WELL-0141 after about 8 h (report MNT-0141-030, inspection INS-0141-0198); WELL-0145 after about 8 h (report MNT-0145-026, inspection INS-0145-0189); WELL-0149 after about 5.9 h (report MNT-0149-028, inspection INS-0149-0204). Containment times come from the free-text repair reports.",
+  "visual": "table",
+  "citations": [
+   "MNT-0128-036",
+   "MNT-0133-023",
+   "MNT-0141-029",
+   "MNT-0141-030",
+   "MNT-0145-026",
+   "MNT-0149-028",
+   "INS-0128-0198",
+   "INS-0133-0198",
+   "INS-0141-0195",
+   "INS-0141-0198",
+   "INS-0145-0189",
+   "INS-0149-0204",
+   "Spill Response SOP SR-02"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "containment",
+     "args": [
+      "In Northeast Block 7, which spills in the last 90 days were not contained within the SOP time limit?",
+      "NE-07"
+     ]
+    }
+   ],
+   "rules": [
+    "SR-02.hours = 4 (Spill Response SOP SR-02)"
+   ],
+   "citations": 13
+  },
+  "visual_data": {
+   "type": "table",
+   "columns": [
+    "Well",
+    "Date",
+    "Contained after (h)",
+    "Report",
+    "Inspection"
+   ],
+   "rows": [
+    {
+     "Well": "WELL-0128",
+     "Date": "10 Sep 2026",
+     "Contained after (h)": 4.6,
+     "Report": "MNT-0128-036",
+     "Inspection": "INS-0128-0198"
+    },
+    {
+     "Well": "WELL-0133",
+     "Date": "20 Aug 2026",
+     "Contained after (h)": 7.3,
+     "Report": "MNT-0133-023",
+     "Inspection": "INS-0133-0198"
+    },
+    {
+     "Well": "WELL-0141",
+     "Date": "13 Aug 2026",
+     "Contained after (h)": 8.1,
+     "Report": "MNT-0141-029",
+     "Inspection": "INS-0141-0195"
+    },
+    {
+     "Well": "WELL-0141",
+     "Date": "3 Sep 2026",
+     "Contained after (h)": 8.0,
+     "Report": "MNT-0141-030",
+     "Inspection": "INS-0141-0198"
+    },
+    {
+     "Well": "WELL-0145",
+     "Date": "30 Jul 2026",
+     "Contained after (h)": 8.0,
+     "Report": "MNT-0145-026",
+     "Inspection": "INS-0145-0189"
+    },
+    {
+     "Well": "WELL-0149",
+     "Date": "17 Sep 2026",
+     "Contained after (h)": 5.9,
+     "Report": "MNT-0149-028",
+     "Inspection": "INS-0149-0204"
+    }
+   ]
+  },
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U40",
+  "user": "Emily Carter",
+  "question": "In Southwest Block 23, which spills in the last 365 days were not contained within the SOP time limit?",
+  "answer": "**14 spills in Southwest Block 23 were not contained within the 4-hour SOP limit (SR-02):** WELL-0001 after about 7 h (report MNT-0001-029, inspection INS-0001-0185); WELL-0005 after about 6.3 h (report MNT-0005-028, inspection INS-0005-0174); WELL-0010 after about 5.5 h (report MNT-0010-026, inspection INS-0010-0181); WELL-0013 after about 5.7 h (report MNT-0013-026, inspection INS-0013-0165); WELL-0013 after about 5 h (report MNT-0013-029, inspection INS-0013-0177); WELL-0015 after about 8.8 h (report MNT-0015-028, inspection INS-0015-0166); WELL-0017 after about 4.9 h (report MNT-0017-029, inspection INS-0017-0198); WELL-0023 after about 6.8 h (report MNT-0023-028, inspection INS-0023-0181); WELL-0030 after about 7.3 h (report MNT-0030-032, inspection INS-0030-0192); WELL-0042 after about 7.5 h (report MNT-0042-026, inspection INS-0042-0204); WELL-0044 after about 7.9 h (report MNT-0044-036, inspection INS-0044-0197); WELL-0047 after about 8.7 h (report MNT-0047-019, inspection INS-0047-0156); WELL-0048 after about 8.1 h (report MNT-0048-022, inspection INS-0048-0169); WELL-0050 after about 8.5 h (report MNT-0050-021, inspection INS-0050-0175). Containment times come from the free-text repair reports.",
+  "visual": "table",
+  "citations": [
+   "MNT-0001-029",
+   "MNT-0005-028",
+   "MNT-0010-026",
+   "MNT-0013-026",
+   "MNT-0013-029",
+   "MNT-0015-028",
+   "MNT-0017-029",
+   "MNT-0023-028",
+   "MNT-0030-032",
+   "MNT-0042-026",
+   "MNT-0044-036",
+   "MNT-0047-019",
+   "MNT-0048-022",
+   "MNT-0050-021",
+   "INS-0001-0185",
+   "INS-0005-0174",
+   "INS-0010-0181",
+   "INS-0013-0165",
+   "INS-0013-0177",
+   "INS-0015-0166",
+   "INS-0017-0198",
+   "INS-0023-0181",
+   "INS-0030-0192",
+   "INS-0042-0204",
+   "INS-0044-0197",
+   "INS-0047-0156",
+   "INS-0048-0169",
+   "INS-0050-0175",
+   "Spill Response SOP SR-02"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "containment",
+     "args": [
+      "In Southwest Block 23, which spills in the last 365 days were not contained within the SOP time limit?",
+      "SW-23"
+     ]
+    }
+   ],
+   "rules": [
+    "SR-02.hours = 4 (Spill Response SOP SR-02)"
+   ],
+   "citations": 29
+  },
+  "visual_data": {
+   "type": "table",
+   "columns": [
+    "Well",
+    "Date",
+    "Contained after (h)",
+    "Report",
+    "Inspection"
+   ],
+   "rows": [
+    {
+     "Well": "WELL-0001",
+     "Date": "11 Jun 2026",
+     "Contained after (h)": 7.0,
+     "Report": "MNT-0001-029",
+     "Inspection": "INS-0001-0185"
+    },
+    {
+     "Well": "WELL-0005",
+     "Date": "12 Mar 2026",
+     "Contained after (h)": 6.3,
+     "Report": "MNT-0005-028",
+     "Inspection": "INS-0005-0174"
+    },
+    {
+     "Well": "WELL-0010",
+     "Date": "23 Apr 2026",
+     "Contained after (h)": 5.5,
+     "Report": "MNT-0010-026",
+     "Inspection": "INS-0010-0181"
+    },
+    {
+     "Well": "WELL-0013",
+     "Date": "1 Jan 2026",
+     "Contained after (h)": 5.7,
+     "Report": "MNT-0013-026",
+     "Inspection": "INS-0013-0165"
+    },
+    {
+     "Well": "WELL-0013",
+     "Date": "26 Mar 2026",
+     "Contained after (h)": 5.0,
+     "Report": "MNT-0013-029",
+     "Inspection": "INS-0013-0177"
+    },
+    {
+     "Well": "WELL-0015",
+     "Date": "8 Jan 2026",
+     "Contained after (h)": 8.8,
+     "Report": "MNT-0015-028",
+     "Inspection": "INS-0015-0166"
+    },
+    {
+     "Well": "WELL-0017",
+     "Date": "13 Aug 2026",
+     "Contained after (h)": 4.9,
+     "Report": "MNT-0017-029",
+     "Inspection": "INS-0017-0198"
+    },
+    {
+     "Well": "WELL-0023",
+     "Date": "16 Apr 2026",
+     "Contained after (h)": 6.8,
+     "Report": "MNT-0023-028",
+     "Inspection": "INS-0023-0181"
+    },
+    {
+     "Well": "WELL-0030",
+     "Date": "23 Jul 2026",
+     "Contained after (h)": 7.3,
+     "Report": "MNT-0030-032",
+     "Inspection": "INS-0030-0192"
+    },
+    {
+     "Well": "WELL-0042",
+     "Date": "24 Sep 2026",
+     "Contained after (h)": 7.5,
+     "Report": "MNT-0042-026",
+     "Inspection": "INS-0042-0204"
+    },
+    {
+     "Well": "WELL-0044",
+     "Date": "20 Aug 2026",
+     "Contained after (h)": 7.9,
+     "Report": "MNT-0044-036",
+     "Inspection": "INS-0044-0197"
+    },
+    {
+     "Well": "WELL-0047",
+     "Date": "20 Nov 2025",
+     "Contained after (h)": 8.7,
+     "Report": "MNT-0047-019",
+     "Inspection": "INS-0047-0156"
+    },
+    {
+     "Well": "WELL-0048",
+     "Date": "8 Jan 2026",
+     "Contained after (h)": 8.1,
+     "Report": "MNT-0048-022",
+     "Inspection": "INS-0048-0169"
+    },
+    {
+     "Well": "WELL-0050",
+     "Date": "12 Mar 2026",
+     "Contained after (h)": 8.5,
+     "Report": "MNT-0050-021",
+     "Inspection": "INS-0050-0175"
+    }
+   ]
+  },
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U41",
+  "user": "Emily Carter",
+  "question": "Which spills in Southwest Block 23 in the last 90 days needed a report to the regulator?",
+  "answer": "**1 spill(s) in Southwest Block 23 in the last 90 days reached the 5 bbl reporting threshold (Spill Response SOP SR-01):**\n- WELL-0042: 5.4 bbl on 17 Sep 2026 (INS-0042-0203). SR-03: agency clean-up verification due by 16 Nov 2026, none recorded.\nNo other spill in that period reached the threshold.",
+  "visual": "table",
+  "citations": [
+   "INS-0042-0203",
+   "Spill Response SOP SR-01",
+   "INS-0042-0203",
+   "REG-0042-001",
+   "MNT-0042-025"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "reportable",
+     "args": [
+      "Which spills in Southwest Block 23 in the last 90 days needed a report to the regulator?",
+      "SW-23"
+     ]
+    }
+   ],
+   "rules": [
+    "spill.reportable_bbl = 5 (Spill Response SOP \u00a73)",
+    "SR-01.hours = 24 (Spill Response SOP SR-01)",
+    "SR-03.days = 60 (Spill Response SOP SR-03)"
+   ],
+   "citations": 4
+  },
+  "visual_data": {
+   "type": "table",
+   "columns": [
+    "Well",
+    "Date",
+    "Barrels",
+    "Status"
+   ],
+   "rows": [
+    {
+     "Well": "WELL-0042",
+     "Date": "17 Sep 2026",
+     "Barrels": 5.4,
+     "Status": "SR-03: agency clean-up verification due by 16 Nov 2026, none recorded"
+    }
+   ]
+  },
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U42",
+  "user": "Emily Carter",
+  "question": "Which spills in Northeast Block 7 in the last 90 days needed a report to the regulator?",
+  "answer": "**1 spill(s) in Northeast Block 7 in the last 90 days reached the 5 bbl reporting threshold (Spill Response SOP SR-01):**\n- WELL-0123: 6.0 bbl on 24 Sep 2026 (INS-0123-0093). SR-03: agency clean-up verification due by 23 Nov 2026, none recorded.\nNo other spill in that period reached the threshold.",
+  "visual": "table",
+  "citations": [
+   "INS-0123-0093",
+   "Spill Response SOP SR-01",
+   "INS-0123-0093",
+   "REG-0123-001",
+   "MNT-0123-014"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "reportable",
+     "args": [
+      "Which spills in Northeast Block 7 in the last 90 days needed a report to the regulator?",
+      "NE-07"
+     ]
+    }
+   ],
+   "rules": [
+    "spill.reportable_bbl = 5 (Spill Response SOP \u00a73)",
+    "SR-01.hours = 24 (Spill Response SOP SR-01)",
+    "SR-03.days = 60 (Spill Response SOP SR-03)"
+   ],
+   "citations": 4
+  },
+  "visual_data": {
+   "type": "table",
+   "columns": [
+    "Well",
+    "Date",
+    "Barrels",
+    "Status"
+   ],
+   "rows": [
+    {
+     "Well": "WELL-0123",
+     "Date": "24 Sep 2026",
+     "Barrels": 6.0,
+     "Status": "SR-03: agency clean-up verification due by 23 Nov 2026, none recorded"
+    }
+   ]
+  },
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U43",
+  "user": "Emily Carter",
+  "question": "What notes do we have on WELL-0101?",
+  "answer": "**Human notes \u2014 WELL-0101: 3 in total**\n\n- CTX-0101-001 (WELL-0101, Michael Turner, operator_note): Workover rig delayed by weather; restart pushed back about a week.\n- CTX-0101-002 (WELL-0101, Ryan Brooks, operator_feedback): Inspection INS-0101-0197: I think this was only produced water, not crude.\n- CTX-0101-003 (WELL-0101, Chris Dalton, operator_feedback): Inspection INS-0101-0197: sampled the stain, it is crude oil. The detection stands.",
+  "visual": "table",
+  "citations": [
+   "CTX-0101-001",
+   "CTX-0101-002",
+   "CTX-0101-003"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "run_query",
+     "args": {
+      "metric": "notes",
+      "scope": {
+       "wells": [
+        "WELL-0101"
+       ]
+      },
+      "window": null,
+      "group_by": null,
+      "top": null,
+      "filters": {}
+     },
+     "result": "1 rows, total 3.0"
+    }
+   ],
+   "rules": [],
+   "citations": 3
+  },
+  "visual_data": {
+   "type": "table",
+   "columns": [
+    "well",
+    "note",
+    "type",
+    "text",
+    "by"
+   ],
+   "rows": [
+    {
+     "well": "WELL-0101",
+     "note": "CTX-0101-001",
+     "type": "operator_note",
+     "text": "Workover rig delayed by weather; restart pushed back about a week.",
+     "by": "Michael Turner"
+    },
+    {
+     "well": "WELL-0101",
+     "note": "CTX-0101-002",
+     "type": "operator_feedback",
+     "text": "Inspection INS-0101-0197: I think this was only produced water, not crude.",
+     "by": "Ryan Brooks"
+    },
+    {
+     "well": "WELL-0101",
+     "note": "CTX-0101-003",
+     "type": "operator_feedback",
+     "text": "Inspection INS-0101-0197: sampled the stain, it is crude oil. The detection stands.",
+     "by": "Chris Dalton"
+    }
+   ]
+  },
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U44",
+  "user": "Emily Carter",
+  "question": "What notes do we have on WELL-0013?",
+  "answer": "**Human notes \u2014 WELL-0013: 0 in total**\n\nNo matching records.",
+  "visual": null,
+  "citations": [],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "run_query",
+     "args": {
+      "metric": "notes",
+      "scope": {
+       "wells": [
+        "WELL-0013"
+       ]
+      },
+      "window": null,
+      "group_by": null,
+      "top": null,
+      "filters": {}
+     },
+     "result": "0 rows, total 0"
+    }
+   ],
+   "rules": [],
+   "citations": 0
+  },
+  "visual_data": null,
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U45",
+  "user": "Emily Carter",
+  "question": "Is any downtime planned for WELL-0001?",
+  "answer": "**Yes, downtime is planned for WELL-0001:**\n- Well shut in from 7 Oct for planned rod string replacement. Work order not yet in the maintenance system. Expected back online around 20 Oct. \u2014 note CTX-0001-003 by Jake Morales",
+  "visual": null,
+  "citations": [
+   "CTX-0001-003",
+   "CTX-0001-002"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "planned",
+     "args": [
+      "WELL-0001"
+     ]
+    }
+   ],
+   "rules": [],
+   "citations": 2
+  },
+  "visual_data": null,
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ },
+ {
+  "id": "U46",
+  "user": "Emily Carter",
+  "question": "Which rules has WELL-0082 broken in the last 12 months?",
+  "answer": "**WELL-0082: 2 rule breach(es) in the last 12 months**.\n- **SR-02** (29 Jan 2026 (0.2 bbl, INS-0082-0167)): contained after about 8.6 h vs 4 h limit (report MNT-0082-025)\n- **SR-02** (10 Sep 2026 (0.7 bbl, INS-0082-0198)): contained after about 7.1 h vs 4 h limit (report MNT-0082-028)\n\n**Still open / pending:**\n- RC-02: no flowline integrity test yet in 2026; last one 8 Mar 2025 (MNT-0082-020)\n\n**Met:**",
+  "visual": "table",
+  "citations": [
+   "INS-0082-0167",
+   "MNT-0082-025",
+   "INS-0082-0198",
+   "MNT-0082-028",
+   "MNT-0082-020",
+   "Spill Response SOP",
+   "Regulatory Compliance SOP"
+  ],
+  "engine": "rules",
+  "confidence": "high",
+  "trace": {
+   "engine": "rules",
+   "steps": [
+    {
+     "tool": "compliance",
+     "args": [
+      "WELL-0082"
+     ]
+    }
+   ],
+   "rules": [
+    "SR-01.hours = 24 (Spill Response SOP SR-01)",
+    "SR-02.hours = 4 (Spill Response SOP SR-02)",
+    "SR-03.days = 60 (Spill Response SOP SR-03)",
+    "RC-04.days = 30 (Regulatory Compliance SOP RC-04)",
+    "spill.reportable_bbl = 5 (Spill Response SOP \u00a73)",
+    "T200.rca_repairs = 3 (T200 manual (maintenance escalation, RCA))",
+    "T350.rca_repairs = 3 (T350 manual (maintenance escalation, RCA))"
+   ],
+   "citations": 7
+  },
+  "visual_data": {
+   "type": "table",
+   "columns": [
+    "Status",
+    "Rule",
+    "Detail"
+   ],
+   "rows": [
+    {
+     "Status": "Breach",
+     "Rule": "SR-02",
+     "Detail": "contained after about 8.6 h vs 4 h limit (report MNT-0082-025)"
+    },
+    {
+     "Status": "Breach",
+     "Rule": "SR-02",
+     "Detail": "contained after about 7.1 h vs 4 h limit (report MNT-0082-028)"
+    },
+    {
+     "Status": "Open",
+     "Rule": "RC-02",
+     "Detail": "no flowline integrity test yet in 2026; last one 8 Mar 2025 (MNT-0082-020)"
+    }
+   ]
+  },
+  "missing": [],
+  "unexpected": [],
+  "visual_ok": true,
+  "pass": true
+ }
+]
