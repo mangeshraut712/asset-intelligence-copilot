@@ -1,0 +1,52 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Asset Intelligence Copilot</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+:root{--bg:#0f1419;--panel:#171d24;--line:#2a333d;--fg:#e6e9ec;--mut:#8b96a1;--acc:#f59e0b}
+*{box-sizing:border-box}body{margin:0;font:14px/1.5 system-ui,sans-serif;background:var(--bg);color:var(--fg);display:flex;height:100vh}
+aside{width:290px;background:var(--panel);border-right:1px solid var(--line);padding:16px;overflow:auto}
+main{flex:1;display:flex;flex-direction:column}#log{flex:1;overflow:auto;padding:24px}
+h1{font-size:16px;margin:0 0 4px}.mut{color:var(--mut);font-size:12px}select,button,textarea{font:inherit}
+select,textarea{width:100%;background:#0b0f13;color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:8px}
+button{background:var(--acc);border:0;border-radius:6px;padding:8px 14px;font-weight:600;cursor:pointer}
+.msg{max-width:980px;margin:0 auto 18px}.u{color:var(--acc);font-weight:600}.bot{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.cites{margin-top:8px;font-size:12px;color:var(--mut)}.cites span{display:inline-block;background:#0b0f13;border:1px solid var(--line);border-radius:4px;padding:0 6px;margin:2px}
+table{border-collapse:collapse;width:100%;margin-top:10px;font-size:13px}td,th{border:1px solid var(--line);padding:5px 8px;text-align:left;vertical-align:top}th{background:#0b0f13}
+.card{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}.card div{background:#0b0f13;border:1px solid var(--line);border-radius:8px;padding:8px}.card b{display:block;font-size:18px}
+.ok{color:#22c55e}.bad{color:#ef4444}.map{height:340px;margin-top:10px;border-radius:8px}
+form{display:flex;gap:8px;padding:12px 24px;border-top:1px solid var(--line)}form textarea{height:44px;resize:none}
+.ex{display:block;font-size:12px;color:var(--mut);cursor:pointer;margin:6px 0}.ex:hover{color:var(--fg)}
+pre{white-space:pre-wrap;font-size:11px;color:var(--mut)}
+</style></head><body>
+<aside><h1>Asset Intelligence Copilot</h1><div class="mut" id="st">loading…</div><br>
+<label class="mut">Acting as</label><select id="user"></select><br><br>
+<button onclick="newChat()">New chat</button> <span class="mut" id="chatid"></span><br><br>
+<div class="mut">Try:</div><div id="exs"></div><br>
+<div class="mut">Memory (shared facts / corrections / type rules)</div><pre id="mem"></pre></aside>
+<main><div id="log"></div><form onsubmit="send(event)"><textarea id="q" placeholder="Ask about wells, spills, downtime, compliance… or correct the data"></textarea><button>Ask</button></form></main>
+<script>
+const EX=["Is WELL-0001 producing oil right now? When was it last inspected, and by whom?","Which wells in Northeast Block 8 are not producing oil right now, and why? Show them in a table.","Show a line chart of WELL-0001's wellhead temperature against air temperature for the last 13 weeks, and mark when it was not producing oil.","Which 3 wells in Northeast Block 7 had the most downtime in the last 4 months? Show a bar chart.","Show on a map every well in Northeast Block 8 with a real spill in the last 90 days.","Show a heatmap of 2026 spills by geographic area and month.","Which rules has WELL-0001 broken in the last 12 months, and what is still open?","For the three wells we discussed yesterday, what have repairs cost this year?","Was the 20 Aug spill at WELL-0101 real oil?"];
+let chat='c'+Date.now();const $=id=>document.getElementById(id);
+function newChat(){chat='c'+Date.now();$('log').innerHTML='';$('chatid').textContent=chat}
+EX.forEach(e=>{const a=document.createElement('a');a.className='ex';a.textContent=e;a.onclick=()=>{$('q').value=e};$('exs').appendChild(a)});
+fetch('/api/users').then(r=>r.json()).then(us=>{us.forEach(u=>{const o=document.createElement('option');o.value=u.user_id;o.textContent=`${u.name} — ${u.role.replace(/_/g,' ')}`;if(u.user_id=='U-201')o.selected=1;$('user').appendChild(o)});$('user').onchange=()=>{newChat();mem()}});
+fetch('/api/status').then(r=>r.json()).then(s=>$('st').textContent=`${s.wells} wells · ${s.llm?'LLM: '+s.model:'rule-based router (no LLM key)'}`);
+function mem(){fetch('/api/memory?user='+$('user').value).then(r=>r.json()).then(m=>{$('mem').textContent=[...m.shared_facts.map(f=>`[fact] ${f.asset_id}: ${f.text} (${f.status})`),...m.corrections.map(c=>`[corr] ${c.inspection_id} ${c.field}: ${c.original_value}→${c.corrected_value}`),...m.type_rules.map(t=>`[rule] ${t.well_type} ${t.rule_key}=${t.value}`)].join('\n')||'(empty)'})}
+newChat();mem();
+async function send(e){e.preventDefault();const q=$('q').value.trim();if(!q)return;$('q').value='';
+ const m=document.createElement('div');m.className='msg';m.innerHTML=`<div class="u">${$('user').selectedOptions[0].textContent.split(' — ')[0]}: </div><div>${q}</div>`;$('log').appendChild(m);
+ const b=document.createElement('div');b.className='msg bot';b.textContent='…';$('log').appendChild(b);$('log').scrollTop=1e9;
+ const r=await (await fetch('/api/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q,user:$('user').value,chat})})).json();
+ b.innerHTML=marked.parse(r.text);if(r.visual)render(b,r.visual);
+ b.insertAdjacentHTML('beforeend',`<div class="cites">Sources: ${[...new Set(r.citations)].slice(0,40).map(c=>`<span>${c}</span>`).join('')} · <i>${r.engine}</i></div>`);$('log').scrollTop=1e9;mem()}
+function render(el,v){const d=document.createElement('div');el.appendChild(d);
+ if(v.type=='table'){d.innerHTML=`<table><tr>${v.columns.map(c=>`<th>${c}</th>`).join('')}</tr>${v.rows.map(r=>`<tr>${v.columns.map(c=>`<td>${r[c]??''}</td>`).join('')}</tr>`).join('')}</table>`}
+ else if(v.type=='card'){const s=v.data;d.innerHTML=`<div class="card"><div>Status<b class="${s.producing?'ok':'bad'}">${s.producing?'Producing':'Not producing'}</b></div><div>Wellhead − air<b>${s.delta_c} °C</b><span class="mut">limit ${s.threshold_c} °C (${s.well_type})</span></div><div>Last inspection<b>${s.inspected_at.slice(0,10)}</b><span class="mut">${s.inspector} · ${s.method}</span></div><div>Recorded status<b class="${s.recorded_status_stale?'bad':''}">${s.recorded_status}</b><span class="mut">${s.recorded_status_stale?'out of date':''}</span></div></div>`}
+ else if(v.type=='line'||v.type=='bar'){const cv=document.createElement('canvas');d.appendChild(cv);const ds=v.series.map((s,i)=>({label:s.name,data:s.data,borderColor:['#f59e0b','#38bdf8'][i%2],backgroundColor:['#f59e0b','#38bdf8'][i%2]}));
+  if(v.marks)ds.push({label:v.mark_label,type:'scatter',data:v.x.map((x,i)=>v.marks.includes(x)?{x,y:v.series[0].data[i]}:null).filter(Boolean),backgroundColor:'#ef4444',pointRadius:7});
+  new Chart(cv,{type:v.type,data:{labels:v.x,datasets:ds},options:{plugins:{legend:{labels:{color:'#e6e9ec'}}},scales:{x:{ticks:{color:'#8b96a1'}},y:{ticks:{color:'#8b96a1'}}}}})}
+ else if(v.type=='map'){d.className='map';setTimeout(()=>{const mp=L.map(d);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mp);const ps=v.points.map(p=>L.marker([p.lat,p.lon]).addTo(mp).bindTooltip(p.label,{permanent:true}));if(ps.length)mp.fitBounds(L.featureGroup(ps).getBounds().pad(0.3));else mp.setView([32,-102.3],10)},0)}
+ else if(v.type=='heatmap'){const mx=Math.max(1,...v.z.flat());d.innerHTML=`<table><tr><th></th>${v.x.map(x=>`<th>${x}</th>`).join('')}<th>Total</th></tr>${v.y.map((y,i)=>`<tr><th>${y}</th>${v.z[i].map(z=>`<td style="background:rgba(245,158,11,${z/mx});text-align:center">${z}</td>`).join('')}<td>${v.z[i].reduce((a,b)=>a+b,0)}</td></tr>`).join('')}</table>`}}
+</script></body></html>
