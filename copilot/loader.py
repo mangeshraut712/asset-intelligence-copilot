@@ -71,6 +71,18 @@ def parse_rules(fleet):
     rules.append(("RC-04.days", _num(r"answered within \*\*([\d.]+) days", r, 30), "Regulatory Compliance SOP RC-04"))
     return rules
 
+_CONTAINED = re.compile(r"contained\W*(?:about|after about|after|within|in)?\s*(?:about\s*)?\**\s*(\d+(?:\.\d+)?)\s*(hours?|hrs?|h|minutes?|mins?)\b", re.I)
+
+def parse_contained_hours(text):
+    """Containment time (hours) from the narrative of a free-text repair report.
+    Prefers the 'What happened' narrative over the compliance table; converts minutes."""
+    if not text: return None
+    t = text.replace("**", "")
+    m = _CONTAINED.search(t)
+    if not m: return None
+    v = float(m.group(1))
+    return round(v / 60, 2) if m.group(2).lower().startswith("m") else v
+
 def load(data_dirs, db_path=DB_PATH):
     os.makedirs(os.path.dirname(os.path.abspath(db_path)), exist_ok=True)
     con = sqlite3.connect(db_path)
@@ -111,8 +123,7 @@ def load(data_dirs, db_path=DB_PATH):
                     rp = os.path.join(wd, x["report_file"])
                     if os.path.exists(rp):
                         rt = open(rp).read()
-                        mm = re.search(r"contained (?:about |after about )?([\d.]+) hours", rt, re.I)
-                        ch = float(mm.group(1)) if mm else None
+                        ch = parse_contained_hours(rt)
                 c = x.get("cost_usd") or {}
                 con.execute("INSERT OR REPLACE INTO maintenance VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", (x["maintenance_id"], x["asset_id"], x.get("started_at"), x.get("completed_at"),
                     x.get("maintenance_type"), x.get("equipment_kind"), x.get("issue"), x.get("action_taken"), x.get("technician_user_id"), x.get("contractor"),

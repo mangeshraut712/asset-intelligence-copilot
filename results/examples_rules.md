@@ -100,12 +100,12 @@ Real spills in 2026 by area and month (corrected detections removed). Totals: So
 - **SR-02** (11 Jun 2026 (6.8 bbl, INS-0001-0185)): contained after about 7 h vs 4 h limit (report MNT-0001-029)
 
 **Still open / pending:**
-- SR-01: notice of violation REG-0001-002, fine USD 5,000, still open
+- SR-01 (11 Jun 2026 (6.8 bbl, INS-0001-0185)): notice of violation REG-0001-002, fine USD 5,000, still open
 - RCA: root-cause analysis due on flowline: 3 corrective repairs in 12 months (MNT-0001-028, MNT-0001-029, MNT-0001-032)
 - Manual §4: planned shut-in not yet recorded in the maintenance system, which the manual requires before work starts (CTX-0001-003)
 
 **Met:**
-- SR-02: contained after about 1.7 h vs 4 h limit (report MNT-0001-032)
+- SR-02 (1 Oct 2026 (1.6 bbl, INS-0001-0201)): contained after about 1.7 h vs 4 h limit (report MNT-0001-032)
 - RC-02: annual flowline integrity test done 7 Mar 2026 (MNT-0001-026)
 
 *Visual:* table · *Citations:* INS-0001-0185, REG-0001-001, REG-0001-002, REG-0001-003, MNT-0001-029, INS-0001-0201, MNT-0001-032, MNT-0001-028, MNT-0001-026, CTX-0001-003, Spill Response SOP, Regulatory Compliance SOP
@@ -136,7 +136,7 @@ Real spills in 2026 by area and month (corrected detections removed). Totals: So
 ## Q11 — Michael Turner
 **Q:** For the three wells we discussed yesterday, what have repairs cost this year?
 
-From your earlier conversation (2026-10-18T06:23: "Which 3 wells in Northeast Block 7 had the most downtime in the last 4 months? Show a bar chart.") the wells were WELL-0121, WELL-0107, WELL-0138. **Repair costs in 2026:** WELL-0121: USD 25,794 (7 jobs) · WELL-0107: USD 5,176 (6 jobs) · WELL-0138: USD 46,942 (10 jobs)
+From your earlier conversation (2026-10-18T08:16: "Which 3 wells in Northeast Block 7 had the most downtime in the last 4 months? Show a bar chart.") the wells were WELL-0121, WELL-0107, WELL-0138. **Repair costs in 2026:** WELL-0121: USD 25,794 (7 jobs) · WELL-0107: USD 5,176 (6 jobs) · WELL-0138: USD 46,942 (10 jobs)
 
 *Visual:* bar · *Citations:* MNT-0121-029, MNT-0121-030, MNT-0121-031, MNT-0121-032, MNT-0121-033, MNT-0121-034, MNT-0121-035, MNT-0107-025, MNT-0107-026, MNT-0107-027, MNT-0107-028, MNT-0107-029, MNT-0107-030, MNT-0138-026, MNT-0138-027, MNT-0138-028, MNT-0138-029, MNT-0138-030, MNT-0138-031, MNT-0138-032, MNT-0138-033, MNT-0138-034, MNT-0138-035
 

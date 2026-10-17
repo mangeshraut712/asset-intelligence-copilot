@@ -628,7 +628,7 @@
   "id": "Q9",
   "user": "Michael Turner",
   "question": "Which rules has WELL-0001 broken in the last 12 months, and what is still open?",
-  "answer": "**WELL-0001: 4 rule breach(es) in the last 12 months**, USD 5,000 in fines still open.\n- **SR-01** (11 Jun 2026 (6.8 bbl, INS-0001-0185)): written notice after 41 h vs 24 h limit (REG-0001-001)\n- **SR-03** (11 Jun 2026 (6.8 bbl, INS-0001-0185)): agency clean-up verification due by 10 Aug 2026, still open (REG-0001-003)\n- **RC-04** (11 Jun 2026 (6.8 bbl, INS-0001-0185)): response to REG-0001-002 was due by 30 Jul 2026; none recorded\n- **SR-02** (11 Jun 2026 (6.8 bbl, INS-0001-0185)): contained after about 7 h vs 4 h limit (report MNT-0001-029)\n\n**Still open / pending:**\n- SR-01: notice of violation REG-0001-002, fine USD 5,000, still open\n- RCA: root-cause analysis due on flowline: 3 corrective repairs in 12 months (MNT-0001-028, MNT-0001-029, MNT-0001-032)\n- Manual \u00a74: planned shut-in not yet recorded in the maintenance system, which the manual requires before work starts (CTX-0001-003)\n\n**Met:**\n- SR-02: contained after about 1.7 h vs 4 h limit (report MNT-0001-032)\n- RC-02: annual flowline integrity test done 7 Mar 2026 (MNT-0001-026)",
+  "answer": "**WELL-0001: 4 rule breach(es) in the last 12 months**, USD 5,000 in fines still open.\n- **SR-01** (11 Jun 2026 (6.8 bbl, INS-0001-0185)): written notice after 41 h vs 24 h limit (REG-0001-001)\n- **SR-03** (11 Jun 2026 (6.8 bbl, INS-0001-0185)): agency clean-up verification due by 10 Aug 2026, still open (REG-0001-003)\n- **RC-04** (11 Jun 2026 (6.8 bbl, INS-0001-0185)): response to REG-0001-002 was due by 30 Jul 2026; none recorded\n- **SR-02** (11 Jun 2026 (6.8 bbl, INS-0001-0185)): contained after about 7 h vs 4 h limit (report MNT-0001-029)\n\n**Still open / pending:**\n- SR-01 (11 Jun 2026 (6.8 bbl, INS-0001-0185)): notice of violation REG-0001-002, fine USD 5,000, still open\n- RCA: root-cause analysis due on flowline: 3 corrective repairs in 12 months (MNT-0001-028, MNT-0001-029, MNT-0001-032)\n- Manual \u00a74: planned shut-in not yet recorded in the maintenance system, which the manual requires before work starts (CTX-0001-003)\n\n**Met:**\n- SR-02 (1 Oct 2026 (1.6 bbl, INS-0001-0201)): contained after about 1.7 h vs 4 h limit (report MNT-0001-032)\n- RC-02: annual flowline integrity test done 7 Mar 2026 (MNT-0001-026)",
   "visual": "table",
   "citations": [
    "INS-0001-0185",
@@ -854,7 +854,7 @@
   "id": "Q11",
   "user": "Michael Turner",
   "question": "For the three wells we discussed yesterday, what have repairs cost this year?",
-  "answer": "From your earlier conversation (2026-10-18T06:23: \"Which 3 wells in Northeast Block 7 had the most downtime in the last 4 months? Show a bar chart.\") the wells were WELL-0121, WELL-0107, WELL-0138. **Repair costs in 2026:** WELL-0121: USD 25,794 (7 jobs) \u00b7 WELL-0107: USD 5,176 (6 jobs) \u00b7 WELL-0138: USD 46,942 (10 jobs)",
+  "answer": "From your earlier conversation (2026-10-18T08:16: \"Which 3 wells in Northeast Block 7 had the most downtime in the last 4 months? Show a bar chart.\") the wells were WELL-0121, WELL-0107, WELL-0138. **Repair costs in 2026:** WELL-0121: USD 25,794 (7 jobs) \u00b7 WELL-0107: USD 5,176 (6 jobs) \u00b7 WELL-0138: USD 46,942 (10 jobs)",
   "visual": "bar",
   "citations": [
    "MNT-0121-029",

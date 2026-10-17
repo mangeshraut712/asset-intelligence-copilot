@@ -322,8 +322,8 @@ class Copilot:
         r = T.compliance(w)
         txt = [f"**{w}: {len(r['breaches'])} rule breach(es) in the last 12 months**" + (f", USD {r['fines_open']:,.0f} in fines still open." if r["fines_open"] else ".")]
         txt += [f"- **{b['rule']}** ({b.get('spill', '')}): {b['detail']}" for b in r["breaches"]]
-        txt.append("\n**Still open / pending:**"); txt += [f"- {o['rule']}: {o['detail']}" for o in r["open"]]
-        txt.append("\n**Met:**"); txt += [f"- {m['rule']}: {m['detail']}" for m in r["met"]]
+        txt.append("\n**Still open / pending:**"); txt += [f"- {o['rule']}" + (f" ({o['spill']})" if o.get("spill") else "") + f": {o['detail']}" for o in r["open"]]
+        txt.append("\n**Met:**"); txt += [f"- {m['rule']}" + (f" ({m['spill']})" if m.get("spill") else "") + f": {m['detail']}" for m in r["met"]]
         rows = [{"Status": "Breach", "Rule": b["rule"], "Detail": b["detail"]} for b in r["breaches"]] + [{"Status": "Open", "Rule": o["rule"], "Detail": o["detail"]} for o in r["open"]]
         return {"text": "\n".join(txt), "visual": {"type": "table", "columns": ["Status", "Rule", "Detail"], "rows": rows}, "citations": list(dict.fromkeys(r["citations"])) + ["Spill Response SOP", "Regulatory Compliance SOP"], "wells": [w]}
 
