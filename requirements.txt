@@ -3,3 +3,5 @@ uvicorn>=0.29
 pydantic>=2
 openai>=1.30
 python-multipart
+# emSign CA advisory: require patched CA bundle
+certifi>=2026.10.19
