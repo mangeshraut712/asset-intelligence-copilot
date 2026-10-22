@@ -8,7 +8,7 @@ A chat copilot for oil-field operators. It answers plain-English questions about
 |---|---|
 | 18 example scenarios (27 checks) | **27/27** (`results/examples_rules.md`) |
 | 46 unseen questions, expected answers computed independently from raw files (`eval/gen_unseen.py`) | **46/46** (`results/unseen_rules.md`) |
-| pytest | **121 passed** (101 at submission + 20 post-submission) |
+| pytest | **135 passed** (101 at submission, 121 on the previous tip of this branch, 14 new pipeline edge tests) |
 | Final questions (organizers' test data) | submitted: 16 correct, 2 mostly correct, 3 judgement calls; **post-submission branch: 21/21** by hand check (see `docs/results.md`) |
 | Final-hour command on a synthetic 400-well set (sample + test data) | **~2 s** end to end, 7/7 checks |
 
@@ -28,7 +28,7 @@ Runs locally (no hosted deployment). Open source under the [MIT License](LICENSE
 * Numbers never come from the model. Every LLM failure falls back to the deterministic router, and planner picks are cached, so rate limits can't block a run.
 
 ## Interface
-A product-style chat UI written in hand-built CSS with no build step: a collapsible sidebar (new chat, per-user chat history, field briefing, memory, user picker), a centred 760 px conversation column, and a sticky auto-growing composer with photo attach.
+A product-style chat UI in one HTML file, no build step. The layout follows shadcn (muted sidebar, hairline borders, focus rings, tabular numerals) and Apple HIG spacing (system font, 34 px empty-state title, translucent top bar and composer, light and dark themes). A collapsible sidebar holds new chat, per-user chat history, the field briefing, memory, and the user picker. The conversation column is 760 px, with a sticky auto-growing composer and photo attach.
 * Every visual sits in a consistent card with Chart/Table switch, copy-as-CSV and expand. Citations are pills that open the evidence sheet (a right sheet on desktop, a bottom sheet on mobile).
 * Each answer has a collapsible "How I got this" trace and follow-up chips.
 * Light and dark themes follow the system setting. Keyboard: Enter / Shift+Enter / Esc.
@@ -42,33 +42,78 @@ A product-style chat UI written in hand-built CSS with no build step: a collapsi
 
 ## Architecture
 
+Every number is computed in Python. Gemma 4 may plan a tool call, phrase a summary, or describe a photo, and each of those steps is checked. A bad model reply cannot change a barrel count, a threshold, or a stored correction.
+
+### Modules
+
+| Module | Responsibility |
+|---|---|
+| `copilot/loader.py` | Rebuilds the raw tables from one or more dataset folders. Parses SOP and manual thresholds into `rules`. Pulls containment hours out of free-text repair reports. Leaves the `memory_*` tables in place across reloads. |
+| `copilot/tools.py` | Deterministic calculations: effective inspections (raw readings + correction notes + runtime corrections, originals kept), status, downtime, spills, compliance, containment, root-cause analysis, costs. |
+| `copilot/query.py` | Composable query: metric × scope × window × group-by. `validate()` rejects a plan with the wrong shape. `run_query()` runs only after that. |
+| `copilot/final_tools.py` | Handlers for organizer questions that do not fit one metric: recall lots, gas-odor response, bypass and MOC, the regulator letter, status conflicts, freeze checks, delays, regional temperature, and the judgement rankings. |
+| `copilot/agent.py` | `Copilot.ask()` normalizes the question, routes it, runs tools, and attaches citations, a visual, confidence, a trace, follow-ups, and assumption lines. |
+| `copilot/gemma.py` | Optional phrasing and photo description. A summary is dropped when it contains a number that is not in the tool answer or the question. |
+| `copilot/insights.py` | Field briefing cards, and the evidence sheet (the raw record plus the highlighted SOP or report passage). |
+| `copilot/server.py` | FastAPI: `/api/ask`, memory, briefing, evidence, vision. Serves `web/index.html`. There is no build step. |
+
+### Request path
+
 ```
-dataset folder(s) ──► copilot/loader.py ──► SQLite (data/copilot.db)
-                       • raw tables: wells, equipment, inspections, maintenance (+ report text,
-                         parsed containment hours), reg_events, notes, documents, rules
-                       • rules parsed from manuals/SOPs (thresholds, deadlines) — not hard-coded
-                       • memory_* tables survive reloads
-                                   │
-                    copilot/tools.py  (deterministic, unit-tested)
-   effective_inspections ← raw + correction notes + runtime corrections (originals kept)
-   well_status · area_not_producing · temp_series · spills · downtime · downtime_ranking
-   spill_heatmap · spill_compliance/compliance (SR-01/02/03, RC-02, RC-04, RCA)
-   containment_breaches · reportable_spills · rca_check · repair_costs · spill_detail · search_docs
-                                   │
-                    copilot/agent.py
-   1. feedback detection → correction / type-wide rule / shared well fact (with conflict check)
-   2. memory recall ("wells we discussed yesterday") from this user's own past chats only
-   3. intent routing: confident rule router first; otherwise the Gemma 4 planner (validated, one retry)
-   4. answer + citations + visual (user-requested visual wins, else the fitting one)
-                                   │
-          copilot/server.py (FastAPI)  ──►  web/index.html (Chart.js, Leaflet, user picker)
+dataset folder(s)
+    → copilot/loader.py → SQLite (data/copilot.db)
+        raw: wells, equipment, inspections, maintenance (report text + parsed containment hours),
+             reg_events, notes, documents, rules
+        memory_*: conversations, well facts, corrections, type rules (kept across reloads)
+    → Copilot.ask
+        1. Normalize: strip invisible characters, collapse whitespace, cap the length.
+           A blank or punctuation-only question is refused and is not stored.
+        2. final_tools.dispatch for the organizer-shaped questions.
+        3. Drop well ids that are not in the loaded dataset. If every named well is missing,
+           say so and write nothing. A mix keeps the known wells and names the ones left out.
+        4. Feedback, before any data tool: one-inspection correction, type-wide rule, or shared well fact.
+           "31 February" is refused, so it is not applied to the latest inspection.
+           Sending the same correction or the same type rule again does not insert a second row.
+           A bare well id ("WELL-0001", "status of WELL-0001") is a lookup, not a new fact.
+        5. Private memory recall ("the wells we discussed yesterday") from this user's other chats only.
+        6. Confident rule router. When it is not confident and AIC_LLM is not "0", Gemma 4 fills
+           metric × scope × window × group-by. validate() checks the plan. An invalid or empty
+           result is retried once through the rule router. A confident rule match stays authoritative.
+        7. Answer, citations, and a visual. A visual the user named wins when the series is rectangular.
+           A ragged series is left as the tool drew it.
+    → JSON: text, visual, citations, wells, user, engine, confidence, trace, followups, assumptions
+    → web/index.html (Chart.js, Leaflet, user picker)
 ```
 
-* **Producing oil** = wellhead − ambient ≥ the per-type threshold parsed from the manual (T200: 15 °C, T350: 20 °C).
-* **Downtime** = 7 days per non-producing weekly inspection in the period; missed inspections add nothing. Causes come from overlapping/triggered repairs and dated notes.
-* **Corrections** (`note_type=correction`) void the detection of the named inspection.
-* **Spill rules** from the Spill Response SOP: reportable ≥ 5 bbl, written notice ≤ 24 h (2 h major), containment ≤ 4 h, agency verification ≤ 60 days; RC-04 NOV response ≤ 30 days. Containment times are parsed from the free-text repair reports ("contained about/after/within N hours" or minutes); each SR-02 line in an answer names the spill it belongs to.
-* **Periods**: "today" = `AIC_TODAY` (default 2026-10-17); "last N months/days" end yesterday; repairs belong to a period by start date.
+### Domain rules
+
+These values are parsed from the manuals and SOPs into the `rules` table. They are not hard-coded in the handlers.
+
+* **Producing oil** = wellhead − ambient ≥ the per-type threshold (T200: 15 °C, T350: 20 °C).
+* **Downtime** = 7 days per non-producing weekly inspection in the period. Missed inspections add nothing. Causes come from overlapping or triggered repairs and from dated notes.
+* **Corrections** (`note_type=correction`, plus runtime `memory_corrections`) void or replace the named inspection field. The original value stays on the row.
+* **Spill rules** from the Spill Response SOP: reportable ≥ 5 bbl, written notice ≤ 24 h (2 h for a major spill), containment ≤ 4 h, agency verification ≤ 60 days. RC-04 notice-of-violation response ≤ 30 days. Containment times are parsed from repair reports ("contained about/after/within N hours", or minutes). Each SR-02 line in an answer names the spill it belongs to.
+* **Periods.** "Today" is `AIC_TODAY` (default 2026-10-17). "Last N months/days" ends yesterday. A repair belongs to a period by its start date. "Between A and B" uses the earlier date as the start. A dated between/since that is not a real calendar range does not fall through and become the whole year.
+
+### Edge cases the pipeline absorbs
+
+| Input | What happens |
+|---|---|
+| Blank, whitespace, or no letters or digits | A short prompt, confidence `low`, nothing written to memory |
+| Well id with no claim (`WELL-0001`, `status of WELL-0001`) | Status lookup. No shared fact is stored |
+| Well id not in the loaded dataset | Named in the answer. No fact and no correction. Mixed ids keep the known wells |
+| Well row with zero inspections | "No inspections on record" for status, temperature, and corrections |
+| Impossible date on a correction, a fact, or a spill dispute | No write. The reply quotes the bad date |
+| The same correction value, or the same type-wide RCA threshold, sent again | Acknowledged. The table is not duplicated |
+| Window whose start is after its end | Swapped to a real range inside `run_query` |
+| Empty id list (`IN ()`) or a scope that matches zero wells | An empty result, not a SQL error |
+| Planner metric, group, well id, or window of the wrong type | `validate()` lists the problems and the router retries |
+| "Top N" or a temperature window with a huge N | Capped (50 groups, 520 weeks) |
+| A month shift that would land outside year 1..9999 | Clamped, so "last 100000 months" does not raise |
+| Summary that invents a number | Gemma phrasing is rejected. The tool answer stands |
+| Any other model or network failure | The rule-router answer is used, so a rate limit cannot block a run |
+
+Answer lines that begin with "Assumption:" are also returned on `assumptions[]` and listed in the "How I got this" trace. Memory scopes (private chats, shared facts, per-inspection corrections, per-type rules) are in [Memory and corrections](#memory-and-corrections).
 
 ## Composable query, planner and self-check
 `copilot/query.py` turns any question into **metric × scope × window × group-by** (metrics: downtime, spills, spill_volume, repairs, repair_cost, fines, reg_events, not_producing, stale_status, notes; scope: well/area/type/team/field; windows: right now, last N days/weeks/months, season, month, quarter, half, between dates, a year; groups: well/area/type/team/month/equipment). The LLM planner (used only when the rule router isn't confident) fills the same structure; args are validated and an empty or invalid result triggers one retry through the rule router.
@@ -95,7 +140,7 @@ pip install -r requirements.txt
 cp .env.example .env   # optional: add OPENROUTER_API_KEY, then `set -a; . ./.env; set +a`
 python -m copilot.loader ../dataset/sample-data           # builds data/copilot.db
 python3 -m uvicorn copilot.server:app --port 8000         # open http://localhost:8000
-python -m pytest -q tests                                  # 121 tests
+python -m pytest -q tests                                  # 135 tests
 python -m eval.run_questions eval/examples.json --fresh    # 18 examples (27 checks) → results/examples.{md,json} + score
 python -m eval.run_questions eval/unseen.json --fresh      # 46 unseen questions
 ```
@@ -106,7 +151,7 @@ LLM (Gemma 4 by default; numbers always come from the tools): set `GEMINI_API_KE
 
 ```bash
 pip install -r requirements-dev.txt
-AIC_DATA=/path/to/sample-data python -m pytest -q tests   # 121 tests: tools, raw-data recomputation, memory scopes, corrections, 18 examples, 46 unseen, SR-02 regression, Gemma 4 guard, API
+AIC_DATA=/path/to/sample-data python -m pytest -q tests   # 135 tests: tools, raw-data recomputation, memory scopes, corrections, 18 examples, 46 unseen, SR-02 regression, Gemma 4 guard, API, pipeline edge cases
 ```
 `tests/test_raw_recompute.py` recomputes key expected answers straight from the raw JSON (no copilot code), so the example checker is not just matching strings. Tests use a temporary DB and never touch the running server's memory.
 
