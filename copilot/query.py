@@ -10,14 +10,19 @@ NUMW = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven":
 METRICS = ["downtime", "spills", "spill_volume", "repairs", "repair_cost", "fines", "reg_events", "not_producing", "stale_status", "notes"]
 GROUPS = [None, "well", "area", "type", "team", "month", "equipment"]
 
+def _safe_date(y, m, d):
+    """Calendar dates that do not exist (31 Feb, year 0) are None, not an exception."""
+    try: return dt.date(int(y), int(m), int(d))
+    except (TypeError, ValueError, OverflowError): return None
+
 def _date(s, default_year=None):
     s = s.strip().lower().replace(",", "")
     m = re.match(r"(\d{4})-(\d{2})-(\d{2})", s)
-    if m: return dt.date(int(m[1]), int(m[2]), int(m[3]))
+    if m: return _safe_date(m[1], m[2], m[3])
     m = re.match(r"(\d{1,2})(?:st|nd|rd|th)? ([a-z]+)(?: (\d{4}))?", s) or None
-    if m and m[2] in MONTHS: return dt.date(int(m[3] or default_year or TODAY.year), MONTHS[m[2]], int(m[1]))
+    if m and m[2] in MONTHS: return _safe_date(m[3] or default_year or TODAY.year, MONTHS[m[2]], m[1])
     m = re.match(r"([a-z]+) (\d{1,2})(?:st|nd|rd|th)?(?: (\d{4}))?", s)
-    if m and m[1] in MONTHS: return dt.date(int(m[3] or default_year or TODAY.year), MONTHS[m[1]], int(m[2]))
+    if m and m[1] in MONTHS: return _safe_date(m[3] or default_year or TODAY.year, MONTHS[m[1]], m[2])
     return None
 
 def parse_window(q):
@@ -27,10 +32,15 @@ def parse_window(q):
     m = re.search(r"between (.+?) and (.+?)(?:[?.,]|$| show| as | in a| on a)", ql)
     if m:
         a, b = _date(m[1]), _date(m[2])
-        if a and b: return a, b, f"{fmt(a)} to {fmt(b)}"
+        if a and b:
+            if a > b: a, b = b, a
+            return a, b, f"{fmt(a)} to {fmt(b)}"
+        if re.search(r"\d", m[1] + m[2]): return None  # a dated "between" that is not a real range
     m = re.search(r"(?:from|since) (\d{1,2} [a-z]+(?: \d{4})?|[a-z]+ \d{1,2}(?: \d{4})?|\d{4}-\d{2}-\d{2})", ql)
-    if m and _date(m[1]):
-        a = _date(m[1]); return a, end, f"{fmt(a)} to {fmt(end)}"
+    if m:
+        a = _date(m[1])
+        if a: return a, end, f"{fmt(a)} to {fmt(end)}"
+        if re.search(r"\d", m[1]): return None
     m = re.search(r"(?:last|past|previous) (\d+|" + "|".join(NUMW) + r") (day|week|month|year)s?", ql)
     if m:
         n = int(NUMW.get(m[1], m[1]) if not m[1].isdigit() else m[1]); u = m[2]
@@ -104,7 +114,9 @@ def parse_group(q):
 
 def scope_wells(c, scope):
     q, a = "SELECT asset_id, well_type, area_id, team_id FROM wells WHERE 1=1", []
-    if scope.get("wells"): q += f" AND asset_id IN ({','.join('?' * len(scope['wells']))})"; a += scope["wells"]
+    wells = scope.get("wells") or []
+    if wells:
+        q += f" AND asset_id IN ({','.join('?' * len(wells))})"; a += list(wells)
     if scope.get("area"): q += " AND area_id=?"; a.append(scope["area"])
     if scope.get("well_type"): q += " AND well_type=?"; a.append(scope["well_type"])
     if scope.get("team"): q += " AND team_id=?"; a.append(scope["team"])
@@ -116,14 +128,29 @@ def validate(args):
     if args.get("metric") not in METRICS: p.append(f"unknown metric {args.get('metric')}")
     if args.get("group_by") not in GROUPS: p.append(f"unknown group_by {args.get('group_by')}")
     w = args.get("window")
-    if w and (w[0] > w[1]): p.append("window start after end")
+    if w:
+        if not isinstance(w, (list, tuple)) or len(w) < 2: p.append("window must be a start and end")
+        elif not isinstance(w[0], dt.date) or not isinstance(w[1], dt.date): p.append("window bounds must be dates")
+        elif w[0] > w[1]: p.append("window start after end")
+    scope = args.get("scope") or {}
+    if not isinstance(scope, dict): p.append("scope must be an object")
+    else:
+        for wid in scope.get("wells") or []:
+            if not re.fullmatch(r"WELL-\d{4}", str(wid), re.I): p.append(f"bad well id {wid}")
+    if "top" in args and args["top"] is not None:
+        top = args["top"]
+        if isinstance(top, bool) or not isinstance(top, int) or top < 1 or top > 50: p.append("top must be an integer from 1 to 50")
     return p
 
 def run_query(metric, scope=None, window=None, group_by=None, top=None, filters=None):
     """Compute a metric. Returns rows [{key, value, detail, citations}], total, rule notes and a trace."""
     c = T.db(); scope = scope or {}; filters = filters or {}
+    if metric not in METRICS:
+        return {"metric": metric, "scope": scope, "window": None, "group_by": group_by, "rows": [], "total": 0,
+                "n_wells": 0, "rules": [], "trace": [], "citations": [], "error": f"unknown metric {metric}"}
     wl = scope_wells(c, scope); ids = list(wl)
     s, e = (window[0], window[1]) if window else (None, None)
+    if s and e and s > e: s, e = e, s
     an = {r["area_id"]: r["name"] for r in c.execute("SELECT * FROM areas")}; tn = {r["team_id"]: r["name"] for r in c.execute("SELECT * FROM teams")}
     def key_of(aid, date=None, extra=None):
         w = wl[aid]

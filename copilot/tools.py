@@ -1,5 +1,5 @@
 """Deterministic, tested tools over the SQLite store. Every result carries citations."""
-import os, re, sqlite3, datetime as dt
+import calendar, os, re, sqlite3, datetime as dt
 from collections import defaultdict
 from .loader import DB_PATH
 
@@ -11,8 +11,11 @@ def db():
 def d(s): return dt.date.fromisoformat(s[:10])
 def fmt(s): x = d(s) if isinstance(s, str) else s; return f"{x.day} {x.strftime('%b %Y')}"
 def sub_months(x, n):
+    """Shift a date back by n months. Years outside 1..9999 clamp instead of raising."""
     m = x.month - 1 - n; y = x.year + m // 12; m = m % 12 + 1
-    import calendar; return dt.date(y, m, min(x.day, calendar.monthrange(y, m)[1]))
+    if y < 1: return dt.date(1, 1, 1)
+    if y > 9999: return dt.date(9999, 12, 31)
+    return dt.date(y, m, min(x.day, calendar.monthrange(y, m)[1]))
 
 def window(months=None, days=None, year=None):
     """'last N months/days' -> inclusive [start, end] ending yesterday (the last full day before 'today')."""
@@ -59,7 +62,9 @@ def wells_in(c, area=None, well_type=None):
 def effective_inspections(c, asset_ids=None, start=None, end=None):
     q, a = "SELECT i.*, w.well_type, w.area_id FROM inspections i JOIN wells w USING(asset_id) WHERE 1=1", []
     if asset_ids is not None:
-        q += f" AND i.asset_id IN ({','.join('?'*len(asset_ids))})"; a += list(asset_ids)
+        asset_ids = list(asset_ids)
+        if not asset_ids: return []  # "IN ()" is a syntax error; an empty scope matches nothing
+        q += f" AND i.asset_id IN ({','.join('?'*len(asset_ids))})"; a += asset_ids
     if start: q += " AND i.date>=?"; a.append(str(start))
     if end: q += " AND i.date<=?"; a.append(str(end))
     rows = [dict(r) for r in c.execute(q + " ORDER BY i.asset_id, i.inspected_at", a)]
@@ -105,6 +110,7 @@ def well_status(asset_id):
     c = db(); w = c.execute("SELECT * FROM wells WHERE asset_id=?", (asset_id,)).fetchone()
     if not w: return {"error": f"{asset_id} not found"}
     w = dict(w); ins = effective_inspections(c, [asset_id])
+    if not ins: return {"error": f"{asset_id} has no inspections on record"}
     last = ins[-1]; cites = [last["inspection_id"], f"{w['well_type']} manual"]
     reasons = []
     if not last["producing"]:
@@ -235,7 +241,9 @@ def rca_check(area=None, equipment_kind=None, asset_ids=None):
     c = db(); ids = asset_ids or [w["asset_id"] for w in wells_in(c, area_id(c, area) if area else None)]
     s = sub_months(TODAY, 12); out = []; applied_rules = {}
     for aid in ids:
-        wt = c.execute("SELECT well_type FROM wells WHERE asset_id=?", (aid,)).fetchone()["well_type"]
+        row = c.execute("SELECT well_type FROM wells WHERE asset_id=?", (aid,)).fetchone()
+        if not row: continue
+        wt = row["well_type"]
         n, src = rule(c, f"{wt}.rca_repairs", 3)
         ur = c.execute("SELECT * FROM memory_type_rules WHERE well_type=? AND rule_key='rca_repairs' ORDER BY id DESC", (wt,)).fetchone()
         if ur: n, src = ur["value"], f"rule from {user_name(c, ur['author_user_id'])} ({ur['ts'][:10]}), overrides manual"; applied_rules[wt] = src
