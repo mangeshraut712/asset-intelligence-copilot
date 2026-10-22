@@ -48,27 +48,41 @@ Compliance test (HSE internal note in the letter, 22 Nov 2026): the clean-up rep
 ## Q6 — Nathan Pierce
 **Q:** Across the whole field, not just my area, for which wells do the latest inspection and the operator notes disagree about whether the well is producing oil? For each one, what is its real status right now, and why?
 
-**15 wells** where the latest inspection and the latest shut-in/restart operator note disagree. Rule (Operations SOP OPS-3): the more recent evidence wins; a restart note newer than the inspection means producing (unconfirmed) until an inspection confirms; gas, bypass and equipment notes don't change status.
+**15 wells** where the latest inspection and the latest operator note saying the well was shut in or restarted disagree. Real status now: **4 producing**, **11 not producing** (table, one line per well with the reason).
 
-*Visual:* table · *Citations:* Operations SOP OPS-3, INS-0010-0219, CTX-0010-004, INS-0026-0216, CTX-0026-001, INS-0032-0219, CTX-0032-006, INS-0033-0222, CTX-0033-003, INS-0044-0218, CTX-0044-008, INS-0046-0220, CTX-0046-004, INS-0219-0171, CTX-0219-006, INS-0249-0120, CTX-0249-004, INS-0323-0219, CTX-0323-002, INS-0330-0213, CTX-0330-002, INS-0332-0217, CTX-0332-003, INS-0422-0215, CTX-0422-003
+Rule (Operations SOP OPS-3): the more recent of the two wins. A shut-in note newer than the inspection means not producing (shut in); a restart note newer than the inspection means producing (unconfirmed) until an inspection confirms it; an inspection newer than the note stands. Inspections are read after any data_correction note. Gas, bypass and equipment notes don't change status.
+
+Not producing because the note is newer: WELL-0044, WELL-0323, WELL-0355, WELL-0422, WELL-0479, WELL-0481. Producing (unconfirmed) because a restart note is newer: WELL-0026, WELL-0032, WELL-0033, WELL-0046. Inspection is newer, so it stands: WELL-0010 (not producing oil), WELL-0330 (not producing oil), WELL-0332 (not producing oil), WELL-0429 (not producing oil), WELL-0452 (not producing oil).
+
+**Assumption, stated:** I read "drive tripping …, restarted/reset from the panel" as an equipment remark (the well was never shut in), so it doesn't count under OPS-3. If you count it as a restart note, 2 more well(s) disagree: WELL-0219 (WELL-0219 drive tripping on underload, restarted from the panel.) → still **not producing oil**, because inspection is more recent than the note (OPS-3); WELL-0249 (WELL-0249 drive tripping on underload, restarted from the panel.) → still **not producing oil**, because inspection is more recent than the note (OPS-3). The status answer is the same under both readings.
+
+*Visual:* table · *Citations:* Operations SOP OPS-3, INS-0010-0219, CTX-0010-004, INS-0026-0216, CTX-0026-001, INS-0032-0219, CTX-0032-006, INS-0033-0222, CTX-0033-003, INS-0044-0218, CTX-0044-008, INS-0046-0220, CTX-0046-004, INS-0219-0171, CTX-0219-006, INS-0249-0120, CTX-0249-004, INS-0323-0219, CTX-0323-002, INS-0330-0213, CTX-0330-002, INS-0332-0217, CTX-0332-003, INS-0355-0213, CTX-0355-004
 
 ## Q7.1 — Robert Hayes
 **Q:** Over the last month the operators have written notes about wells that sound or behave wrong. Which of those wells haven't had a repair since? Rank the 10 most likely to need a repair in the next 90 days, other than a spill clean-up, and quote the notes as evidence.
 
-In the last month operators wrote abnormal-behaviour notes (rattling, rod squeal, fluid pound, tagging bottom, amps hunting, etc.) about **172 wells**; **160** have had no repair since the first such note. Ranked by: number of repeated notes, recent non-producing readings, corrective-repair frequency over 12 months, and recalled pumps. This is a judgement score, not a validated failure model.
+In the last month (15 Dec 2026 – 15 Jan 2027) operators wrote notes about **175 wells** that sound or behave wrong (rattling, rod squeal, fluid pound, tagging bottom, amps hunting, drive trips, stuffing-box leaks). **160** have had no repair since the latest such note (spill clean-ups don't count as a repair; 0 more would drop out if you count from the first note instead).
 
-*Visual:* table · *Citations:* 
+How I ranked them: wells with a failure precursor that the documents name come first, then by points (table) — the T500 manual's early-warning temperature fall (8), repeated drive trips (6), and a well that reads not producing with no shut-in or job to explain it (6; T200 manual: 'unit running, wellhead cold' = rod parted or pump stuck). Then repeated notes (1.5 each, up to 3), different symptoms (+1 each), corrective repairs on the same equipment in 12 months (+1 each, +2 at the RCA threshold) and a recalled pump (+2). There is no history to validate a 90-day failure model, so this is an evidence-weighted ranking, not a probability.
+
+Left out because a repair is already under way: WELL-0197 (MNT-0197-029 Sucker rod parted, started 1 Jan 2027, due to finish 19 Jan 2027); WELL-0249 (MNT-0249-018 ESP motor burnout, started 9 Jan 2027, due to finish 2 Feb 2027); WELL-0263 (MNT-0263-035 Flowline corrosion pinhole leak, started 9 Jan 2027, due to finish 19 Jan 2027).
+
+Also showing a documented precursor but ranked below #10 on supporting evidence: WELL-0430, WELL-0442, WELL-0202, WELL-0097, WELL-0471, WELL-0478.
+
+Tied with #10 on score: WELL-0430, WELL-0442 (sorted by well ID).
+
+*Visual:* table · *Citations:* CTX-0336-003, CTX-0336-004, CTX-0336-005, INS-0336-0218, CTX-0401-003, CTX-0401-004, INS-0401-0221, CTX-0175-003, CTX-0175-006, CTX-0175-007, INS-0175-0216, CTX-0329-002, CTX-0329-003, INS-0329-0218, CTX-0344-002, CTX-0344-003, CTX-0344-004, INS-0344-0219, CTX-0219-006, CTX-0219-007, INS-0219-0171, CTX-0010-005, CTX-0010-006, CTX-0010-007, INS-0010-0219
 
 ## Q7.2 — Robert Hayes
 **Q:** Which three would you send a crew to first this week, and why?
 
-Send crews first to:
-1. **WELL-0182** (Northeast Block 8) — 2027-01-05: "Heard fluid pound on WELL-0182, unit still running."; 6 corrective repairs in the last 12 months; 3 recent inspections not producing; last repair MNT-0182-029 26 Dec 2026 (Walking beam bearing wear).
-2. **WELL-0411** (Northwest Block 12) — 2026-12-28: "Drive on WELL-0411 showing amps hunting between 38 and 44 A."; 5 corrective repairs in the last 12 months; 6 recent inspections not producing; last repair MNT-0411-023 6 Dec 2026 (Flowline corrosion pinhole leak).
-3. **WELL-0297** (Northeast Block 7) — 2027-01-11: "Rod squeal at WELL-0297 stuffing box, greased the polished rod."; 6 corrective repairs in the last 12 months; 4 recent inspections not producing; last repair MNT-0297-036 8 Jan 2027 (Prime mover failure).
-Why: these have the most repeated abnormal notes without a repair since, plus the strongest other warning signs. Gas-odor and recalled-pump items are handled under their own procedures.
+Send crews first to WELL-0336, WELL-0401 and WELL-0175:
+1. **WELL-0336** (Northwest Block 12, T500, score 16.5) — CTX-0336-005 2027-01-14: "WELL-0336 amps hunting on the drive panel, still running.". Why: T500 early-warning pattern: wellhead-minus-air fell 3 inspections in a row by 4.2 °C (37.3 → 36.9 → 34.9 → 33.1); the manual says ESP motors usually fail after this and calls for a drive and insulation check within 14 days, i.e. by 28 Jan 2027; drive trip reset by the operator; 1 corrective repair(s) on the same equipment (esp_pump) in the last 12 months. Last repair: MNT-0336-026 8 May 2026 (ESP motor burnout).
+2. **WELL-0401** (Northwest Block 12, T500, score 15.0) — CTX-0401-004 2027-01-14: "WELL-0401 amps hunting on the drive panel, still running.". Why: T500 early-warning pattern: wellhead-minus-air fell 3 inspections in a row by 3.8 °C (34.1 → 32.9 → 31.6 → 30.3); the manual says ESP motors usually fail after this and calls for a drive and insulation check within 14 days, i.e. by 28 Jan 2027; 2 corrective repair(s) on the same equipment (esp_pump) in the last 12 months — at the RCA threshold (2). Last repair: MNT-0401-032 27 Nov 2026 (ESP motor burnout).
+3. **WELL-0175** (Northeast Block 8, T200, score 13.5) — CTX-0175-007 2026-12-26: "WELL-0175 tagging bottom on the downstroke, adjust spacing next visit.". Why: latest inspection INS-0175-0216 (14 Jan 2027) reads not producing (Δ 5.5 °C, below the 15 °C rule) with no shut-in note or open job to explain it — for a rod-lift well the manual lists 'unit running, wellhead cold' as rod parted or pump stuck; 1 corrective repair(s) on the same equipment (wellhead) in the last 12 months. Last repair: MNT-0175-031 30 May 2026 (Stuffing box packing leak).
+Why these three: each has a precursor the manuals treat as an imminent or actual failure, not just a noise note; next in line is WELL-0329 (score 13.0). Assumption: this is about the noise/behaviour list from your previous question. Safety items come before all of it: an unanswered gas-odor report (OPS-1) or an overdue recalled pump is handled under its own procedure, so check those lists too before you plan the week.
 
-*Visual:* table · *Citations:* 
+*Visual:* table · *Citations:* CTX-0336-003, CTX-0336-004, CTX-0336-005, INS-0336-0218, CTX-0401-003, CTX-0401-004, INS-0401-0221, CTX-0175-003, CTX-0175-006, CTX-0175-007, INS-0175-0216
 
 ## Q8.1 — Nathan Pierce
 **Q:** WELL-0333's recalled pump was swapped out yesterday. The work order isn't in the system yet. Please count it as replaced from now on.
@@ -171,18 +185,30 @@ Of the 8 wells with recalled pumps from your first question, **2 are not produci
 ## Q9.6 — Robert Hayes
 **Q:** Of all the wells we've talked about today, which one would you deal with first, and why?
 
-Of the 10 wells discussed in this conversation, I'd deal with **WELL-0332** (Northwest Block 12) first: gas-odor report with a missed OPS-1 response (safety); not producing oil right now. Safety items (gas) outrank production and recall items, then overdue recalls, then lost production. This is a judgement call based on the evidence above.
+Of the **10 wells** we've discussed in this conversation (WELL-0428, WELL-0031, WELL-0263, WELL-0426, WELL-0156, WELL-0160, WELL-0577, WELL-0305, WELL-0310, WELL-0332), I'd deal with **WELL-0332** (Northwest Block 12) first: gas-odor report 2026-12-03 with a missed OPS-1 response and **no crew on site since** (only drone inspections) — an open safety item; not producing now (INS-0332-0217, Δ 0.5 °C) with no repair under way; abnormal operator notes with no repair since (pump-jack rattle/knock, stuffing-box squeal/leak).
 
-*Visual:* None · *Citations:* INS-0332-0217
+How I weighed them: an unanswered safety report beats everything (gas/H2S can hurt people; OPS-1 and WS-03), then an overdue recalled pump (compliance with the supplier recall), then lost production, then abnormal-behaviour notes. Full comparison in the table.
+
+Runner-up: **WELL-0160** (Northeast Block 8): recalled pump (LOT-2409-C) still in the ground, past the 31 Dec 2026 replacement date; not producing now, but repair MNT-0160-032 (Walking beam bearing wear) is already under way until 26 Jan 2027. Tied on points with WELL-0263, WELL-0305, WELL-0428.
+
+If you mean 'first' for production or the recall rather than safety, the answer changes: the recalled-pump wells come first.
+
+Quick win: a repair crew is already on WELL-0160, WELL-0263, which still have recalled pumps; it is worth scheduling the pump swap while the well is already down.
+
+Assumption: 'today' means this conversation (the wells named in my earlier answers here). This is a judgement call based on the evidence shown, not a computed risk.
+
+*Visual:* table · *Citations:* Operations SOP OPS-1, recall notice, INS-0332-0217, INS-0160-0217, MNT-0160-032, INS-0263-0219, MNT-0263-035
 
 ## Q10 — Michael Turner
 **Q:** When a well stays shut in longer than the repair itself, what are we usually waiting on: parts, crews, contractors or weather? Break it down by area for jobs started in 2026, with the typical number of extra days, and tell me if any area stands out.
 
-**500 jobs started in 2026** kept the well shut in longer than the repair (the report states "about N days longer than the repair itself because …"). Field-wide: weather 28% (median 9 extra days), contractors 26% (median 9 extra days), parts 23% (median 9 extra days), crews 22% (median 9 extra days).
+**500 jobs started in 2026** kept the well shut in longer than the repair (the report states "about N days longer than the repair itself because …"). Field-wide the waits split weather 28%, contractors 26%, parts 23%, crews 22%: **no single cause dominates**, weather is only slightly ahead, four causes in roughly equal shares. Typical extra time: median **9 days** (mean 11.9), about the same for every cause.
 
-By area: Northeast Block 7: 56 jobs, mostly parts (parts 27% (median 15 d, mean 14.1 d), contractors 27% (median 8 d, mean 9.3 d), crews 20% (median 16 d, mean 17.5 d), weather 27% (median 9 d, mean 11.5 d)); Northeast Block 8: 67 jobs, mostly crews (parts 19% (median 10 d, mean 13.7 d), contractors 25% (median 9 d, mean 13.3 d), crews 28% (median 14 d, mean 11.9 d), weather 27% (median 8 d, mean 8.7 d)); Northwest Block 12: 129 jobs, mostly weather (parts 22% (median 9 d, mean 10.1 d), contractors 21% (median 9 d, mean 12.4 d), crews 28% (median 8.5 d, mean 11.3 d), weather 29% (median 9 d, mean 11.7 d)); Southeast Block 31: 27 jobs, mostly contractors (parts 22% (median 8.5 d, mean 8.7 d), contractors 37% (median 15.5 d, mean 12.4 d), crews 11% (median 2 d, mean 4.0 d), weather 30% (median 12.5 d, mean 12.1 d)); Southeast Block 32: 111 jobs, mostly contractors (parts 23% (median 9.5 d, mean 11.6 d), contractors 30% (median 9 d, mean 13.7 d), crews 19% (median 10 d, mean 12.2 d), weather 28% (median 8 d, mean 13.7 d)); Southwest Block 23: 58 jobs, mostly parts (parts 28% (median 12.5 d, mean 15.8 d), contractors 21% (median 12.5 d, mean 13.8 d), crews 24% (median 7 d, mean 9.1 d), weather 28% (median 9 d, mean 12.4 d)); Southwest Block 24: 52 jobs, mostly contractors (parts 23% (median 8 d, mean 9.8 d), contractors 33% (median 8 d, mean 7.3 d), crews 15% (median 12 d, mean 10.6 d), weather 29% (median 10 d, mean 11.5 d)).
+By area (table): Northeast Block 7: 56 jobs (44% of its jobs), mostly parts, median 9 extra days; Northeast Block 8: 67 jobs (49% of its jobs), mostly crews, median 9 extra days; Northwest Block 12: 129 jobs (42% of its jobs), mostly weather, median 9 extra days; Southeast Block 31: 27 jobs (36% of its jobs), mostly contractors, median 10 extra days; Southeast Block 32: 111 jobs (44% of its jobs), mostly contractors, median 9 extra days; Southwest Block 23: 58 jobs (39% of its jobs), mostly parts, median 9 extra days; Southwest Block 24: 52 jobs (39% of its jobs), mostly contractors, median 8.5 extra days.
 
-Stands out: no area's mix differs from the field mix by more than 20 percentage points, and the typical extra wait is about the same everywhere; Northwest Block 12 simply has the most delayed jobs.
+Does any area stand out? **Not clearly.** The reason mix doesn't differ between areas more than chance would (chi-square 12.4 on 18 df, p≈0.83), and no area's waiting time for any cause differs clearly from the field. Worth watching, but small samples: Northeast Block 7 parts: median 15 extra days vs 9 field-wide (n=15, p≈0.21); Northeast Block 7 crews: median 16 extra days vs 9 field-wide (n=11, p≈0.11); Northeast Block 8 crews: median 14 extra days vs 9 field-wide (n=19, p≈0.23); Southeast Block 31 contractors: median 15.5 extra days vs 9 field-wide (n=10, p≈0.10); Southeast Block 31 contractors share 37% vs 26% field-wide (10 of 27 jobs); Southeast Block 31 crews share 11% vs 22% field-wide (3 of 27 jobs). Delays are most common in Northeast Block 8 (49% of jobs) and least common in Southeast Block 31 (36%); Northwest Block 12 has the most delayed jobs simply because it has the most wells.
+
+Method: the cause is read from the 'because …' clause (back-ordered part → parts, weekday contractor slot → contractors, crew committed elsewhere or rig busy → crews, rain/road → weather); 'typical' = median.
 
 *Visual:* bar · *Citations:* MNT-0001-028, MNT-0001-033, MNT-0002-018, MNT-0004-021, MNT-0004-026, MNT-0005-031, MNT-0006-023, MNT-0006-025, MNT-0006-026, MNT-0007-031, MNT-0009-026, MNT-0010-024, MNT-0010-027, MNT-0013-037, MNT-0013-038, MNT-0014-015, MNT-0015-030, MNT-0015-032, MNT-0015-036, MNT-0018-028, MNT-0019-026, MNT-0020-030, MNT-0020-034, MNT-0021-027, MNT-0021-032
 

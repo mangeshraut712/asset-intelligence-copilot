@@ -8,18 +8,69 @@ MONTHS = {m: i for i, m in enumerate(["jan", "feb", "mar", "apr", "may", "jun", 
 VISUALS = [("heatmap", "heatmap"), ("map", "map"), ("bar chart", "bar"), ("bar", "bar"), ("line chart", "line"), ("line", "line"), ("table", "table"), ("card", "card"), ("list", "table")]
 
 SIM_DAY = None  # evaluation can simulate "day N" so that "yesterday" works in one run
+_DATE_RE = re.compile(r"(\d{1,2})\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*(?:\s+(\d{4}))?", re.I)
+_ZW_RE = re.compile(r"[\u200b\u200c\u200d\ufeff\x00]")
+BLANK_TEXT = "Ask about a well, an area, spills, downtime, repairs, or a rule from the manuals. For example: \"Is WELL-0001 producing oil right now?\""
+
 def now():
     t = dt.datetime.now()
     if SIM_DAY is not None: t = dt.datetime.combine(TODAY + dt.timedelta(days=SIM_DAY), t.time())
     return t.isoformat(timespec="seconds")
 
+def normalize_question(q):
+    """Strip invisible characters and collapse whitespace. Content of a real question is unchanged."""
+    if q is None: return ""
+    if not isinstance(q, str): q = str(q)
+    q = _ZW_RE.sub("", q)
+    q = re.sub(r"\s+", " ", q).strip()
+    return q[:4000]
+
+def question_is_blank(q):
+    return not q or not re.search(r"[A-Za-z0-9]", q)
+
 def parse_date(text):
-    m = re.search(r"(\d{1,2})\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*(?:\s+(\d{4}))?", text, re.I)
+    """A calendar date from the question, or None when none was given or the date cannot exist."""
+    m = _DATE_RE.search(text or "")
     if not m: return None
     y = int(m.group(3)) if m.group(3) else TODAY.year
-    x = dt.date(y, MONTHS[m.group(2).lower()[:3]], int(m.group(1)))
+    try: x = dt.date(y, MONTHS[m.group(2).lower()[:3]], int(m.group(1)))
+    except ValueError: return None
     if not m.group(3) and x > TODAY + dt.timedelta(days=60): x = x.replace(year=y - 1)
     return x
+
+def invalid_date_phrase(text):
+    """The date words the user wrote, when they do not fall on a real calendar day."""
+    m = _DATE_RE.search(text or "")
+    if not m or parse_date(text) is not None: return None
+    return m.group(0)
+
+def looks_like_lookup(q, wells):
+    """A well id or a status/compliance ask, with no claim that should be stored as a fact."""
+    ql = (q or "").lower().strip().rstrip("?.!")
+    if re.fullmatch(r"(?:please )?(?:check|show|status(?: of)?|what about)? ?well-\d{4}(?:'s)?(?: status| compliance| temperature| temps?| spills?)?", ql):
+        return True
+    if wells and re.search(r"\b(status|compliance|inspection history)\b", ql) and not re.search(
+            r"\b(shut|wrong|faulty|re-?measured|correct|note that|running|offline|workover|planned|will be|has been|have been)\b", ql):
+        return True
+    return False
+
+def partition_wells(c, wells):
+    if not wells: return [], []
+    found = {r["asset_id"] for r in c.execute(f"SELECT asset_id FROM wells WHERE asset_id IN ({','.join('?' * len(wells))})", tuple(wells))}
+    return [w for w in wells if w in found], [w for w in wells if w not in found]
+
+def bad_date_answer(phrase):
+    return {"text": f"\"{phrase}\" isn't a real calendar date. Use a date that exists, such as 15 Oct 2026.",
+            "visual": None, "citations": [], "wells": []}
+
+def collect_assumptions(text, extra=None):
+    found = []
+    for line in (text or "").splitlines():
+        s = line.strip().lstrip("-*").strip()
+        if re.match(r"assumption\b", s, re.I) and s not in found: found.append(s)
+    for a in extra or []:
+        if a and a not in found: found.append(a)
+    return found
 
 def asked_visual(q):
     ql = q.lower()
@@ -75,7 +126,15 @@ class Copilot:
         """Rule router first. It is authoritative when it matches confidently; the LLM is only consulted
         (to pick the tool / rewrite the question) when the router falls back. AIC_LLM=force sends every question
         through the LLM (used to evaluate the LLM path); AIC_LLM=0 disables it."""
-        user = T.user_id(self.c, user); self.steps = []; self.rules_used = []
+        question = normalize_question(question)
+        user = user.strip()[:120] if isinstance(user, str) else "U-201"
+        user = user or "U-201"
+        chat = chat.strip()[:120] if isinstance(chat, str) else "default"
+        chat = chat or "default"
+        user = T.user_id(self.c, user); self.steps = []; self.rules_used = []; self._missing = []
+        if question_is_blank(question):
+            self.confident = False
+            return self._finish({"text": BLANK_TEXT, "visual": None, "citations": [], "wells": []}, question, user, chat, remember=False)
         mode = os.environ.get("AIC_LLM", "auto")
         self.confident = True
         res = None if mode == "force" else self.route(question, user, chat)
@@ -87,31 +146,69 @@ class Copilot:
             except Exception as e:
                 print("LLM failed, using rule router:", str(e)[:200])
         if res is None: self.confident = True; res = self.route(question, user, chat)
+        return self._finish(res, question, user, chat, remember=True)
+
+    def _finish(self, res, question, user, chat, remember=True):
+        """Every answer leaves ask() with the same keys, even when a handler returned a partial dict."""
+        if not isinstance(res, dict):
+            res = {"text": "I couldn't build an answer for that.", "visual": None, "citations": [], "wells": []}
         res.setdefault("engine", "rules")
-        v = asked_visual(question)
+        text = res.get("text")
+        if not isinstance(text, str) or not text.strip():
+            res["text"] = "I couldn't build an answer for that question."
+        missing = getattr(self, "_missing", None) or []
+        if missing:
+            note = "Not in the loaded dataset, so left out: " + ", ".join(missing) + "."
+            if note not in res["text"]: res["text"] += "\n\n" + note
+        cites = res.get("citations") or []
+        if not isinstance(cites, (list, tuple)): cites = [cites]
+        res["citations"] = [str(x) for x in cites if x is not None]
+        wells = res.get("wells") or []
+        if not isinstance(wells, (list, tuple)): wells = [wells]
+        res["wells"] = [str(x) for x in wells if x]
+        if "visual" not in res: res["visual"] = None
+        v = asked_visual(question) if question else None
         if v and not res.get("visual") and res.get("alt_visual"): res["visual"] = res["alt_visual"]
         res.pop("alt_visual", None)
-        if v and res.get("visual") and res["visual"]["type"] != v: res["visual"] = convert_visual(res["visual"], v)
-        self.remember(user, chat, question, res["text"], res.get("wells", []))
+        vis = res.get("visual")
+        if v and isinstance(vis, dict) and vis.get("type") != v: res["visual"] = convert_visual(vis, v)
+        if remember and question: self.remember(user, chat, question, res["text"], res.get("wells", []))
         res["user"] = user_name(self.c, user)
-        txt = res["text"]
-        conflict = bool(re.search(r"⚠|disagree|contradict|unconfirmed|conflict", txt, re.I))
-        res["confidence"] = "conflict" if conflict else ("low" if not self.confident else "medium" if res["engine"].startswith("llm") else "high")
-        res["trace"] = {"engine": res["engine"], "steps": self.steps, "rules": list(dict.fromkeys(self.rules_used)), "citations": len(set(res["citations"]))}
+        conflict = bool(re.search(r"⚠|disagree|contradict|unconfirmed|conflict", res["text"], re.I))
+        res["confidence"] = "conflict" if conflict else ("low" if not self.confident else "medium" if str(res.get("engine", "")).startswith("llm") else "high")
+        res.pop("_cand", None)
+        if res.pop("judgement", False) and res["confidence"] == "high": res["confidence"] = "medium (judgement)"
+        res["assumptions"] = collect_assumptions(res["text"], res.get("assumptions"))
+        res["trace"] = {"engine": res["engine"], "steps": self.steps, "rules": list(dict.fromkeys(self.rules_used)),
+                        "citations": len(set(res["citations"])), "assumptions": res["assumptions"]}
         res["followups"] = followups(self.steps, res.get("wells", []), question)
         return res
+
     def route(self, q, user, chat):
-        c = self.c; ql = q.lower(); wells = [w.upper() for w in WELL_RE.findall(q)]; area = area_from(c, q)
+        c = self.c; ql = q.lower(); wells = [w.upper() for w in WELL_RE.findall(q)]; area = area_from(c, q); self._missing = []
         from . import final_tools as FT
         fr = FT.dispatch(self, q, user, chat, wells, area)
         if fr is not None:
             self.steps.append({"tool": "final_tools", "args": [q[:80]]}); return fr
-        is_q = q.strip().endswith("?") or re.match(r"^(is|are|was|were|which|what|how|show|list|when|who|why|did|does|do|give|find|can|could|plot|compare|chart|graph|map|draw|display|tell|summari[sz]e|rank|count|get|list|break ?down|where|who)\b", ql)
+        if wells:
+            known, missing = partition_wells(c, wells)
+            if missing and not known:
+                listed = ", ".join(missing)
+                return {"text": f"I don't have {listed} in the loaded dataset, so I can't answer or store a fact about it. Well IDs look like WELL-0001.",
+                        "visual": None, "citations": [], "wells": []}
+            self._missing = missing
+            wells = known
+        is_q = q.strip().endswith("?") or bool(re.match(r"^(is|are|was|were|which|what|how|show|list|when|who|why|did|does|do|give|find|can|could|plot|compare|chart|graph|map|draw|display|tell|summari[sz]e|rank|count|get|list|break ?down|where|who)\b", ql)) or looks_like_lookup(q, wells)
         # --- feedback / statements ---
         if not is_q:
             if re.search(r"all (t\d{3}) wells", ql): return self.type_rule(q, user)
             if wells and re.search(r"(wrong|faulty|re-?measured|measured|estimated|correct)", ql): return self.correction(q, user, wells[0])
-            if wells: return self.statement(q, user, wells[0])
+            if wells:
+                res = self.statement(q, user, wells[0])
+                if len(wells) > 1 and res.get("text", "").startswith("Noted"):
+                    res["text"] += f"\n\nRecorded for {wells[0]} only. {', '.join(wells[1:])} need a separate note."
+                    res["wells"] = [wells[0]]
+                return res
         if re.search(r"(discussed|talked about|we looked at).*(yesterday|earlier|before|last time)|wells we discussed", ql):
             mm = re.search(r"\b(two|three|four|five|\d+) wells", ql)
             self._want_n = ({"two": 2, "three": 3, "four": 4, "five": 5}.get(mm.group(1)) or int(mm.group(1))) if mm and not mm.group(1).isalpha() or (mm and mm.group(1) in ("two", "three", "four", "five")) else None
@@ -173,11 +270,15 @@ class Copilot:
         if group is None and metric in ("spills", "spill_volume", "fines", "reg_events", "notes", "repairs", "repair_cost", "downtime") and re.search(r"\bwhich\b|\blist\b", ql): group = "well"
         m = re.search(r"top (\d+)|\b(\d+) wells|\b(three|five|ten) wells", ql)
         if m: top = int(m[1] or m[2] or {"three": 3, "five": 5, "ten": 10}[m[3]])
+        if top is not None:
+            try: top = max(1, min(int(top), 50))
+            except (TypeError, ValueError): top = None
         if metric == "downtime" and win is None: win = (dt.date(1900, 1, 1), TODAY - dt.timedelta(days=1), "all records")
         args = {"metric": metric, "scope": scope, "window": win, "group_by": group}
         probs = Q.validate(args)
         if probs: return {"text": "I couldn't build a valid query: " + "; ".join(probs), "visual": None, "citations": [], "wells": []}
         r = Q.run_query(metric, scope, win, group, top, filters)
+        if r.get("error"): return {"text": r["error"], "visual": None, "citations": [], "wells": []}
         if not r["rows"] and r["n_wells"] == 0 and scope:   # self-check: empty scope -> retry once without the narrowest filter
             sc = dict(scope); sc.pop("team", None) or sc.pop("well_type", None); r = Q.run_query(metric, sc, win, group, top, filters); r["retried"] = True
         lab = {"downtime": ("downtime", "days"), "spills": ("real spills", ""), "spill_volume": ("spilled oil", "bbl"), "repairs": ("repair jobs", ""), "repair_cost": ("repair cost", "USD"),
@@ -255,7 +356,11 @@ class Copilot:
 
     def temps(self, q, w):
         m = re.search(r"(\d+)\s*weeks", q.lower()); n = int(m.group(1)) if m else 13
-        r = T.temp_series(w, n); down = [fmt(p["date"]) for p in r["points"] if not p["producing"]]
+        n = max(1, min(n, 520))
+        r = T.temp_series(w, n)
+        if not r["points"]:
+            return {"text": f"No temperature readings are on record for {w}.", "visual": None, "citations": [], "wells": [w]}
+        down = [fmt(p["date"]) for p in r["points"] if not p["producing"]]
         txt = f"{len(r['points'])} readings for {w} ({fmt(r['points'][0]['date'])} to {fmt(r['points'][-1]['date'])}). Not producing oil on: {', '.join(down) or 'none'} (wellhead less than {r['threshold']:g} °C above air)."
         return {"text": txt, "visual": {"type": "line", "x": [p["date"] for p in r["points"]], "series": [{"name": "Wellhead °C", "data": [p["wellhead"] for p in r["points"]]}, {"name": "Air °C", "data": [p["ambient"] for p in r["points"]]}],
                 "marks": [p["date"] for p in r["points"] if not p["producing"]], "mark_label": "not producing"}, "citations": r["citations"], "wells": [w]}
@@ -294,6 +399,7 @@ class Copilot:
                                   {"type": "table", "columns": ["Well", "Date", "Delta °C", "Cause", "Inspection"], "rows": rows},
                     "citations": [e["inspection_id"] for x in r for e in x["events"]] + ["Dataset Guide (downtime)", "well-type manual"], "wells": wells}
         m = re.search(r"\b(\d+|three|five|ten)\b (?:wells|assets)", ql); n = int({"three": "3", "five": "5", "ten": "10"}.get(m.group(1), m.group(1))) if m else 5
+        n = max(1, min(n, 50))
         r = T.downtime_ranking(area, *p, n=n)
         txt = f"**Top {n} wells in {r['area']} by downtime ({fmt(p[0])} to {fmt(p[1])}):** " + ", ".join(f"{x['asset_id']}: {x['days']} days ({x['well_type']})" for x in r["top"])
         if r["next"]: txt += f". Next is {r['next']['asset_id']} at {r['next']['days']}."
@@ -350,6 +456,8 @@ class Copilot:
         return {"text": txt, "visual": {"type": "bar", "x": [x["asset_id"] for x in r["rows"]], "series": [{"name": f"Repair cost {y} (USD)", "data": [x["total_usd"] for x in r["rows"]]}]}, "citations": [i for x in r["rows"] for i in x["maintenance_ids"]], "wells": ws}
 
     def spill_dispute(self, w, q):
+        bad = invalid_date_phrase(q)
+        if bad: return bad_date_answer(bad) | {"wells": [w]}
         dd = parse_date(q); r = T.spill_detail(w, str(dd)[5:] if dd else None)
         if "error" in r: return {"text": r["error"], "visual": None, "citations": [], "wells": [w]}
         disagree = len(r["notes"]) >= 2
@@ -399,9 +507,13 @@ class Copilot:
 
     # ---------------- feedback ----------------
     def correction(self, q, user, w):
-        c = self.c; ql = q.lower(); dd = parse_date(q); name = user_name(c, user)
+        c = self.c; ql = q.lower(); name = user_name(c, user)
+        bad = invalid_date_phrase(q)
+        if bad: return bad_date_answer(bad) | {"wells": [w]}
+        dd = parse_date(q)
         nums = [float(x) for x in re.findall(r"(\d+(?:\.\d+)?)\s*(?:°\s*c|bbl|barrels|c\b)", ql)]
         ins = T.effective_inspections(c, [w]); target = None
+        if not ins: return {"text": f"{w} has no inspections on record, so there is nothing to correct.", "visual": None, "citations": [], "wells": [w]}
         if dd: target = next((r for r in ins if r["date"] == str(dd)), None)
         if "spill" in ql or "bbl" in ql:
             field = "spill_est_volume_bbl"; target = target or next((r for r in reversed(ins) if r["spill_detected"]), None)
@@ -409,6 +521,10 @@ class Copilot:
             field = "ambient_temp_c" if re.search(r"\b(air|ambient)\b", ql) and "wellhead" not in ql else "wellhead_temp_c"; target = target or ins[-1]
         if not target or not nums: return {"text": "I couldn't tell which inspection or value to correct. Please name the well, the date and the corrected value.", "visual": None, "citations": [], "wells": [w]}
         new = nums[-1]; orig = target.get(field + "_original", target[field])
+        prev = c.execute("SELECT corrected_value, author_user_id FROM memory_corrections WHERE inspection_id=? AND field=? ORDER BY id DESC LIMIT 1", (target["inspection_id"], field)).fetchone()
+        if prev and str(prev["corrected_value"]) == str(new):
+            return {"text": f"That correction is already on record: **{target['inspection_id']}** ({fmt(target['date'])}) {field} = {new}, set by {user_name(c, prev['author_user_id'])}. I did not add a duplicate.",
+                    "visual": None, "citations": [target["inspection_id"]], "wells": [w]}
         reason = re.sub(r"\s+", " ", q.strip())
         c.execute("INSERT INTO memory_corrections(inspection_id,asset_id,field,original_value,corrected_value,author_user_id,ts,reason) VALUES(?,?,?,?,?,?,?,?)",
                   (target["inspection_id"], w, field, str(orig), str(new), user, now(), reason)); c.commit()
@@ -433,13 +549,22 @@ class Copilot:
         m = re.search(r"after (\d+|two|three|four|one) repairs", q.lower()); n = {"one": 1, "two": 2, "three": 3, "four": 4}.get(m.group(1), None) if m else None
         n = n or (int(m.group(1)) if m else None)
         if n is None: return {"text": "I couldn't parse the rule value. Please state e.g. 'RCA after 2 repairs'.", "visual": None, "citations": [], "wells": []}
+        prev = c.execute("SELECT value, author_user_id FROM memory_type_rules WHERE well_type=? AND rule_key='rca_repairs' ORDER BY id DESC LIMIT 1", (wt,)).fetchone()
+        if prev and int(prev["value"]) == int(n):
+            return {"text": f"That rule is already on record for all {wt} wells: root-cause analysis after {n} corrective repairs (set by {user_name(c, prev['author_user_id'])}). I did not add a duplicate.",
+                    "visual": None, "citations": [], "wells": []}
         c.execute("INSERT INTO memory_type_rules(well_type,rule_key,value,author_user_id,ts,text) VALUES(?,?,?,?,?,?)", (wt, "rca_repairs", n, user, now(), q)); c.commit()
         man, src = T.rule(c, f"{wt}.rca_repairs", 3)
         return {"text": f"Recorded a team rule for **all {wt} wells only**: root-cause analysis after {n} corrective repairs (manual: {man:g}, {src}). Set by {user_name(c, user)}; it applies to every user's later answers, and not to other well types.", "visual": None, "citations": [src], "wells": []}
 
     def statement(self, q, user, w):
         """Shared well fact. Compare with the latest inspection and other users' facts; flag conflicts."""
-        c = self.c; ql = q.lower(); name = user_name(c, user); s = T.well_status(w); dd = parse_date(q)
+        c = self.c; ql = q.lower(); name = user_name(c, user)
+        bad = invalid_date_phrase(q)
+        if bad: return bad_date_answer(bad) | {"wells": [w]}
+        s = T.well_status(w)
+        if "error" in s: return {"text": s["error"] + " I didn't record a shared fact.", "visual": None, "citations": [], "wells": [w]}
+        dd = parse_date(q)
         claims_down = bool(re.search(r"shut.?in|down|stopped|offline|workover|maintenance", ql)) and not re.search(r"back online|running fine|is running|producing", ql)
         claims_up = bool(re.search(r"back online|running|producing|is up\b|restarted", ql))
         future = dd is not None and dd > dt.date.fromisoformat(s["inspected_at"][:10])
@@ -477,16 +602,31 @@ def followups(steps, wells, q):
     return [x for x in out if x.lower() != q.lower()][:3]
 
 def convert_visual(v, to):
-    """Honor a user-requested visual type when the data allows it."""
-    if to == "table":
-        if v["type"] in ("bar", "line"): return {"type": "table", "columns": ["Label"] + [s["name"] for s in v["series"]], "rows": [dict([("Label", x)] + [(s["name"], s["data"][i]) for s in v["series"]]) for i, x in enumerate(v["x"])]}
-        if v["type"] == "map": return {"type": "table", "columns": ["Label", "Lat", "Lon"], "rows": [{"Label": p["label"], "Lat": p["lat"], "Lon": p["lon"]} for p in v["points"]]}
-        if v["type"] == "heatmap": return {"type": "table", "columns": ["Row"] + v["x"], "rows": [dict([("Row", y)] + list(zip(v["x"], v["z"][i]))) for i, y in enumerate(v["y"])]}
-    if to == "bar" and v["type"] == "table":
-        num = [k for k in v["columns"] if v["rows"] and isinstance(v["rows"][0].get(k), (int, float)) and k not in ("Lat", "Lon")]
-        if num: return {"type": "bar", "x": [str(list(r.values())[0]) for r in v["rows"]], "series": [{"name": num[0], "data": [r[num[0]] for r in v["rows"]]}]}
-    if to == "map" and v["type"] == "table" and v["rows"] and "Lat" in v["rows"][0]:
-        return {"type": "map", "points": [{"lat": r["Lat"], "lon": r["Lon"], "label": str(list(r.values())[0])} for r in v["rows"]]}
+    """Honor a user-requested visual type when the data allows it. A short or ragged series is left as-is."""
+    if not isinstance(v, dict) or "type" not in v: return v
+    try:
+        if to == "table":
+            if v["type"] in ("bar", "line"):
+                xs = list(v.get("x") or [])
+                series = v.get("series") or []
+                if not series or any(not isinstance(s, dict) or len(s.get("data") or []) < len(xs) for s in series): return v
+                return {"type": "table", "columns": ["Label"] + [s["name"] for s in series], "rows": [dict([("Label", x)] + [(s["name"], s["data"][i]) for s in series]) for i, x in enumerate(xs)]}
+            if v["type"] == "map":
+                pts = v.get("points") or []
+                return {"type": "table", "columns": ["Label", "Lat", "Lon"], "rows": [{"Label": p.get("label"), "Lat": p.get("lat"), "Lon": p.get("lon")} for p in pts]}
+            if v["type"] == "heatmap":
+                xs, ys, zs = v.get("x") or [], v.get("y") or [], v.get("z") or []
+                if len(zs) < len(ys) or any(len(row) < len(xs) for row in zs): return v
+                return {"type": "table", "columns": ["Row"] + list(xs), "rows": [dict([("Row", y)] + list(zip(xs, zs[i]))) for i, y in enumerate(ys)]}
+        if to == "bar" and v["type"] == "table":
+            rows, cols = v.get("rows") or [], v.get("columns") or []
+            if not rows or not cols: return v
+            num = [k for k in cols if isinstance(rows[0].get(k), (int, float)) and not isinstance(rows[0].get(k), bool) and k not in ("Lat", "Lon")]
+            if num: return {"type": "bar", "x": [str(list(r.values())[0]) for r in rows], "series": [{"name": num[0], "data": [r[num[0]] for r in rows]}]}
+        if to == "map" and v["type"] == "table" and v.get("rows") and "Lat" in v["rows"][0] and "Lon" in v["rows"][0]:
+            return {"type": "map", "points": [{"lat": r["Lat"], "lon": r["Lon"], "label": str(list(r.values())[0])} for r in v["rows"]]}
+    except (KeyError, IndexError, TypeError, ValueError):
+        return v
     return v
 
 # ---------------- optional LLM tool-calling layer ----------------
