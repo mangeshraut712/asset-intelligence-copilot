@@ -689,7 +689,7 @@
   "id": "Q6",
   "user": "Nathan Pierce",
   "question": "Across the whole field, not just my area, for which wells do the latest inspection and the operator notes disagree about whether the well is producing oil? For each one, what is its real status right now, and why?",
-  "answer": "**15 wells** where the latest inspection and the latest shut-in/restart operator note disagree. Rule (Operations SOP OPS-3): the more recent evidence wins; a restart note newer than the inspection means producing (unconfirmed) until an inspection confirms; gas, bypass and equipment notes don't change status.",
+  "answer": "**15 wells** where the latest inspection and the latest operator note saying the well was shut in or restarted disagree. Real status now: **4 producing**, **11 not producing** (table, one line per well with the reason).\n\nRule (Operations SOP OPS-3): the more recent of the two wins. A shut-in note newer than the inspection means not producing (shut in); a restart note newer than the inspection means producing (unconfirmed) until an inspection confirms it; an inspection newer than the note stands. Inspections are read after any data_correction note. Gas, bypass and equipment notes don't change status.\n\nNot producing because the note is newer: WELL-0044, WELL-0323, WELL-0355, WELL-0422, WELL-0479, WELL-0481. Producing (unconfirmed) because a restart note is newer: WELL-0026, WELL-0032, WELL-0033, WELL-0046. Inspection is newer, so it stands: WELL-0010 (not producing oil), WELL-0330 (not producing oil), WELL-0332 (not producing oil), WELL-0429 (not producing oil), WELL-0452 (not producing oil).\n\n**Assumption, stated:** I read \"drive tripping \u2026, restarted/reset from the panel\" as an equipment remark (the well was never shut in), so it doesn't count under OPS-3. If you count it as a restart note, 2 more well(s) disagree: WELL-0219 (WELL-0219 drive tripping on underload, restarted from the panel.) \u2192 still **not producing oil**, because inspection is more recent than the note (OPS-3); WELL-0249 (WELL-0249 drive tripping on underload, restarted from the panel.) \u2192 still **not producing oil**, because inspection is more recent than the note (OPS-3). The status answer is the same under both readings.",
   "visual": "table",
   "citations": [
    "Operations SOP OPS-3",
@@ -715,12 +715,16 @@
    "CTX-0330-002",
    "INS-0332-0217",
    "CTX-0332-003",
+   "INS-0355-0213",
+   "CTX-0355-004",
    "INS-0422-0215",
    "CTX-0422-003",
    "INS-0429-0219",
    "CTX-0429-004",
    "INS-0452-0219",
    "CTX-0452-005",
+   "INS-0479-0213",
+   "CTX-0479-004",
    "INS-0481-0220",
    "CTX-0481-006"
   ],
@@ -737,7 +741,7 @@
     }
    ],
    "rules": [],
-   "citations": 31
+   "citations": 35
   },
   "visual_data": {
    "type": "table",
@@ -745,7 +749,7 @@
     "Well",
     "Area",
     "Latest inspection",
-    "Latest operator note",
+    "Latest shut-in/restart note",
     "Status now",
     "Why"
    ],
@@ -753,120 +757,120 @@
     {
      "Well": "WELL-0010",
      "Area": "Southwest Block 23",
-     "Latest inspection": "INS-0010-0219, 14 Jan 2027: not producing (\u0394 17.5 \u00b0C vs 20)",
-     "Latest operator note": "2027-01-09 04:00 UTC: Restarted WELL-0010 after the crew cleared the lockout.",
+     "Latest inspection": "INS-0010-0219, 2027-01-14 14:00 UTC: not producing (\u0394 17.5 \u00b0C vs 20)",
+     "Latest shut-in/restart note": "CTX-0010-004, 2027-01-09 04:00 UTC: Restarted WELL-0010 after the crew cleared the lockout.",
      "Status now": "Not producing oil",
      "Why": "inspection is more recent than the note (OPS-3)"
     },
     {
      "Well": "WELL-0026",
      "Area": "Southwest Block 23",
-     "Latest inspection": "INS-0026-0216, 14 Jan 2027: not producing (\u0394 5.4 \u00b0C vs 15)",
-     "Latest operator note": "2027-01-15 10:25 UTC: WELL-0026 put back on production after the repair crew finished.",
+     "Latest inspection": "INS-0026-0216, 2027-01-14 12:15 UTC: not producing (\u0394 5.4 \u00b0C vs 15)",
+     "Latest shut-in/restart note": "CTX-0026-001, 2027-01-15 10:25 UTC: WELL-0026 put back on production after the repair crew finished.",
      "Status now": "Producing oil (unconfirmed)",
      "Why": "operator note is more recent than the inspection (OPS-3)"
     },
     {
      "Well": "WELL-0032",
      "Area": "Southwest Block 23",
-     "Latest inspection": "INS-0032-0219, 14 Jan 2027: not producing (\u0394 7.4 \u00b0C vs 20)",
-     "Latest operator note": "2027-01-15 10:25 UTC: Brought WELL-0032 back online after the pump change.",
+     "Latest inspection": "INS-0032-0219, 2027-01-14 08:30 UTC: not producing (\u0394 7.4 \u00b0C vs 20)",
+     "Latest shut-in/restart note": "CTX-0032-006, 2027-01-15 10:25 UTC: Brought WELL-0032 back online after the pump change.",
      "Status now": "Producing oil (unconfirmed)",
      "Why": "operator note is more recent than the inspection (OPS-3)"
     },
     {
      "Well": "WELL-0033",
      "Area": "Southwest Block 23",
-     "Latest inspection": "INS-0033-0222, 14 Jan 2027: not producing (\u0394 10.0 \u00b0C vs 20)",
-     "Latest operator note": "2027-01-15 10:25 UTC: Restarted WELL-0033, unit running smooth.",
+     "Latest inspection": "INS-0033-0222, 2027-01-14 14:45 UTC: not producing (\u0394 10.0 \u00b0C vs 20)",
+     "Latest shut-in/restart note": "CTX-0033-003, 2027-01-15 10:25 UTC: Restarted WELL-0033, unit running smooth.",
      "Status now": "Producing oil (unconfirmed)",
      "Why": "operator note is more recent than the inspection (OPS-3)"
     },
     {
      "Well": "WELL-0044",
      "Area": "Southwest Block 23",
-     "Latest inspection": "INS-0044-0218, 14 Jan 2027: producing (\u0394 23.7 \u00b0C vs 15)",
-     "Latest operator note": "2027-01-14 13:05 UTC: Shut in WELL-0044 at the wellhead, flowline leak suspected.",
+     "Latest inspection": "INS-0044-0218, 2027-01-14 07:30 UTC: producing (\u0394 23.7 \u00b0C vs 15)",
+     "Latest shut-in/restart note": "CTX-0044-008, 2027-01-14 13:05 UTC: Shut in WELL-0044 at the wellhead, flowline leak suspected.",
      "Status now": "Not producing oil (shut in)",
      "Why": "operator note is more recent than the inspection (OPS-3)"
     },
     {
      "Well": "WELL-0046",
      "Area": "Southwest Block 23",
-     "Latest inspection": "INS-0046-0220, 14 Jan 2027: not producing (\u0394 2.1 \u00b0C vs 15)",
-     "Latest operator note": "2027-01-15 10:25 UTC: WELL-0046 put back on production after the repair crew finished.",
+     "Latest inspection": "INS-0046-0220, 2027-01-14 13:00 UTC: not producing (\u0394 2.1 \u00b0C vs 15)",
+     "Latest shut-in/restart note": "CTX-0046-004, 2027-01-15 10:25 UTC: WELL-0046 put back on production after the repair crew finished.",
      "Status now": "Producing oil (unconfirmed)",
      "Why": "operator note is more recent than the inspection (OPS-3)"
     },
     {
-     "Well": "WELL-0219",
-     "Area": "Southeast Block 31",
-     "Latest inspection": "INS-0219-0171, 14 Jan 2027: not producing (\u0394 4.5 \u00b0C vs 25)",
-     "Latest operator note": "2027-01-05 09:55 UTC: WELL-0219 drive tripping on underload, restarted from the panel.",
-     "Status now": "Not producing oil",
-     "Why": "inspection is more recent than the note (OPS-3)"
-    },
-    {
-     "Well": "WELL-0249",
-     "Area": "Southeast Block 31",
-     "Latest inspection": "INS-0249-0120, 14 Jan 2027: not producing (\u0394 5.9 \u00b0C vs 25)",
-     "Latest operator note": "2027-01-13 09:40 UTC: WELL-0249 drive tripping on underload, restarted from the panel.",
-     "Status now": "Not producing oil",
-     "Why": "inspection is more recent than the note (OPS-3)"
-    },
-    {
      "Well": "WELL-0323",
      "Area": "Northwest Block 12",
-     "Latest inspection": "INS-0323-0219, 14 Jan 2027: producing (\u0394 24.5 \u00b0C vs 15)",
-     "Latest operator note": "2027-01-14 19:20 UTC: Shut-in WELL-0323 after the pumper reported a stuffing box leak.",
+     "Latest inspection": "INS-0323-0219, 2027-01-14 14:45 UTC: producing (\u0394 24.5 \u00b0C vs 15)",
+     "Latest shut-in/restart note": "CTX-0323-002, 2027-01-14 19:20 UTC: Shut-in WELL-0323 after the pumper reported a stuffing box leak.",
      "Status now": "Not producing oil (shut in)",
      "Why": "operator note is more recent than the inspection (OPS-3)"
     },
     {
      "Well": "WELL-0330",
      "Area": "Northwest Block 12",
-     "Latest inspection": "INS-0330-0213, 14 Jan 2027: not producing (\u0394 4.4 \u00b0C vs 15)",
-     "Latest operator note": "2026-12-19 06:00 UTC: WELL-0330 put back on production after the repair crew finished.",
+     "Latest inspection": "INS-0330-0213, 2027-01-14 07:15 UTC: not producing (\u0394 4.4 \u00b0C vs 15)",
+     "Latest shut-in/restart note": "CTX-0330-002, 2026-12-19 06:00 UTC: WELL-0330 put back on production after the repair crew finished.",
      "Status now": "Not producing oil",
      "Why": "inspection is more recent than the note (OPS-3)"
     },
     {
      "Well": "WELL-0332",
      "Area": "Northwest Block 12",
-     "Latest inspection": "INS-0332-0217, 14 Jan 2027: not producing (\u0394 0.5 \u00b0C vs 15)",
-     "Latest operator note": "2026-11-20 20:00 UTC: Restarted WELL-0332 after the crew cleared the lockout.",
+     "Latest inspection": "INS-0332-0217, 2027-01-14 14:45 UTC: not producing (\u0394 0.5 \u00b0C vs 15)",
+     "Latest shut-in/restart note": "CTX-0332-003, 2026-11-20 20:00 UTC: Restarted WELL-0332 after the crew cleared the lockout.",
      "Status now": "Not producing oil",
      "Why": "inspection is more recent than the note (OPS-3)"
     },
     {
+     "Well": "WELL-0355",
+     "Area": "Northwest Block 12",
+     "Latest inspection": "INS-0355-0213, 2027-01-14 15:15 UTC: producing (\u0394 31.1 \u00b0C vs 15)",
+     "Latest shut-in/restart note": "CTX-0355-004, 2027-01-14 19:05 UTC: Found WELL-0355 leaking at the stuffing box, shut the well in.",
+     "Status now": "Not producing oil (shut in)",
+     "Why": "operator note is more recent than the inspection (OPS-3)"
+    },
+    {
      "Well": "WELL-0422",
      "Area": "Northwest Block 12",
-     "Latest inspection": "INS-0422-0215, 14 Jan 2027: producing (\u0394 27.7 \u00b0C vs 20)",
-     "Latest operator note": "2027-01-14 21:35 UTC: Shut in WELL-0422 for the night, high pressure alarm on the separator.",
+     "Latest inspection": "INS-0422-0215, 2027-01-14 15:15 UTC: producing (\u0394 27.7 \u00b0C vs 20)",
+     "Latest shut-in/restart note": "CTX-0422-003, 2027-01-14 21:35 UTC: Shut in WELL-0422 for the night, high pressure alarm on the separator.",
      "Status now": "Not producing oil (shut in)",
      "Why": "operator note is more recent than the inspection (OPS-3)"
     },
     {
      "Well": "WELL-0429",
      "Area": "Northwest Block 12",
-     "Latest inspection": "INS-0429-0219, 14 Jan 2027: not producing (\u0394 6.2 \u00b0C vs 20)",
-     "Latest operator note": "2026-11-14 05:30 UTC: Restarted WELL-0429 after the crew cleared the lockout.",
+     "Latest inspection": "INS-0429-0219, 2027-01-14 11:15 UTC: not producing (\u0394 6.2 \u00b0C vs 20)",
+     "Latest shut-in/restart note": "CTX-0429-004, 2026-11-14 05:30 UTC: Restarted WELL-0429 after the crew cleared the lockout.",
      "Status now": "Not producing oil",
      "Why": "inspection is more recent than the note (OPS-3)"
     },
     {
      "Well": "WELL-0452",
      "Area": "Southeast Block 32",
-     "Latest inspection": "INS-0452-0219, 14 Jan 2027: not producing (\u0394 3.1 \u00b0C vs 20)",
-     "Latest operator note": "2026-12-15 01:00 UTC: Restarted WELL-0452, unit running smooth.",
+     "Latest inspection": "INS-0452-0219, 2027-01-14 11:15 UTC: not producing (\u0394 3.1 \u00b0C vs 20)",
+     "Latest shut-in/restart note": "CTX-0452-005, 2026-12-15 01:00 UTC: Restarted WELL-0452, unit running smooth.",
      "Status now": "Not producing oil",
      "Why": "inspection is more recent than the note (OPS-3)"
     },
     {
+     "Well": "WELL-0479",
+     "Area": "Southeast Block 32",
+     "Latest inspection": "INS-0479-0213, 2027-01-14 11:45 UTC: producing (\u0394 23.6 \u00b0C vs 15)",
+     "Latest shut-in/restart note": "CTX-0479-004, 2027-01-14 15:35 UTC: Found WELL-0479 leaking at the stuffing box, shut the well in.",
+     "Status now": "Not producing oil (shut in)",
+     "Why": "operator note is more recent than the inspection (OPS-3)"
+    },
+    {
      "Well": "WELL-0481",
      "Area": "Southeast Block 32",
-     "Latest inspection": "INS-0481-0220, 14 Jan 2027: producing (\u0394 22.4 \u00b0C vs 15)",
-     "Latest operator note": "2027-01-14 18:50 UTC: Shut in WELL-0481 for the night, high pressure alarm on the separator.",
+     "Latest inspection": "INS-0481-0220, 2027-01-14 14:30 UTC: producing (\u0394 22.4 \u00b0C vs 15)",
+     "Latest shut-in/restart note": "CTX-0481-006, 2027-01-14 18:50 UTC: Shut in WELL-0481 for the night, high pressure alarm on the separator.",
      "Status now": "Not producing oil (shut in)",
      "Why": "operator note is more recent than the inspection (OPS-3)"
     }
@@ -877,11 +881,50 @@
   "id": "Q7.1",
   "user": "Robert Hayes",
   "question": "Over the last month the operators have written notes about wells that sound or behave wrong. Which of those wells haven't had a repair since? Rank the 10 most likely to need a repair in the next 90 days, other than a spill clean-up, and quote the notes as evidence.",
-  "answer": "In the last month operators wrote abnormal-behaviour notes (rattling, rod squeal, fluid pound, tagging bottom, amps hunting, etc.) about **172 wells**; **160** have had no repair since the first such note. Ranked by: number of repeated notes, recent non-producing readings, corrective-repair frequency over 12 months, and recalled pumps. This is a judgement score, not a validated failure model.",
+  "answer": "In the last month (15 Dec 2026 \u2013 15 Jan 2027) operators wrote notes about **175 wells** that sound or behave wrong (rattling, rod squeal, fluid pound, tagging bottom, amps hunting, drive trips, stuffing-box leaks). **160** have had no repair since the latest such note (spill clean-ups don't count as a repair; 0 more would drop out if you count from the first note instead).\n\nHow I ranked them: wells with a failure precursor that the documents name come first, then by points (table) \u2014 the T500 manual's early-warning temperature fall (8), repeated drive trips (6), and a well that reads not producing with no shut-in or job to explain it (6; T200 manual: 'unit running, wellhead cold' = rod parted or pump stuck). Then repeated notes (1.5 each, up to 3), different symptoms (+1 each), corrective repairs on the same equipment in 12 months (+1 each, +2 at the RCA threshold) and a recalled pump (+2). There is no history to validate a 90-day failure model, so this is an evidence-weighted ranking, not a probability.\n\nLeft out because a repair is already under way: WELL-0197 (MNT-0197-029 Sucker rod parted, started 1 Jan 2027, due to finish 19 Jan 2027); WELL-0249 (MNT-0249-018 ESP motor burnout, started 9 Jan 2027, due to finish 2 Feb 2027); WELL-0263 (MNT-0263-035 Flowline corrosion pinhole leak, started 9 Jan 2027, due to finish 19 Jan 2027).\n\nAlso showing a documented precursor but ranked below #10 on supporting evidence: WELL-0430, WELL-0442, WELL-0202, WELL-0097, WELL-0471, WELL-0478.\n\nTied with #10 on score: WELL-0430, WELL-0442 (sorted by well ID).",
   "visual": "table",
-  "citations": [],
+  "citations": [
+   "CTX-0336-003",
+   "CTX-0336-004",
+   "CTX-0336-005",
+   "INS-0336-0218",
+   "CTX-0401-003",
+   "CTX-0401-004",
+   "INS-0401-0221",
+   "CTX-0175-003",
+   "CTX-0175-006",
+   "CTX-0175-007",
+   "INS-0175-0216",
+   "CTX-0329-002",
+   "CTX-0329-003",
+   "INS-0329-0218",
+   "CTX-0344-002",
+   "CTX-0344-003",
+   "CTX-0344-004",
+   "INS-0344-0219",
+   "CTX-0219-006",
+   "CTX-0219-007",
+   "INS-0219-0171",
+   "CTX-0010-005",
+   "CTX-0010-006",
+   "CTX-0010-007",
+   "INS-0010-0219",
+   "CTX-0498-004",
+   "CTX-0498-005",
+   "CTX-0498-006",
+   "INS-0498-0219",
+   "CTX-0332-005",
+   "CTX-0332-006",
+   "INS-0332-0217",
+   "CTX-0418-001",
+   "CTX-0418-002",
+   "INS-0418-0219",
+   "T500 manual \u00a75",
+   "T200 manual \u00a77",
+   "Field Work SOP \u00a74"
+  ],
   "engine": "rules",
-  "confidence": "high",
+  "confidence": "medium (judgement)",
   "trace": {
    "engine": "rules",
    "steps": [
@@ -893,7 +936,7 @@
     }
    ],
    "rules": [],
-   "citations": 0
+   "citations": 38
   },
   "visual_data": {
    "type": "table",
@@ -901,90 +944,112 @@
     "Rank",
     "Well",
     "Area",
+    "Type",
+    "Score",
     "Operator-note evidence",
-    "Other warning signs",
+    "Warning signs",
     "Last repair"
    ],
    "rows": [
     {
      "Rank": 1,
-     "Well": "WELL-0182",
-     "Area": "Northeast Block 8",
-     "Operator-note evidence": "2026-12-27: \"Pumper reports rattling at WELL-0182 pump jack, keep an eye on it.\" | 2026-12-30: \"WELL-0182 tagging bottom on the downstroke, adjust spacing next visit.\" | 2027-01-05: \"Heard fluid pound on WELL-0182, unit still running.\"",
-     "Other warning signs": "6 corrective repairs in the last 12 months; 3 recent inspections not producing",
-     "Last repair": "MNT-0182-029 26 Dec 2026 (Walking beam bearing wear)"
+     "Well": "WELL-0336",
+     "Area": "Northwest Block 12",
+     "Type": "T500",
+     "Score": 16.5,
+     "Operator-note evidence": "CTX-0336-003 2026-12-24: \"WELL-0336 amps hunting on the drive panel, still running.\" | CTX-0336-004 2027-01-07: \"WELL-0336 drive tripping on underload, restarted from the panel.\" | CTX-0336-005 2027-01-14: \"WELL-0336 amps hunting on the drive panel, still running.\"",
+     "Warning signs": "T500 early-warning pattern: wellhead-minus-air fell 3 inspections in a row by 4.2 \u00b0C (37.3 \u2192 36.9 \u2192 34.9 \u2192 33.1); the manual says ESP motors usually fail after this and calls for a drive and insulation check within 14 days, i.e. by 28 Jan 2027; drive trip reset by the operator; 1 corrective repair(s) on the same equipment (esp_pump) in the last 12 months",
+     "Last repair": "MNT-0336-026 8 May 2026 (ESP motor burnout)"
     },
     {
      "Rank": 2,
-     "Well": "WELL-0411",
+     "Well": "WELL-0401",
      "Area": "Northwest Block 12",
-     "Operator-note evidence": "2026-12-25: \"Drive on WELL-0411 showing amps hunting between 38 and 44 A.\" | 2026-12-28: \"Drive on WELL-0411 showing amps hunting between 38 and 44 A.\"",
-     "Other warning signs": "5 corrective repairs in the last 12 months; 6 recent inspections not producing",
-     "Last repair": "MNT-0411-023 6 Dec 2026 (Flowline corrosion pinhole leak)"
+     "Type": "T500",
+     "Score": 15.0,
+     "Operator-note evidence": "CTX-0401-003 2026-12-18: \"WELL-0401 amps hunting on the drive panel, still running.\" | CTX-0401-004 2027-01-14: \"WELL-0401 amps hunting on the drive panel, still running.\"",
+     "Warning signs": "T500 early-warning pattern: wellhead-minus-air fell 3 inspections in a row by 3.8 \u00b0C (34.1 \u2192 32.9 \u2192 31.6 \u2192 30.3); the manual says ESP motors usually fail after this and calls for a drive and insulation check within 14 days, i.e. by 28 Jan 2027; 2 corrective repair(s) on the same equipment (esp_pump) in the last 12 months \u2014 at the RCA threshold (2)",
+     "Last repair": "MNT-0401-032 27 Nov 2026 (ESP motor burnout)"
     },
     {
      "Rank": 3,
-     "Well": "WELL-0297",
-     "Area": "Northeast Block 7",
-     "Operator-note evidence": "2027-01-09: \"Pumper reports rattling at WELL-0297 pump jack, keep an eye on it.\" | 2027-01-11: \"Rod squeal at WELL-0297 stuffing box, greased the polished rod.\"",
-     "Other warning signs": "6 corrective repairs in the last 12 months; 4 recent inspections not producing",
-     "Last repair": "MNT-0297-036 8 Jan 2027 (Prime mover failure)"
+     "Well": "WELL-0175",
+     "Area": "Northeast Block 8",
+     "Type": "T200",
+     "Score": 13.5,
+     "Operator-note evidence": "CTX-0175-003 2026-12-17: \"Heard fluid pound on WELL-0175, unit still running.\" | CTX-0175-006 2026-12-21: \"Rod squeal at WELL-0175 stuffing box, greased the polished rod.\" | CTX-0175-007 2026-12-26: \"WELL-0175 tagging bottom on the downstroke, adjust spacing next visit.\"",
+     "Warning signs": "latest inspection INS-0175-0216 (14 Jan 2027) reads not producing (\u0394 5.5 \u00b0C, below the 15 \u00b0C rule) with no shut-in note or open job to explain it \u2014 for a rod-lift well the manual lists 'unit running, wellhead cold' as rod parted or pump stuck; 1 corrective repair(s) on the same equipment (wellhead) in the last 12 months",
+     "Last repair": "MNT-0175-031 30 May 2026 (Stuffing box packing leak)"
     },
     {
      "Rank": 4,
-     "Well": "WELL-0114",
-     "Area": "Northeast Block 7",
-     "Operator-note evidence": "2026-12-16: \"Rod squeal at WELL-0114 stuffing box, greased the polished rod.\" | 2026-12-23: \"Pumper reports rattling at WELL-0114 pump jack, keep an eye on it.\" | 2026-12-31: \"WELL-0114 tagging bottom on the downstroke, adjust spacing next visit.\"",
-     "Other warning signs": "4 corrective repairs in the last 12 months; 2 recent inspections not producing",
-     "Last repair": "MNT-0114-028 4 Dec 2026 (Flowline corrosion pinhole leak)"
+     "Well": "WELL-0329",
+     "Area": "Northwest Block 12",
+     "Type": "T500",
+     "Score": 13.0,
+     "Operator-note evidence": "CTX-0329-002 2026-12-26: \"WELL-0329 drive tripping on and off overnight, reset it each time.\" | CTX-0329-003 2027-01-15: \"WELL-0329 drive tripping on and off overnight, reset it each time.\"",
+     "Warning signs": "repeated drive trips that were reset; the T500 manual says repeated trips must be treated as a failure, not reset; 2 corrective repair(s) on the same equipment (esp_pump) in the last 12 months \u2014 at the RCA threshold (2)",
+     "Last repair": "MNT-0329-031 25 Sep 2026 (ESP power cable insulation failure)"
     },
     {
      "Rank": 5,
-     "Well": "WELL-0197",
-     "Area": "Northeast Block 8",
-     "Operator-note evidence": "2027-01-04: \"Pumper reports rattling at WELL-0197 pump jack, keep an eye on it.\" | 2027-01-08: \"Heard fluid pound on WELL-0197, unit still running.\" | 2027-01-12: \"Heard fluid pound on WELL-0197, unit still running.\"",
-     "Other warning signs": "2 corrective repairs in the last 12 months; 3 recent inspections not producing",
-     "Last repair": "MNT-0197-029 1 Jan 2027 (Sucker rod parted)"
+     "Well": "WELL-0344",
+     "Area": "Northwest Block 12",
+     "Type": "T500",
+     "Score": 12.5,
+     "Operator-note evidence": "CTX-0344-002 2026-12-21: \"Drive on WELL-0344 showing amps hunting between 38 and 44 A.\" | CTX-0344-003 2026-12-24: \"Drive on WELL-0344 showing amps hunting between 38 and 44 A.\" | CTX-0344-004 2027-01-04: \"WELL-0344 drive tripping on and off overnight, reset it each time.\"",
+     "Warning signs": "repeated drive trips that were reset; the T500 manual says repeated trips must be treated as a failure, not reset; 1 corrective repair(s) on the same equipment (esp_pump) in the last 12 months",
+     "Last repair": "MNT-0344-032 26 Sep 2026 (Flowline corrosion pinhole leak)"
     },
     {
      "Rank": 6,
-     "Well": "WELL-0263",
-     "Area": "Southwest Block 23",
-     "Operator-note evidence": "2027-01-11: \"Heard fluid pound on WELL-0263, unit still running.\" | 2027-01-14: \"Rod squeal at WELL-0263 stuffing box, greased the polished rod.\"",
-     "Other warning signs": "4 corrective repairs in the last 12 months; 2 recent inspections not producing; recalled pump in the ground",
-     "Last repair": "MNT-0263-035 9 Jan 2027 (Flowline corrosion pinhole leak)"
+     "Well": "WELL-0219",
+     "Area": "Southeast Block 31",
+     "Type": "T500",
+     "Score": 12.0,
+     "Operator-note evidence": "CTX-0219-006 2027-01-05: \"WELL-0219 drive tripping on underload, restarted from the panel.\" | CTX-0219-007 2027-01-13: \"Drive on WELL-0219 showing amps hunting between 38 and 44 A.\"",
+     "Warning signs": "drive trip reset by the operator; latest inspection INS-0219-0171 (14 Jan 2027) reads not producing (\u0394 4.5 \u00b0C, below the 25 \u00b0C rule) with no shut-in note or open job to explain it \u2014 for an ESP well this is consistent with a drive/motor failure",
+     "Last repair": "MNT-0219-020 21 Aug 2026 (Wellhead cable penetrator leak)"
     },
     {
      "Rank": 7,
      "Well": "WELL-0010",
      "Area": "Southwest Block 23",
-     "Operator-note evidence": "2027-01-10: \"Rod squeal at WELL-0010 stuffing box, greased the polished rod.\" | 2027-01-13: \"Rod squeal at WELL-0010 stuffing box, greased the polished rod.\" | 2027-01-14: \"Heard fluid pound on WELL-0010, unit still running.\"",
-     "Other warning signs": "4 corrective repairs in the last 12 months; 1 recent inspections not producing",
-     "Last repair": "MNT-0010-031 8 Jan 2027 (Flowline leak causing spill)"
+     "Type": "T350",
+     "Score": 11.5,
+     "Operator-note evidence": "CTX-0010-005 2027-01-10: \"Rod squeal at WELL-0010 stuffing box, greased the polished rod.\" | CTX-0010-006 2027-01-13: \"Rod squeal at WELL-0010 stuffing box, greased the polished rod.\" | CTX-0010-007 2027-01-14: \"Heard fluid pound on WELL-0010, unit still running.\"",
+     "Warning signs": "latest inspection INS-0010-0219 (14 Jan 2027) reads not producing (\u0394 17.5 \u00b0C, below the 20 \u00b0C rule) with no shut-in note or open job to explain it \u2014 for a rod-lift well the manual lists 'unit running, wellhead cold' as rod parted or pump stuck",
+     "Last repair": "MNT-0010-027 9 May 2026 (Prime mover failure)"
     },
     {
      "Rank": 8,
-     "Well": "WELL-0023",
-     "Area": "Southwest Block 23",
-     "Operator-note evidence": "2026-12-27: \"Rod squeal at WELL-0023 stuffing box, greased the polished rod.\" | 2027-01-04: \"Rod squeal at WELL-0023 stuffing box, greased the polished rod.\" | 2027-01-10: \"Heard fluid pound on WELL-0023, unit still running.\"",
-     "Other warning signs": "4 corrective repairs in the last 12 months; 1 recent inspections not producing",
-     "Last repair": "MNT-0023-033 6 Dec 2026 (Sucker rod parted)"
+     "Well": "WELL-0498",
+     "Area": "Southeast Block 32",
+     "Type": "T500",
+     "Score": 10.5,
+     "Operator-note evidence": "CTX-0498-004 2027-01-09: \"WELL-0498 drive tripping on and off overnight, reset it each time.\" | CTX-0498-005 2027-01-11: \"WELL-0498 drive tripping on underload, restarted from the panel.\" | CTX-0498-006 2027-01-12: \"WELL-0498 drive tripping on underload, restarted from the panel.\"",
+     "Warning signs": "repeated drive trips that were reset; the T500 manual says repeated trips must be treated as a failure, not reset",
+     "Last repair": "MNT-0498-031 3 Jan 2027 (Separator level controller fault)"
     },
     {
      "Rank": 9,
-     "Well": "WELL-0175",
-     "Area": "Northeast Block 8",
-     "Operator-note evidence": "2026-12-17: \"Heard fluid pound on WELL-0175, unit still running.\" | 2026-12-21: \"Rod squeal at WELL-0175 stuffing box, greased the polished rod.\" | 2026-12-26: \"WELL-0175 tagging bottom on the downstroke, adjust spacing next visit.\"",
-     "Other warning signs": "3 corrective repairs in the last 12 months; 1 recent inspections not producing",
-     "Last repair": "MNT-0175-033 31 Jul 2026 (Flowline leak causing spill)"
+     "Well": "WELL-0332",
+     "Area": "Northwest Block 12",
+     "Type": "T200",
+     "Score": 10.0,
+     "Operator-note evidence": "CTX-0332-005 2026-12-31: \"Rod squeal at WELL-0332 stuffing box, greased the polished rod.\" | CTX-0332-006 2027-01-03: \"Pumper reports rattling at WELL-0332 pump jack, keep an eye on it.\"",
+     "Warning signs": "latest inspection INS-0332-0217 (14 Jan 2027) reads not producing (\u0394 0.5 \u00b0C, below the 15 \u00b0C rule) with no shut-in note or open job to explain it \u2014 for a rod-lift well the manual lists 'unit running, wellhead cold' as rod parted or pump stuck",
+     "Last repair": "MNT-0332-027 14 Feb 2026 (Flowline corrosion pinhole leak)"
     },
     {
      "Rank": 10,
-     "Well": "WELL-0213",
-     "Area": "Southeast Block 31",
-     "Operator-note evidence": "2026-12-16: \"Rod squeal at WELL-0213 stuffing box, greased the polished rod.\" | 2027-01-05: \"Pumper reports rattling at WELL-0213 pump jack, keep an eye on it.\" | 2027-01-06: \"Heard fluid pound on WELL-0213, unit still running.\"",
-     "Other warning signs": "3 corrective repairs in the last 12 months; 1 recent inspections not producing",
-     "Last repair": "MNT-0213-028 2 Oct 2026 (Prime mover failure)"
+     "Well": "WELL-0418",
+     "Area": "Northwest Block 12",
+     "Type": "T350",
+     "Score": 10.0,
+     "Operator-note evidence": "CTX-0418-001 2026-12-27: \"Heard fluid pound on WELL-0418, unit still running.\" | CTX-0418-002 2027-01-13: \"Pumper reports rattling at WELL-0418 pump jack, keep an eye on it.\"",
+     "Warning signs": "latest inspection INS-0418-0219 (14 Jan 2027) reads not producing (\u0394 8.2 \u00b0C, below the 20 \u00b0C rule) with no shut-in note or open job to explain it \u2014 for a rod-lift well the manual lists 'unit running, wellhead cold' as rod parted or pump stuck",
+     "Last repair": "MNT-0418-023 10 Jul 2026 (Stuffing box packing leak)"
     }
    ]
   }
@@ -993,11 +1058,23 @@
   "id": "Q7.2",
   "user": "Robert Hayes",
   "question": "Which three would you send a crew to first this week, and why?",
-  "answer": "Send crews first to:\n1. **WELL-0182** (Northeast Block 8) \u2014 2027-01-05: \"Heard fluid pound on WELL-0182, unit still running.\"; 6 corrective repairs in the last 12 months; 3 recent inspections not producing; last repair MNT-0182-029 26 Dec 2026 (Walking beam bearing wear).\n2. **WELL-0411** (Northwest Block 12) \u2014 2026-12-28: \"Drive on WELL-0411 showing amps hunting between 38 and 44 A.\"; 5 corrective repairs in the last 12 months; 6 recent inspections not producing; last repair MNT-0411-023 6 Dec 2026 (Flowline corrosion pinhole leak).\n3. **WELL-0297** (Northeast Block 7) \u2014 2027-01-11: \"Rod squeal at WELL-0297 stuffing box, greased the polished rod.\"; 6 corrective repairs in the last 12 months; 4 recent inspections not producing; last repair MNT-0297-036 8 Jan 2027 (Prime mover failure).\nWhy: these have the most repeated abnormal notes without a repair since, plus the strongest other warning signs. Gas-odor and recalled-pump items are handled under their own procedures.",
+  "answer": "Send crews first to WELL-0336, WELL-0401 and WELL-0175:\n1. **WELL-0336** (Northwest Block 12, T500, score 16.5) \u2014 CTX-0336-005 2027-01-14: \"WELL-0336 amps hunting on the drive panel, still running.\". Why: T500 early-warning pattern: wellhead-minus-air fell 3 inspections in a row by 4.2 \u00b0C (37.3 \u2192 36.9 \u2192 34.9 \u2192 33.1); the manual says ESP motors usually fail after this and calls for a drive and insulation check within 14 days, i.e. by 28 Jan 2027; drive trip reset by the operator; 1 corrective repair(s) on the same equipment (esp_pump) in the last 12 months. Last repair: MNT-0336-026 8 May 2026 (ESP motor burnout).\n2. **WELL-0401** (Northwest Block 12, T500, score 15.0) \u2014 CTX-0401-004 2027-01-14: \"WELL-0401 amps hunting on the drive panel, still running.\". Why: T500 early-warning pattern: wellhead-minus-air fell 3 inspections in a row by 3.8 \u00b0C (34.1 \u2192 32.9 \u2192 31.6 \u2192 30.3); the manual says ESP motors usually fail after this and calls for a drive and insulation check within 14 days, i.e. by 28 Jan 2027; 2 corrective repair(s) on the same equipment (esp_pump) in the last 12 months \u2014 at the RCA threshold (2). Last repair: MNT-0401-032 27 Nov 2026 (ESP motor burnout).\n3. **WELL-0175** (Northeast Block 8, T200, score 13.5) \u2014 CTX-0175-007 2026-12-26: \"WELL-0175 tagging bottom on the downstroke, adjust spacing next visit.\". Why: latest inspection INS-0175-0216 (14 Jan 2027) reads not producing (\u0394 5.5 \u00b0C, below the 15 \u00b0C rule) with no shut-in note or open job to explain it \u2014 for a rod-lift well the manual lists 'unit running, wellhead cold' as rod parted or pump stuck; 1 corrective repair(s) on the same equipment (wellhead) in the last 12 months. Last repair: MNT-0175-031 30 May 2026 (Stuffing box packing leak).\nWhy these three: each has a precursor the manuals treat as an imminent or actual failure, not just a noise note; next in line is WELL-0329 (score 13.0). Assumption: this is about the noise/behaviour list from your previous question. Safety items come before all of it: an unanswered gas-odor report (OPS-1) or an overdue recalled pump is handled under its own procedure, so check those lists too before you plan the week.",
   "visual": "table",
-  "citations": [],
+  "citations": [
+   "CTX-0336-003",
+   "CTX-0336-004",
+   "CTX-0336-005",
+   "INS-0336-0218",
+   "CTX-0401-003",
+   "CTX-0401-004",
+   "INS-0401-0221",
+   "CTX-0175-003",
+   "CTX-0175-006",
+   "CTX-0175-007",
+   "INS-0175-0216"
+  ],
   "engine": "rules",
-  "confidence": "high",
+  "confidence": "medium (judgement)",
   "trace": {
    "engine": "rules",
    "steps": [
@@ -1009,7 +1086,7 @@
     }
    ],
    "rules": [],
-   "citations": 0
+   "citations": 11
   },
   "visual_data": {
    "type": "table",
@@ -1017,34 +1094,38 @@
     "Rank",
     "Well",
     "Area",
-    "Operator-note evidence",
-    "Other warning signs",
+    "Type",
+    "Score",
+    "Warning signs",
     "Last repair"
    ],
    "rows": [
     {
      "Rank": 1,
-     "Well": "WELL-0182",
-     "Area": "Northeast Block 8",
-     "Operator-note evidence": "2026-12-27: \"Pumper reports rattling at WELL-0182 pump jack, keep an eye on it.\" | 2026-12-30: \"WELL-0182 tagging bottom on the downstroke, adjust spacing next visit.\" | 2027-01-05: \"Heard fluid pound on WELL-0182, unit still running.\"",
-     "Other warning signs": "6 corrective repairs in the last 12 months; 3 recent inspections not producing",
-     "Last repair": "MNT-0182-029 26 Dec 2026 (Walking beam bearing wear)"
+     "Well": "WELL-0336",
+     "Area": "Northwest Block 12",
+     "Type": "T500",
+     "Score": 16.5,
+     "Warning signs": "T500 early-warning pattern: wellhead-minus-air fell 3 inspections in a row by 4.2 \u00b0C (37.3 \u2192 36.9 \u2192 34.9 \u2192 33.1); the manual says ESP motors usually fail after this and calls for a drive and insulation check within 14 days, i.e. by 28 Jan 2027; drive trip reset by the operator; 1 corrective repair(s) on the same equipment (esp_pump) in the last 12 months",
+     "Last repair": "MNT-0336-026 8 May 2026 (ESP motor burnout)"
     },
     {
      "Rank": 2,
-     "Well": "WELL-0411",
+     "Well": "WELL-0401",
      "Area": "Northwest Block 12",
-     "Operator-note evidence": "2026-12-25: \"Drive on WELL-0411 showing amps hunting between 38 and 44 A.\" | 2026-12-28: \"Drive on WELL-0411 showing amps hunting between 38 and 44 A.\"",
-     "Other warning signs": "5 corrective repairs in the last 12 months; 6 recent inspections not producing",
-     "Last repair": "MNT-0411-023 6 Dec 2026 (Flowline corrosion pinhole leak)"
+     "Type": "T500",
+     "Score": 15.0,
+     "Warning signs": "T500 early-warning pattern: wellhead-minus-air fell 3 inspections in a row by 3.8 \u00b0C (34.1 \u2192 32.9 \u2192 31.6 \u2192 30.3); the manual says ESP motors usually fail after this and calls for a drive and insulation check within 14 days, i.e. by 28 Jan 2027; 2 corrective repair(s) on the same equipment (esp_pump) in the last 12 months \u2014 at the RCA threshold (2)",
+     "Last repair": "MNT-0401-032 27 Nov 2026 (ESP motor burnout)"
     },
     {
      "Rank": 3,
-     "Well": "WELL-0297",
-     "Area": "Northeast Block 7",
-     "Operator-note evidence": "2027-01-09: \"Pumper reports rattling at WELL-0297 pump jack, keep an eye on it.\" | 2027-01-11: \"Rod squeal at WELL-0297 stuffing box, greased the polished rod.\"",
-     "Other warning signs": "6 corrective repairs in the last 12 months; 4 recent inspections not producing",
-     "Last repair": "MNT-0297-036 8 Jan 2027 (Prime mover failure)"
+     "Well": "WELL-0175",
+     "Area": "Northeast Block 8",
+     "Type": "T200",
+     "Score": 13.5,
+     "Warning signs": "latest inspection INS-0175-0216 (14 Jan 2027) reads not producing (\u0394 5.5 \u00b0C, below the 15 \u00b0C rule) with no shut-in note or open job to explain it \u2014 for a rod-lift well the manual lists 'unit running, wellhead cold' as rod parted or pump stuck; 1 corrective repair(s) on the same equipment (wellhead) in the last 12 months",
+     "Last repair": "MNT-0175-031 30 May 2026 (Stuffing box packing leak)"
     }
    ]
   }
@@ -1603,13 +1684,19 @@
   "id": "Q9.6",
   "user": "Robert Hayes",
   "question": "Of all the wells we've talked about today, which one would you deal with first, and why?",
-  "answer": "Of the 10 wells discussed in this conversation, I'd deal with **WELL-0332** (Northwest Block 12) first: gas-odor report with a missed OPS-1 response (safety); not producing oil right now. Safety items (gas) outrank production and recall items, then overdue recalls, then lost production. This is a judgement call based on the evidence above.",
-  "visual": null,
+  "answer": "Of the **10 wells** we've discussed in this conversation (WELL-0428, WELL-0031, WELL-0263, WELL-0426, WELL-0156, WELL-0160, WELL-0577, WELL-0305, WELL-0310, WELL-0332), I'd deal with **WELL-0332** (Northwest Block 12) first: gas-odor report 2026-12-03 with a missed OPS-1 response and **no crew on site since** (only drone inspections) \u2014 an open safety item; not producing now (INS-0332-0217, \u0394 0.5 \u00b0C) with no repair under way; abnormal operator notes with no repair since (pump-jack rattle/knock, stuffing-box squeal/leak).\n\nHow I weighed them: an unanswered safety report beats everything (gas/H2S can hurt people; OPS-1 and WS-03), then an overdue recalled pump (compliance with the supplier recall), then lost production, then abnormal-behaviour notes. Full comparison in the table.\n\nRunner-up: **WELL-0160** (Northeast Block 8): recalled pump (LOT-2409-C) still in the ground, past the 31 Dec 2026 replacement date; not producing now, but repair MNT-0160-032 (Walking beam bearing wear) is already under way until 26 Jan 2027. Tied on points with WELL-0263, WELL-0305, WELL-0428.\n\nIf you mean 'first' for production or the recall rather than safety, the answer changes: the recalled-pump wells come first.\n\nQuick win: a repair crew is already on WELL-0160, WELL-0263, which still have recalled pumps; it is worth scheduling the pump swap while the well is already down.\n\nAssumption: 'today' means this conversation (the wells named in my earlier answers here). This is a judgement call based on the evidence shown, not a computed risk.",
+  "visual": "table",
   "citations": [
-   "INS-0332-0217"
+   "Operations SOP OPS-1",
+   "recall notice",
+   "INS-0332-0217",
+   "INS-0160-0217",
+   "MNT-0160-032",
+   "INS-0263-0219",
+   "MNT-0263-035"
   ],
   "engine": "rules",
-  "confidence": "high",
+  "confidence": "medium (judgement)",
   "trace": {
    "engine": "rules",
    "steps": [
@@ -1621,15 +1708,96 @@
     }
    ],
    "rules": [],
-   "citations": 1
+   "citations": 7
   },
-  "visual_data": null
+  "visual_data": {
+   "type": "table",
+   "columns": [
+    "Rank",
+    "Well",
+    "Area",
+    "Points",
+    "Evidence"
+   ],
+   "rows": [
+    {
+     "Rank": 1,
+     "Well": "WELL-0332",
+     "Area": "Northwest Block 12",
+     "Points": 14,
+     "Evidence": "gas-odor report 2026-12-03 with a missed OPS-1 response and **no crew on site since** (only drone inspections) \u2014 an open safety item; not producing now (INS-0332-0217, \u0394 0.5 \u00b0C) with no repair under way; abnormal operator notes with no repair since (pump-jack rattle/knock, stuffing-box squeal/leak)"
+    },
+    {
+     "Rank": 2,
+     "Well": "WELL-0160",
+     "Area": "Northeast Block 8",
+     "Points": 5,
+     "Evidence": "recalled pump (LOT-2409-C) still in the ground, past the 31 Dec 2026 replacement date; not producing now, but repair MNT-0160-032 (Walking beam bearing wear) is already under way until 26 Jan 2027"
+    },
+    {
+     "Rank": 3,
+     "Well": "WELL-0263",
+     "Area": "Southwest Block 23",
+     "Points": 5,
+     "Evidence": "recalled pump (LOT-2410-B) still in the ground, past the 31 Dec 2026 replacement date; not producing now, but repair MNT-0263-035 (Flowline corrosion pinhole leak) is already under way until 19 Jan 2027"
+    },
+    {
+     "Rank": 4,
+     "Well": "WELL-0305",
+     "Area": "Northwest Block 12",
+     "Points": 5,
+     "Evidence": "recalled pump (LOT-2409-A) still in the ground, past the 31 Dec 2026 replacement date; abnormal operator notes with no repair since (pump-jack rattle/knock)"
+    },
+    {
+     "Rank": 5,
+     "Well": "WELL-0428",
+     "Area": "Northwest Block 12",
+     "Points": 5,
+     "Evidence": "recalled pump (LOT-2410-B) still in the ground, past the 31 Dec 2026 replacement date; abnormal operator notes with no repair since (fluid pound)"
+    },
+    {
+     "Rank": 6,
+     "Well": "WELL-0031",
+     "Area": "Southwest Block 23",
+     "Points": 4,
+     "Evidence": "recalled pump (LOT-2409-A) still in the ground, past the 31 Dec 2026 replacement date"
+    },
+    {
+     "Rank": 7,
+     "Well": "WELL-0156",
+     "Area": "Northeast Block 8",
+     "Points": 4,
+     "Evidence": "recalled pump (LOT-2409-A) still in the ground, past the 31 Dec 2026 replacement date"
+    },
+    {
+     "Rank": 8,
+     "Well": "WELL-0426",
+     "Area": "Northwest Block 12",
+     "Points": 4,
+     "Evidence": "recalled pump (LOT-2409-C) still in the ground, past the 31 Dec 2026 replacement date"
+    },
+    {
+     "Rank": 9,
+     "Well": "WELL-0577",
+     "Area": "Southeast Block 32",
+     "Points": 4,
+     "Evidence": "recalled pump (LOT-2409-A) still in the ground, past the 31 Dec 2026 replacement date (a swap was reported by Olivia Grant, unconfirmed)"
+    },
+    {
+     "Rank": 10,
+     "Well": "WELL-0310",
+     "Area": "Northwest Block 12",
+     "Points": 1,
+     "Evidence": "missed the OPS-5 heat trace check after INS-0310-0213 (17 Dec 2026) (past compliance miss)"
+    }
+   ]
+  }
  },
  {
   "id": "Q10",
   "user": "Michael Turner",
   "question": "When a well stays shut in longer than the repair itself, what are we usually waiting on: parts, crews, contractors or weather? Break it down by area for jobs started in 2026, with the typical number of extra days, and tell me if any area stands out.",
-  "answer": "**500 jobs started in 2026** kept the well shut in longer than the repair (the report states \"about N days longer than the repair itself because \u2026\"). Field-wide: weather 28% (median 9 extra days), contractors 26% (median 9 extra days), parts 23% (median 9 extra days), crews 22% (median 9 extra days).\n\nBy area: Northeast Block 7: 56 jobs, mostly parts (parts 27% (median 15 d, mean 14.1 d), contractors 27% (median 8 d, mean 9.3 d), crews 20% (median 16 d, mean 17.5 d), weather 27% (median 9 d, mean 11.5 d)); Northeast Block 8: 67 jobs, mostly crews (parts 19% (median 10 d, mean 13.7 d), contractors 25% (median 9 d, mean 13.3 d), crews 28% (median 14 d, mean 11.9 d), weather 27% (median 8 d, mean 8.7 d)); Northwest Block 12: 129 jobs, mostly weather (parts 22% (median 9 d, mean 10.1 d), contractors 21% (median 9 d, mean 12.4 d), crews 28% (median 8.5 d, mean 11.3 d), weather 29% (median 9 d, mean 11.7 d)); Southeast Block 31: 27 jobs, mostly contractors (parts 22% (median 8.5 d, mean 8.7 d), contractors 37% (median 15.5 d, mean 12.4 d), crews 11% (median 2 d, mean 4.0 d), weather 30% (median 12.5 d, mean 12.1 d)); Southeast Block 32: 111 jobs, mostly contractors (parts 23% (median 9.5 d, mean 11.6 d), contractors 30% (median 9 d, mean 13.7 d), crews 19% (median 10 d, mean 12.2 d), weather 28% (median 8 d, mean 13.7 d)); Southwest Block 23: 58 jobs, mostly parts (parts 28% (median 12.5 d, mean 15.8 d), contractors 21% (median 12.5 d, mean 13.8 d), crews 24% (median 7 d, mean 9.1 d), weather 28% (median 9 d, mean 12.4 d)); Southwest Block 24: 52 jobs, mostly contractors (parts 23% (median 8 d, mean 9.8 d), contractors 33% (median 8 d, mean 7.3 d), crews 15% (median 12 d, mean 10.6 d), weather 29% (median 10 d, mean 11.5 d)).\n\nStands out: no area's mix differs from the field mix by more than 20 percentage points, and the typical extra wait is about the same everywhere; Northwest Block 12 simply has the most delayed jobs.",
+  "answer": "**500 jobs started in 2026** kept the well shut in longer than the repair (the report states \"about N days longer than the repair itself because \u2026\"). Field-wide the waits split weather 28%, contractors 26%, parts 23%, crews 22%: **no single cause dominates**, weather is only slightly ahead, four causes in roughly equal shares. Typical extra time: median **9 days** (mean 11.9), about the same for every cause.\n\nBy area (table): Northeast Block 7: 56 jobs (44% of its jobs), mostly parts, median 9 extra days; Northeast Block 8: 67 jobs (49% of its jobs), mostly crews, median 9 extra days; Northwest Block 12: 129 jobs (42% of its jobs), mostly weather, median 9 extra days; Southeast Block 31: 27 jobs (36% of its jobs), mostly contractors, median 10 extra days; Southeast Block 32: 111 jobs (44% of its jobs), mostly contractors, median 9 extra days; Southwest Block 23: 58 jobs (39% of its jobs), mostly parts, median 9 extra days; Southwest Block 24: 52 jobs (39% of its jobs), mostly contractors, median 8.5 extra days.\n\nDoes any area stand out? **Not clearly.** The reason mix doesn't differ between areas more than chance would (chi-square 12.4 on 18 df, p\u22480.83), and no area's waiting time for any cause differs clearly from the field. Worth watching, but small samples: Northeast Block 7 parts: median 15 extra days vs 9 field-wide (n=15, p\u22480.21); Northeast Block 7 crews: median 16 extra days vs 9 field-wide (n=11, p\u22480.11); Northeast Block 8 crews: median 14 extra days vs 9 field-wide (n=19, p\u22480.23); Southeast Block 31 contractors: median 15.5 extra days vs 9 field-wide (n=10, p\u22480.10); Southeast Block 31 contractors share 37% vs 26% field-wide (10 of 27 jobs); Southeast Block 31 crews share 11% vs 22% field-wide (3 of 27 jobs). Delays are most common in Northeast Block 8 (49% of jobs) and least common in Southeast Block 31 (36%); Northwest Block 12 has the most delayed jobs simply because it has the most wells.\n\nMethod: the cause is read from the 'because \u2026' clause (back-ordered part \u2192 parts, weekday contractor slot \u2192 contractors, crew committed elsewhere or rig busy \u2192 crews, rain/road \u2192 weather); 'typical' = median.",
   "visual": "bar",
   "citations": [
    "MNT-0001-028",
@@ -2323,7 +2491,7 @@
       54.9,
       47.1,
       41.9,
-      40.0
+      39.9
      ]
     },
     {

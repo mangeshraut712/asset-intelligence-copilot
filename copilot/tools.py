@@ -1,5 +1,5 @@
 """Deterministic, tested tools over the SQLite store. Every result carries citations."""
-import os, re, sqlite3, datetime as dt
+import calendar, os, re, sqlite3, datetime as dt
 from collections import defaultdict
 from .loader import DB_PATH
 
@@ -11,8 +11,11 @@ def db():
 def d(s): return dt.date.fromisoformat(s[:10])
 def fmt(s): x = d(s) if isinstance(s, str) else s; return f"{x.day} {x.strftime('%b %Y')}"
 def sub_months(x, n):
+    """Shift a date back by n months. Years outside 1..9999 clamp instead of raising."""
     m = x.month - 1 - n; y = x.year + m // 12; m = m % 12 + 1
-    import calendar; return dt.date(y, m, min(x.day, calendar.monthrange(y, m)[1]))
+    if y < 1: return dt.date(1, 1, 1)
+    if y > 9999: return dt.date(9999, 12, 31)
+    return dt.date(y, m, min(x.day, calendar.monthrange(y, m)[1]))
 
 def window(months=None, days=None, year=None):
     """'last N months/days' -> inclusive [start, end] ending yesterday (the last full day before 'today')."""
@@ -59,11 +62,17 @@ def wells_in(c, area=None, well_type=None):
 def effective_inspections(c, asset_ids=None, start=None, end=None):
     q, a = "SELECT i.*, w.well_type, w.area_id FROM inspections i JOIN wells w USING(asset_id) WHERE 1=1", []
     if asset_ids is not None:
-        q += f" AND i.asset_id IN ({','.join('?'*len(asset_ids))})"; a += list(asset_ids)
+        asset_ids = list(asset_ids)
+        if not asset_ids: return []  # "IN ()" is a syntax error; an empty scope matches nothing
+        q += f" AND i.asset_id IN ({','.join('?'*len(asset_ids))})"; a += asset_ids
     if start: q += " AND i.date>=?"; a.append(str(start))
     if end: q += " AND i.date<=?"; a.append(str(end))
     rows = [dict(r) for r in c.execute(q + " ORDER BY i.asset_id, i.inspected_at", a)]
     corr_notes = {r["inspection_id"]: dict(r) for r in c.execute("SELECT * FROM notes WHERE note_type='correction' AND inspection_id IS NOT NULL")}
+    data_corr = defaultdict(list)
+    try:
+        for n in c.execute("SELECT * FROM notes WHERE note_type='data_correction' AND inspection_id IS NOT NULL ORDER BY created_at"): data_corr[n["inspection_id"]].append(dict(n))
+    except Exception: pass  # older databases without the field columns
     mem = defaultdict(list)
     for r in c.execute("SELECT * FROM memory_corrections ORDER BY id"): mem[r["inspection_id"]].append(dict(r))
     thr = {k.split(".")[0]: v for k, v in c.execute("SELECT key, value FROM rules WHERE key LIKE '%.producing_delta_c'")}
@@ -73,6 +82,15 @@ def effective_inspections(c, asset_ids=None, start=None, end=None):
             n = corr_notes[r["inspection_id"]]
             r["spill_detected"] = 0; r["spill_voided_by"] = n["note_id"]
             r["corrections"].append({"source": n["note_id"], "field": "spill_detected", "by": user_name(c, n["author_user_id"]), "text": n["text"]})
+        # data_correction notes (OPS-3: "after any data_correction note") replace one field with a measured value
+        for n in data_corr.get(r["inspection_id"], []):
+            f = n["field"]
+            if f not in r or n["corrected_value"] is None: continue
+            try: v = float(n["corrected_value"])
+            except ValueError: continue
+            r[f + "_original"] = r.get(f); r[f] = v
+            r["corrections"].append({"source": n["note_id"], "field": f, "original": n["original_value"], "corrected": v,
+                                     "by": user_name(c, n["author_user_id"]), "reason": n["text"]})
         for m in mem.get(r["inspection_id"], []):
             f = m["field"]; v = m["corrected_value"]
             r[f + "_original"] = r.get(f)
@@ -92,6 +110,7 @@ def well_status(asset_id):
     c = db(); w = c.execute("SELECT * FROM wells WHERE asset_id=?", (asset_id,)).fetchone()
     if not w: return {"error": f"{asset_id} not found"}
     w = dict(w); ins = effective_inspections(c, [asset_id])
+    if not ins: return {"error": f"{asset_id} has no inspections on record"}
     last = ins[-1]; cites = [last["inspection_id"], f"{w['well_type']} manual"]
     reasons = []
     if not last["producing"]:
@@ -222,7 +241,9 @@ def rca_check(area=None, equipment_kind=None, asset_ids=None):
     c = db(); ids = asset_ids or [w["asset_id"] for w in wells_in(c, area_id(c, area) if area else None)]
     s = sub_months(TODAY, 12); out = []; applied_rules = {}
     for aid in ids:
-        wt = c.execute("SELECT well_type FROM wells WHERE asset_id=?", (aid,)).fetchone()["well_type"]
+        row = c.execute("SELECT well_type FROM wells WHERE asset_id=?", (aid,)).fetchone()
+        if not row: continue
+        wt = row["well_type"]
         n, src = rule(c, f"{wt}.rca_repairs", 3)
         ur = c.execute("SELECT * FROM memory_type_rules WHERE well_type=? AND rule_key='rca_repairs' ORDER BY id DESC", (wt,)).fetchone()
         if ur: n, src = ur["value"], f"rule from {user_name(c, ur['author_user_id'])} ({ur['ts'][:10]}), overrides manual"; applied_rules[wt] = src

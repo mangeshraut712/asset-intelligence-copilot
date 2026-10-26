@@ -9,14 +9,16 @@
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
-:root{--font:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--mono:ui-monospace,SFMono-Regular,Menlo,monospace;--r-sm:8px;--r:12px;--r-lg:16px;--side:272px;--col:760px}
-[data-theme=light]{--bg:#fff;--bg2:#fafafa;--bg3:#f4f4f5;--line:#e4e4e7;--line2:#d4d4d8;--fg:#09090b;--fg2:#3f3f46;--mut:#71717a;--acc:#2563eb;--acc-fg:#fff;--acc-soft:#eff6ff;--ok:#16a34a;--bad:#dc2626;--warn:#b45309;--purple:#7c3aed;--shadow:0 1px 2px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.06);--ubub:#f4f4f5;--heat:220,38,38}
-[data-theme=dark]{--bg:#09090b;--bg2:#111113;--bg3:#18181b;--line:#27272a;--line2:#3f3f46;--fg:#fafafa;--fg2:#d4d4d8;--mut:#a1a1aa;--acc:#3b82f6;--acc-fg:#fff;--acc-soft:rgba(59,130,246,.12);--ok:#22c55e;--bad:#f87171;--warn:#fbbf24;--purple:#a78bfa;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);--ubub:#27272a;--heat:248,113,113}
+:root{--font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Inter,ui-sans-serif,system-ui,sans-serif;--mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,monospace;--r-sm:8px;--r:12px;--r-lg:16px;--side:272px;--col:760px}
+[data-theme=light]{--bg:#fff;--bg2:#f5f5f7;--bg3:#f2f2f4;--card:#fff;--line:rgba(0,0,0,.08);--line2:rgba(0,0,0,.14);--fg:#1d1d1f;--fg2:#3a3a3c;--mut:#6e6e73;--acc:#0071e3;--acc-fg:#fff;--acc-soft:rgba(0,113,227,.08);--ok:#248a3d;--bad:#d70015;--warn:#b25000;--purple:#6d28d9;--shadow:0 1px 1px rgba(0,0,0,.04),0 8px 24px rgba(0,0,0,.05);--ubub:#eef0f3;--heat:215,0,21;--ring:rgba(0,113,227,.22)}
+[data-theme=dark]{--bg:#000;--bg2:#1c1c1e;--bg3:#2c2c2e;--card:#1c1c1e;--line:rgba(255,255,255,.1);--line2:rgba(255,255,255,.16);--fg:#f5f5f7;--fg2:#e5e5ea;--mut:#98989d;--acc:#0a84ff;--acc-fg:#fff;--acc-soft:rgba(10,132,255,.16);--ok:#30d158;--bad:#ff453a;--warn:#ffd60a;--purple:#bf5af2;--shadow:0 1px 2px rgba(0,0,0,.5),0 12px 32px rgba(0,0,0,.4);--ubub:#2c2c2e;--heat:255,69,58;--ring:rgba(10,132,255,.35)}
 *{box-sizing:border-box}html,body{height:100%;margin:0}
-body{font:15px/1.6 var(--font);background:var(--bg);color:var(--fg);-webkit-font-smoothing:antialiased;overflow:hidden}
+body{font:15px/1.55 var(--font);background:var(--bg);color:var(--fg);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow:hidden;letter-spacing:-.011em}
+::selection{background:var(--acc-soft);color:var(--fg)}
 button,select,textarea,input{font:inherit;color:inherit}
 button{cursor:pointer;background:none;border:0;padding:0}
 :focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:6px}
+kbd{font:11px/1.4 var(--mono);letter-spacing:0;border:1px solid var(--line2);border-bottom-width:2px;border-radius:6px;padding:0 5px;background:var(--bg);color:var(--fg2)}
 svg.i{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .app{display:grid;grid-template-columns:var(--side) minmax(0,1fr);height:100dvh;transition:grid-template-columns .2s ease}
 .app.collapsed{grid-template-columns:0 minmax(0,1fr)}
@@ -48,8 +50,8 @@ svg.i{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-widt
 .scrim{display:none}
 /* main */
 .main{display:flex;flex-direction:column;min-width:0;height:100dvh;position:relative}
-.top{height:56px;display:flex;align-items:center;gap:8px;padding:0 12px;padding-top:env(safe-area-inset-top);flex:none;border-bottom:1px solid transparent}
-.top.scrolled{border-bottom-color:var(--line)}
+.top{height:56px;display:flex;align-items:center;gap:8px;padding:0 12px;padding-top:env(safe-area-inset-top);flex:none;border-bottom:1px solid transparent;position:sticky;top:0;z-index:5}
+.top.scrolled{border-bottom-color:var(--line);background:color-mix(in srgb,var(--bg) 78%,transparent);backdrop-filter:saturate(180%) blur(16px)}
 .top .title{font-size:14px;font-weight:500;display:flex;align-items:center;gap:8px;min-width:0}
 .top .title span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--mut);border:1px solid var(--line);border-radius:999px;padding:2px 10px;white-space:nowrap}
@@ -61,18 +63,18 @@ svg.i{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-widt
 #log{padding:24px 0 32px}
 /* empty state */
 .empty{min-height:calc(100dvh - 220px);display:flex;flex-direction:column;justify-content:center;padding:32px 0}
-.empty h2{font-size:28px;line-height:1.25;font-weight:600;letter-spacing:-.02em;margin:0 0 8px}
+.empty h2{font-size:34px;line-height:1.15;font-weight:600;letter-spacing:-.03em;margin:0 0 8px}
 .empty p{color:var(--mut);margin:0 0 32px}
 .sugg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.scard{text-align:left;border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;background:var(--bg);display:flex;flex-direction:column;gap:4px;transition:border-color .15s,background .15s;min-height:88px}
-.scard:hover{background:var(--bg2);border-color:var(--line2)}
-.scard .k{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--fg)}
-.scard .k svg{width:16px;height:16px;color:var(--acc)}
+.scard{text-align:left;border:1px solid var(--line);border-radius:var(--r-lg);padding:14px 16px;background:var(--card);display:flex;flex-direction:column;gap:6px;transition:border-color .15s,background .15s,transform .15s;min-height:88px;box-shadow:0 1px 0 rgba(0,0,0,.02)}
+.scard:hover{background:var(--bg2);border-color:var(--line2);transform:translateY(-1px)}
+.scard .k{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--fg)}
+.scard .k svg{width:16px;height:16px;color:var(--acc);background:var(--acc-soft);padding:6px;box-sizing:content-box;border-radius:8px}
 .scard .d{font-size:13px;color:var(--mut);line-height:1.45}
 /* messages */
 .turn{margin:0 0 32px}
 .u{display:flex;justify-content:flex-end;margin-bottom:24px}
-.u .bub{background:var(--ubub);border-radius:20px;padding:10px 16px;max-width:min(85%,560px);white-space:pre-wrap;overflow-wrap:anywhere}
+.u .bub{background:var(--ubub);border-radius:20px 20px 6px 20px;padding:10px 16px;max-width:min(85%,560px);white-space:pre-wrap;overflow-wrap:anywhere}
 .u .bub img{display:block;max-width:240px;width:100%;border-radius:12px;margin-top:8px}
 .a{min-width:0}
 .meta{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px;font-size:12px;color:var(--mut)}
@@ -86,7 +88,7 @@ svg.i{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-widt
 .prose code,code{font-family:var(--mono);font-size:.85em;background:var(--bg3);padding:1px 5px;border-radius:5px}
 .prose table{display:block;overflow-x:auto}
 /* visual card */
-.vcard{border:1px solid var(--line);border-radius:var(--r-lg);background:var(--bg);margin:16px 0;overflow:hidden;box-shadow:var(--shadow)}
+.vcard{border:1px solid var(--line);border-radius:var(--r-lg);background:var(--card);margin:16px 0;overflow:hidden;box-shadow:var(--shadow)}
 .vhd{display:flex;align-items:center;gap:8px;height:48px;padding:0 8px 0 16px;border-bottom:1px solid var(--line)}
 .vhd .t{font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px;min-width:0;flex:1}
 .vhd .t span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -102,14 +104,14 @@ svg.i{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-widt
 table.dt{border-collapse:separate;border-spacing:0;width:100%;font-size:13px;line-height:1.45}
 table.dt th,table.dt td{padding:9px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);white-space:nowrap}
 table.dt td.wrap{white-space:normal;min-width:220px;max-width:420px}
-table.dt th{position:sticky;top:0;background:var(--bg2);color:var(--mut);font-weight:500;font-size:12px;z-index:1}
+table.dt th{position:sticky;top:0;background:var(--bg3);color:var(--mut);font-weight:500;font-size:12px;z-index:1}
 table.dt tr:last-child td{border-bottom:0}
 table.dt tbody tr:hover td{background:var(--bg2)}
 table.dt td.num,table.dt th.num{text-align:right;font-variant-numeric:tabular-nums}
 .chartbox{position:relative;height:300px;width:100%}
 .mapbox{height:340px;width:100%;z-index:0}
 .stat{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line)}
-.stat>div{background:var(--bg);padding:14px 16px;min-width:0}
+.stat>div{background:var(--card);padding:14px 16px;min-width:0}
 .stat .l{font-size:12px;color:var(--mut)}.stat b{display:block;font-size:18px;font-weight:600;letter-spacing:-.01em;margin:2px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.stat .s{font-size:12px;color:var(--mut);overflow-wrap:anywhere}
 .ok{color:var(--ok)}.bad{color:var(--bad)}
 .heat td.h{text-align:center;font-weight:500;font-variant-numeric:tabular-nums;min-width:44px}
@@ -152,12 +154,13 @@ details.trace .tb{padding:0 14px 12px;border-top:1px solid var(--line)}
 @keyframes spin{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 /* composer */
-.composer{flex:none;padding:0 0 calc(12px + env(safe-area-inset-bottom));background:linear-gradient(to bottom,transparent,var(--bg) 24px)}
-.box{border:1px solid var(--line2);border-radius:24px;background:var(--bg);box-shadow:var(--shadow);display:flex;align-items:flex-end;gap:4px;padding:8px}
-.box:focus-within{border-color:var(--mut)}
+.composer{flex:none;padding:0 0 calc(12px + env(safe-area-inset-bottom));background:linear-gradient(to bottom,transparent,var(--bg) 28px)}
+.box{border:1px solid var(--line2);border-radius:24px;background:color-mix(in srgb,var(--card) 88%,transparent);backdrop-filter:saturate(180%) blur(18px);box-shadow:var(--shadow);display:flex;align-items:flex-end;gap:4px;padding:8px;transition:box-shadow .15s,border-color .15s}
+.box:focus-within{border-color:var(--acc);box-shadow:0 0 0 4px var(--ring),var(--shadow)}
 .box textarea{flex:1;border:0;outline:0;resize:none;background:transparent;padding:7px 6px;max-height:200px;line-height:1.5;min-height:38px;font-size:15px}
 .box textarea::placeholder{color:var(--mut)}
-.send{width:36px;height:36px;border-radius:999px;background:var(--fg);color:var(--bg);display:grid;place-items:center;flex:none}
+.send{width:36px;height:36px;border-radius:999px;background:var(--fg);color:var(--bg);display:grid;place-items:center;flex:none;transition:transform .12s,opacity .12s}
+.send:not(:disabled):hover{transform:scale(1.04)}
 .send:disabled{opacity:.3;cursor:default}
 .hint{text-align:center;font-size:12px;color:var(--mut);margin-top:8px}
 /* briefing & memory views */
@@ -178,7 +181,7 @@ details.bc li:last-child{border-bottom:0}
 .memi{border:1px solid var(--line);border-radius:var(--r);padding:10px 14px;margin-bottom:8px;font-size:14px;overflow-wrap:anywhere}
 .memi .s{font-size:12px;color:var(--mut);margin-top:2px}
 /* drawer / sheet */
-.sheet{position:fixed;top:0;right:0;bottom:0;width:min(560px,100vw);background:var(--bg);border-left:1px solid var(--line);box-shadow:-8px 0 32px rgba(0,0,0,.18);transform:translateX(100%);transition:transform .22s ease;z-index:70;display:flex;flex-direction:column;visibility:hidden}
+.sheet{position:fixed;top:0;right:0;bottom:0;width:min(560px,100vw);background:var(--card);border-left:1px solid var(--line);box-shadow:-8px 0 32px rgba(0,0,0,.18);transform:translateX(100%);transition:transform .22s ease;z-index:70;display:flex;flex-direction:column;visibility:hidden}
 .sheet.open{transform:none;visibility:visible}
 .sheet .hd{display:flex;align-items:center;gap:8px;height:56px;padding:0 8px 0 20px;border-bottom:1px solid var(--line);flex:none}
 .sheet .hd b{font:600 14px var(--mono);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -286,7 +289,7 @@ mark{background:color-mix(in srgb,#facc15 45%,transparent);color:inherit;border-
     <textarea id="q" rows="1" placeholder="Ask about wells, spills, downtime, compliance…" aria-label="Message"></textarea>
     <button class="send pri" id="sendbtn" aria-label="Send" disabled><svg class="i"><use href="#i-up"/></svg></button>
    </form>
-   <div class="hint">Numbers come from deterministic tools with cited records. Enter to send · Shift+Enter for new line.</div>
+   <div class="hint">Numbers come from deterministic tools, with the record cited. <kbd>Enter</kbd> sends · <kbd>Shift</kbd>+<kbd>Enter</kbd> for a new line.</div>
   </div></div>
  </div>
 </div>
@@ -355,21 +358,22 @@ const STEPS=['Parsing entities, metric and time window','Selecting deterministic
 function progress(a,steps){a.innerHTML=`<div class="prog"><div class="steps">${steps.map(s=>`<div class="stp">${esc(s)}</div>`).join('')}</div><div class="shim" style="width:92%"></div><div class="shim" style="width:76%"></div><div class="shim" style="width:54%"></div></div>`;
  const d=a.querySelectorAll('.stp');let i=0;d[0].classList.add('run');return setInterval(()=>{if(i<d.length-1){d[i].className='stp done';i++;d[i].classList.add('run')}},380)}
 async function ask(text){if(busy)return;busy=true;grow();show('chat');const a=addTurn(text);const tick=progress(a,STEPS);scrollEnd();
- let r;try{const res=await fetch('/api/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:text,user:$('user').value,chat:chat.id})});r=await res.json();if(!res.ok)throw new Error(r.detail||res.status)}
+ let r;try{const res=await fetch('/api/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:text,user:$('user').value,chat:chat.id})});const raw=await res.text();try{r=JSON.parse(raw)}catch{throw new Error(raw.slice(0,180)||('HTTP '+res.status))}if(!res.ok)throw new Error((r&&(typeof r.detail==='string'?r.detail:r.text))||('HTTP '+res.status));if(!r||typeof r.text!=='string')throw new Error('The server returned an empty answer.')}
  catch(err){clearInterval(tick);a.innerHTML=`<div class="meta"><span class="badge b-low">Error</span></div><div class="prose"><p>${esc(err.message||err)}</p></div>`;busy=false;grow();return}
  clearInterval(tick);const item={q:text,r};persist(item);paintAnswer(a,text,r,null,item);scrollTo(a);busy=false;grow();
  mem();if(/correct|rule|fact|recorded/i.test(r.text||''))briefing()}
 function scrollTo(a){const v=$('v-chat');const top=a.parentElement.offsetTop-16;v.scrollTop=Math.max(0,top)}
-const CONF={high:'High confidence',medium:'LLM-planned',low:'Low confidence',conflict:'Data conflict'};
+const CONF={high:'High confidence',medium:'LLM-planned',low:'Low confidence',conflict:'Data conflict','medium (judgement)':'Judgement'};
+function confClass(c){if(c==='medium (judgement)')return 'low';return String(c||'low').split(' ')[0].replace(/[^a-z]/g,'')||'low'}
 function paintAnswer(a,text,r,g,item){
- a.innerHTML=`<div class="meta">${r.confidence?`<span class="badge b-${r.confidence}">${CONF[r.confidence]||esc(r.confidence)}</span>`:''}<span>${esc(r.engine||'')}</span></div><div class="prose">${marked.parse(r.text||'')}</div>`;
+ a.innerHTML=`<div class="meta">${r.confidence?`<span class="badge b-${confClass(r.confidence)}">${CONF[r.confidence]||esc(r.confidence)}</span>`:''}<span>${esc(r.engine||'')}</span></div><div class="prose">${marked.parse(r.text||'')}</div>`;
  if(r.visual)renderVisual(a,r.visual);
  const cites=[...new Set(r.citations||[])];
  if(cites.length){const c=document.createElement('div');c.className='cites';const N=12;
   c.innerHTML=`<span class="lbl">Sources · ${cites.length}</span>`+cites.map((x,i)=>`<button class="cite"${i>=N?' hidden':''}>${esc(x)}</button>`).join('')+(cites.length>N?`<button class="more">+${cites.length-N} more</button>`:'');
   a.appendChild(c);const m=c.querySelector('.more');if(m)m.onclick=()=>{c.querySelectorAll('.cite[hidden]').forEach(x=>x.hidden=false);m.remove()}}
  const t=r.trace||{};const steps=t.steps||[];
- if(steps.length||(t.rules||[]).length){a.insertAdjacentHTML('beforeend',`<details class="trace"><summary>${ic('route')}How I got this<svg class="i chev"><use href="#i-down"/></svg></summary><div class="tb"><ol class="steps-l">${steps.map(s=>`<li>Tool <code>${esc(s.tool)}</code>${s.args?' <code>'+esc(JSON.stringify(s.args))+'</code>':''}${s.result?' → '+esc(s.result):''}</li>`).join('')}</ol>${(t.rules||[]).length?`<h4>Rules applied (parsed from documents)</h4><ul>${t.rules.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}<div class="foot">Router: ${esc(t.engine||r.engine||'')} · ${t.citations??cites.length} distinct records cited · numbers computed by deterministic tools, never by the LLM.</div></div></details>`)}
+ if(steps.length||(t.rules||[]).length||(r.assumptions||[]).length){a.insertAdjacentHTML('beforeend',`<details class="trace"><summary>${ic('route')}How I got this<svg class="i chev"><use href="#i-down"/></svg></summary><div class="tb"><ol class="steps-l">${steps.map(s=>`<li>Tool <code>${esc(s.tool)}</code>${s.args?' <code>'+esc(JSON.stringify(s.args))+'</code>':''}${s.result?' → '+esc(s.result):''}</li>`).join('')}</ol>${(t.rules||[]).length?`<h4>Rules applied (parsed from documents)</h4><ul>${t.rules.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}${(r.assumptions||[]).length?`<h4>Assumptions</h4><ul>${r.assumptions.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}<div class="foot">Router: ${esc(t.engine||r.engine||'')} · ${t.citations??cites.length} distinct records cited · numbers computed by deterministic tools, never by the LLM.</div></div></details>`)}
  if((r.followups||[]).length){a.insertAdjacentHTML('beforeend',`<div class="chips">${r.followups.map(f=>`<button class="chip">${ic('arrow')}<span>${esc(f)}</span></button>`).join('')}</div>`);a.querySelectorAll('.chip').forEach(c=>c.onclick=()=>ask(c.textContent))}
  if(g)paintGem(a,g);else if(LLM&&item)gemma(a,text,r,item)}
 function gemSlot(a){let s=a.querySelector('.gem');if(!s){s=document.createElement('div');s.className='gem';const ref=a.querySelector('.cites')||a.querySelector('details.trace')||a.querySelector('.chips');ref?ref.before(s):a.appendChild(s)}return s}
