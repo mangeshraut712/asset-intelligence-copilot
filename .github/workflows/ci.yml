@@ -1,0 +1,44 @@
+name: CI
+
+"on":
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      AIC_DATA: ${{ runner.temp }}/asset-intelligence-dataset/sample-data
+      AIC_DB: ${{ runner.temp }}/copilot.db
+      AIC_LLM: "0"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt -r requirements-dev.txt
+      - name: Fetch pinned public dataset
+        run: |
+          git init --quiet "$RUNNER_TEMP/asset-intelligence-dataset"
+          git -C "$RUNNER_TEMP/asset-intelligence-dataset" remote add origin https://github.com/FlytBaseAILabs/flytbase-ahc-swe-asset-intelligence-dataset.git
+          git -C "$RUNNER_TEMP/asset-intelligence-dataset" fetch --depth=1 origin 009e2b596782150f420021f9472ab37e3a2953ee
+          git -C "$RUNNER_TEMP/asset-intelligence-dataset" checkout --detach --quiet FETCH_HEAD
+      - name: Run test suite
+        run: python -m pytest -q tests
+      - name: Load dataset for scenario checks
+        run: python -m copilot.loader "$AIC_DATA"
+      - name: Check example scenarios
+        run: |
+          python -m eval.run_questions eval/examples.json --fresh --out "$RUNNER_TEMP/examples"
+          python -c 'import json,sys; rows=json.load(open(sys.argv[1])); scenarios=json.load(open(sys.argv[2])); expected=int(sys.argv[3]); failed=[row["id"] for row in rows if not row.get("pass")]; vacuous=[scenario["id"] for scenario in scenarios if not (scenario.get("expect") or scenario.get("reject") or scenario.get("visual"))]; print(f"SCORE {len(rows)-len(failed)}/{expected}"); sys.exit(f"Failed, incomplete, or vacuous scenarios: failed={failed}; vacuous={vacuous}" if len(rows) != expected or len(scenarios) != expected or failed or vacuous else 0)' "$RUNNER_TEMP/examples.json" eval/examples.json 27
+      - name: Check unseen scenarios
+        run: |
+          python -m eval.run_questions eval/unseen.json --fresh --out "$RUNNER_TEMP/unseen"
+          python -c 'import json,sys; rows=json.load(open(sys.argv[1])); scenarios=json.load(open(sys.argv[2])); expected=int(sys.argv[3]); failed=[row["id"] for row in rows if not row.get("pass")]; vacuous=[scenario["id"] for scenario in scenarios if not (scenario.get("expect") or scenario.get("reject") or scenario.get("visual"))]; print(f"SCORE {len(rows)-len(failed)}/{expected}"); sys.exit(f"Failed, incomplete, or vacuous scenarios: failed={failed}; vacuous={vacuous}" if len(rows) != expected or len(scenarios) != expected or failed or vacuous else 0)' "$RUNNER_TEMP/unseen.json" eval/unseen.json 46
