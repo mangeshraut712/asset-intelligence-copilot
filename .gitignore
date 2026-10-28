@@ -21,9 +21,6 @@ results/_final_questions.json
 results/final.json
 results/final.md
 
-# Workflows cannot be pushed with the current token; CI lives in docs/ci-workflow.yml
-.github/workflows/
-
 # OS / editor
 .DS_Store
 .idea/

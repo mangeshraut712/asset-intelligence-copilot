@@ -494,7 +494,9 @@
   "user": "Emily Carter",
   "chat": "u44",
   "q": "What notes do we have on WELL-0013?",
-  "expect": []
+  "expect": [
+   "0 in total"
+  ]
  },
  {
   "id": "U45",

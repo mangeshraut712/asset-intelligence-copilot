@@ -100,7 +100,7 @@ for a in ["SW-23", "NE-07"]:
     add(f"Which spills in {AN[a]} in the last 90 days needed a report to the regulator?", ([f"{len(rp)} spill(s)"] + rp) if rp else ["No spill"])
 # --- notes and planned shutdowns
 for w in ["WELL-0101", "WELL-0013"]:
-    ns = W[w]["notes"]; add(f"What notes do we have on {w}?", [n["note_id"] for n in ns])
+    ns = W[w]["notes"]; add(f"What notes do we have on {w}?", [n["note_id"] for n in ns] or ["0 in total"])
 add("Is any downtime planned for WELL-0001?", ["Yes", "CTX-0001-003", "20 Oct"])
 # --- compliance one well
 add("Which rules has WELL-0082 broken in the last 12 months?", ["SR-02", "MNT-0082-028"])
