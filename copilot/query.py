@@ -93,14 +93,20 @@ def _closed_range(left, right):
     if a and mb:
         if _is_month_year(left):
             a = dt.date(a.year, a.month, 1)
-        b = _month_end(dt.date(a.year, mb, 1))
+        # A bare end month earlier in the calendar belongs to the next year
+        # ("between November 2026 and January" -> Jan 2027, not Jan 2026).
+        end_year = a.year + 1 if mb < a.month else a.year
+        b = _month_end(dt.date(end_year, mb, 1))
         if a > b:
             a, b = b, a
         return a, b, f"{fmt(a)} to {fmt(b)}"
     if b and ma:
         if _is_month_year(right):
             b = _month_end(b)
-        a = dt.date(b.year, ma, 1)
+        # A bare start month later in the calendar belongs to the previous year
+        # ("between Nov and Jan 2027" -> Nov 2026, not Nov 2027 swapped).
+        start_year = b.year - 1 if ma > b.month else b.year
+        a = dt.date(start_year, ma, 1)
         if a > b:
             a, b = b, a
         return a, b, f"{fmt(a)} to {fmt(b)}"
