@@ -188,6 +188,12 @@ def parse_window(q):
     # "after last month" is this month, not the rolling last-month window.
     if re.search(r"\bafter last month\b", ql):
         return TODAY.replace(day=1), end, "this month"
+    # "before last month" is Jan 1 through the month before last, not the rolling last-month window.
+    if re.search(r"\bbefore last month\b", ql):
+        last_start = (TODAY.replace(day=1) - dt.timedelta(days=1)).replace(day=1)
+        e = last_start - dt.timedelta(days=1)
+        s = dt.date(e.year, 1, 1)
+        return s, e, f"before last month ({fmt(s)} to {fmt(e)})"
     if re.search(r"(?:last|past|previous|prior) (month)\b", ql): s = T.sub_months(end, 1); return s, end, f"last month ({fmt(s)} to {fmt(end)})"
     # "last fortnight" is the same 14-day window as "last two weeks", ending yesterday.
     if re.search(r"\b(?:last|past|previous|prior) fortnight\b", ql):
