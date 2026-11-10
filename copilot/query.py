@@ -6,6 +6,7 @@ from . import tools as T
 from .tools import TODAY, fmt
 
 MONTHS = {m.lower(): i for i, m in enumerate(calendar.month_name) if m} | {m.lower(): i for i, m in enumerate(calendar.month_abbr) if m}
+MONTHS["sept"] = 9  # common abbreviation; calendar.month_abbr only has "Sep"
 NUMW = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10, "twelve": 12}
 METRICS = ["downtime", "spills", "spill_volume", "repairs", "repair_cost", "fines", "reg_events", "not_producing", "stale_status", "notes"]
 GROUPS = [None, "well", "area", "type", "team", "month", "equipment"]
