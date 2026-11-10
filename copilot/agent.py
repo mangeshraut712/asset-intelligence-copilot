@@ -32,6 +32,8 @@ def normalize_question(q):
 def question_is_blank(q):
     return not q or not re.search(r"[A-Za-z0-9]", q)
 
+_NUM_RE = re.compile(r"\b(\d{4}[-/.]\d{1,2}[-/.]\d{1,2}|\d{1,2}[-/.]\d{1,2}[-/.]\d{4})\b")
+
 def parse_date(text):
     """A calendar date from the question, or None when none was given or the date cannot exist."""
     m = _DATE_RE.search(text or "")
@@ -48,12 +50,17 @@ def parse_date(text):
         except ValueError: return None
     # "Oct 15 2026" / "October 15, 2026" — month name first.
     m = _MDY_RE.search(text or "")
+    if m:
+        y = int(m.group(3)) if m.group(3) else TODAY.year
+        try: x = dt.date(y, MONTHS[m.group(1).lower()[:3]], int(m.group(2)))
+        except ValueError: return None
+        if not m.group(3) and x > TODAY + dt.timedelta(days=60): x = x.replace(year=y - 1)
+        return x
+    # "15/10/2026", "10/15/2026", "15.10.2026", "2026/10/15".
+    from .query import _numeric_date
+    m = _NUM_RE.search(text or "")
     if not m: return None
-    y = int(m.group(3)) if m.group(3) else TODAY.year
-    try: x = dt.date(y, MONTHS[m.group(1).lower()[:3]], int(m.group(2)))
-    except ValueError: return None
-    if not m.group(3) and x > TODAY + dt.timedelta(days=60): x = x.replace(year=y - 1)
-    return x
+    return _numeric_date(m.group(1))
 
 def invalid_date_phrase(text):
     """The date words the user wrote, when they do not fall on a real calendar day."""
@@ -64,6 +71,9 @@ def invalid_date_phrase(text):
     if m:
         return None if parse_date(text) is not None else m.group(0)
     m = _MDY_RE.search(text or "")
+    if m:
+        return None if parse_date(text) is not None else m.group(0)
+    m = _NUM_RE.search(text or "")
     if not m or parse_date(text) is not None: return None
     return m.group(0)
 

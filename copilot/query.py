@@ -15,8 +15,24 @@ def _safe_date(y, m, d):
     try: return dt.date(int(y), int(m), int(d))
     except (TypeError, ValueError, OverflowError): return None
 
+def _numeric_date(s):
+    """Slash, dot or hyphen numeric dates. Day-month-year matches the product's '15 Oct 2026' form;
+    month-day-year is used only when the first number cannot be a day-major month (e.g. 10/15/2026)."""
+    s = s.strip()
+    m = re.match(r"^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$", s)
+    if m: return _safe_date(m[1], m[2], m[3])
+    m = re.match(r"^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})$", s)
+    if not m: return None
+    a, b, y = int(m[1]), int(m[2]), int(m[3])
+    dmy, mdy = _safe_date(y, b, a), _safe_date(y, a, b)
+    if a > 12: return dmy
+    if b > 12: return mdy
+    return dmy  # both <= 12: prefer day-month-year
+
 def _date(s, default_year=None):
     s = s.strip().lower().replace(",", "")
+    num = _numeric_date(s)
+    if num: return num
     m = re.match(r"(\d{4})-(\d{2})-(\d{2})", s)
     if m: return _safe_date(m[1], m[2], m[3])
     m = re.match(r"(\d{1,2})(?:st|nd|rd|th)? ([a-z]+)(?: (\d{4}))?", s) or None
@@ -36,7 +52,7 @@ def parse_window(q):
             if a > b: a, b = b, a
             return a, b, f"{fmt(a)} to {fmt(b)}"
         if re.search(r"\d", m[1] + m[2]): return None  # a dated "between" that is not a real range
-    m = re.search(r"(?:from|since) (\d{1,2} [a-z]+(?: \d{4})?|[a-z]+ \d{1,2}(?: \d{4})?|\d{4}-\d{2}-\d{2})", ql)
+    m = re.search(r"(?:from|since) (\d{1,2} [a-z]+(?: \d{4})?|[a-z]+ \d{1,2}(?: \d{4})?|\d{4}[-/.]\d{1,2}[-/.]\d{1,2}|\d{1,2}[-/.]\d{1,2}[-/.]\d{4})", ql)
     if m:
         a = _date(m[1])
         if a: return a, end, f"{fmt(a)} to {fmt(end)}"
@@ -74,8 +90,33 @@ def parse_window(q):
         return dt.date(TODAY.year, 1, 1), end, f"{TODAY.year} to date"
     if "last year" in ql: y = TODAY.year - 1; return dt.date(y, 1, 1), dt.date(y, 12, 31), str(y)
     if "this month" in ql: return TODAY.replace(day=1), end, "this month"
+    mon3 = "|".join(k for k in MONTHS if len(k) == 3 or k == "sept")
+    date_token = (
+        rf"(?:\d{{4}}[-/.]\d{{1,2}}[-/.]\d{{1,2}}|\d{{1,2}}[-/.]\d{{1,2}}[-/.]\d{{4}}|"
+        rf"\d{{1,2}}(?:st|nd|rd|th)? (?:{mon3})[a-z]*(?: \d{{4}})?|"
+        rf"(?:{mon3})[a-z]* \d{{1,2}}(?:st|nd|rd|th)?(?:,)?(?: \d{{4}})?)"
+    )
+    # "on 15 Oct 2026" / "on 2026-10-15" is that day, not the whole year the digits mention.
+    m = re.search(rf"\b(?:on|dated)\s+({date_token})", ql)
+    if m:
+        a = _date(m[1])
+        if a: return a, a, fmt(a)
+        if re.search(r"\d", m[1]): return None
+    # "in 2026-10" is that month, not the whole of 2026.
+    m = re.search(r"\bin (\d{4})[-/](\d{1,2})\b", ql)
+    if m:
+        y, mo = int(m[1]), int(m[2])
+        if 1 <= mo <= 12:
+            s, e = dt.date(y, mo, 1), dt.date(y, mo, calendar.monthrange(y, mo)[1])
+            return s, min(e, end), f"{calendar.month_name[mo]} {y}"
     m = re.search(r"\b(20\d\d)\b", ql)
-    if m: y = int(m[1]); return dt.date(y, 1, 1), min(dt.date(y, 12, 31), end), str(y)
+    if m:
+        # A year that is only there as part of a more specific date must not become a year-long window.
+        if re.search(rf"{date_token}|\d{{4}}[-/]\d{{1,2}}\b", ql):
+            a = _date(re.search(date_token, ql).group(0)) if re.search(date_token, ql) else None
+            if a: return a, a, fmt(a)
+            return None
+        y = int(m[1]); return dt.date(y, 1, 1), min(dt.date(y, 12, 31), end), str(y)
     if re.search(r"all time|ever|in total|overall|whole history|4 years", ql): return dt.date(1900, 1, 1), end, "all records"
     return None
 
