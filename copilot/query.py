@@ -201,10 +201,10 @@ def parse_window(q):
     if re.search(r"\b(?:last|previous|prior) year\b", ql): y = TODAY.year - 1; return dt.date(y, 1, 1), dt.date(y, 12, 31), str(y)
     if re.search(r"\btoday\b", ql): return TODAY, TODAY, "today"
     if re.search(r"\byesterday\b", ql): return end, end, "yesterday"
-    if re.search(r"\bthis week\b", ql) or re.search(r"\bweek[\s\u2010-\u2015\-]+to[\s\u2010-\u2015\-]+date\b", ql):
+    if re.search(r"\bthis week\b", ql) or re.search(r"\bweek[\s\u2010-\u2015\-]+to[\s\u2010-\u2015\-]+date\b", ql) or re.search(r"\bwtd\b", ql):
         start = TODAY - dt.timedelta(days=TODAY.weekday())
         return start, end if start <= end else start, f"this week ({fmt(start)} to {fmt(end if start <= end else start)})"
-    if "this month" in ql or re.search(r"\bmonth[\s\u2010-\u2015\-]+to[\s\u2010-\u2015\-]+date\b", ql):
+    if "this month" in ql or re.search(r"\bmonth[\s\u2010-\u2015\-]+to[\s\u2010-\u2015\-]+date\b", ql) or re.search(r"\bmtd\b", ql):
         return TODAY.replace(day=1), end, "this month"
     mon3 = "|".join(k for k in MONTHS if len(k) == 3 or k == "sept")
     # Month + 4-digit year must be tried before Month + 1-2 day digits, otherwise
