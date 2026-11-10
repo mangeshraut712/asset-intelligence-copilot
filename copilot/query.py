@@ -198,6 +198,18 @@ def parse_window(q):
         end_year = y + 1 if mb < ma else y
         b = _month_end(dt.date(end_year, mb, 1))
         return a, b, f"{fmt(a)} to {fmt(b)}"
+    # "first/second half of October" is days 1-15 / 16-end of that month, not
+    # the whole month (the bare "of October" clause below would swallow it).
+    m = re.search(rf"\b(first|second) half(?: of)? ({mon})(?:\s+(\d{{4}}))?", ql)
+    if m:
+        mo = MONTHS[m[2]]
+        y = int(m[3]) if m[3] else (TODAY.year if mo <= TODAY.month else TODAY.year - 1)
+        last = calendar.monthrange(y, mo)[1]
+        if m[1] == "first":
+            s, e = dt.date(y, mo, 1), dt.date(y, mo, 15)
+        else:
+            s, e = dt.date(y, mo, 16), dt.date(y, mo, last)
+        return s, min(e, end), f"{fmt(s)} to {fmt(min(e, end))}"
     m = re.search(rf"\b(?:in|during|for|of)\s+({mon})\b(?:\s+(\d{{4}}))?", ql)
     if m:
         mo = MONTHS[m[1]]; y = int(m[2]) if m[2] else (TODAY.year if mo <= TODAY.month else TODAY.year - 1)
