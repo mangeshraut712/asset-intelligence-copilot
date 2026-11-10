@@ -293,6 +293,10 @@ def parse_window(q):
         e = _cap_end(s, e, end)
         return s, e, f"Q{k} {y} ({fmt(s)} to {fmt(e)})"
     # Accept "year-to-date" / "year—to—date" as well as the spaced and "ytd" forms.
+    # "before this year" is the previous calendar year, not year-to-date.
+    if re.search(r"\bbefore this year\b", ql):
+        y = TODAY.year - 1
+        return dt.date(y, 1, 1), dt.date(y, 12, 31), str(y)
     if "this year" in ql or re.search(r"\byear[\s\u2010-\u2015\-]+to[\s\u2010-\u2015\-]+date\b", ql) or re.search(r"\bytd\b", ql):
         return dt.date(TODAY.year, 1, 1), end, f"{TODAY.year} to date"
     if re.search(r"\b(?:last|previous|prior) year\b", ql): y = TODAY.year - 1; return dt.date(y, 1, 1), dt.date(y, 12, 31), str(y)
