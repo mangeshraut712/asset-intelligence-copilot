@@ -274,9 +274,10 @@ def parse_window(q):
     if m:
         h = 1 if (m[1] == "first" or m[3] == "1") else 2; y = int(m[2] or m[4] or TODAY.year)
         s, e = (dt.date(y, 1, 1), dt.date(y, 6, 30)) if h == 1 else (dt.date(y, 7, 1), dt.date(y, 12, 31)); e = _cap_end(s, e, end); return s, e, f"H{h} {y} ({fmt(s)} to {fmt(e)})"
-    m = re.search(r"\bq([1-4])(?: (\d{4}))?|\b(first|second|third|fourth) quarter(?: of)?(?: (\d{4}))?", ql)
+    m = re.search(r"\bq([1-4])(?: (\d{4}))?|\b(first|second|third|fourth|1st|2nd|3rd|4th) quarter(?: of)?(?: (\d{4}))?", ql)
     if m:
-        k = int(m[1]) if m[1] else ["first", "second", "third", "fourth"].index(m[3]) + 1; y = int(m[2] or m[4] or TODAY.year)
+        _qord = {"first": 1, "second": 2, "third": 3, "fourth": 4, "1st": 1, "2nd": 2, "3rd": 3, "4th": 4}
+        k = int(m[1]) if m[1] else _qord[m[3]]; y = int(m[2] or m[4] or TODAY.year)
         s = dt.date(y, 3 * k - 2, 1); e = dt.date(y, 3 * k, calendar.monthrange(y, 3 * k)[1]); e = _cap_end(s, e, end); return s, e, f"Q{k} {y} ({fmt(s)} to {fmt(e)})"
     # "this quarter" / "quarter-to-date" / "qtd", and the previous calendar quarter.
     if re.search(r"\b(?:this|current) quarter\b|\bquarter[\s\u2010-\u2015\-]+to[\s\u2010-\u2015\-]+date\b|\bqtd\b", ql):
