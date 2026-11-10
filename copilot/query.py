@@ -150,9 +150,12 @@ def parse_window(q):
         a = _date(m[1])
         if a: return a, end, f"{fmt(a)} to {fmt(end)}"
         if re.search(r"\d", m[1]): return None
-    m = re.search(r"(?:last|past|previous) (\d+|" + "|".join(NUMW) + r") (day|week|month|year)s?", ql)
+    m = re.search(r"(?:last|past|previous) (\d+|" + "|".join(NUMW) + r") (day|week|month|year|quarter)s?", ql)
     if m:
         n = int(NUMW.get(m[1], m[1]) if not m[1].isdigit() else m[1]); u = m[2]
+        if u == "quarter":
+            s = T.sub_months(end, 3 * n)
+            return s, end, f"last {n} quarters ({fmt(s)} to {fmt(end)})"
         s = T.sub_months(end, n) if u == "month" else T.sub_months(end, 12 * n) if u == "year" else T.sub_days(TODAY, n * (7 if u == "week" else 1))
         return s, end, f"last {n} {u}s ({fmt(s)} to {fmt(end)})"
     if re.search(r"\b(?:last|previous|prior) year\b", ql): y = TODAY.year - 1; return dt.date(y, 1, 1), dt.date(y, 12, 31), str(y)
