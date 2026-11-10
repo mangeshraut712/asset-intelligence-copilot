@@ -44,7 +44,7 @@ def parse_window(q):
     m = re.search(r"(?:last|past|previous) (\d+|" + "|".join(NUMW) + r") (day|week|month|year)s?", ql)
     if m:
         n = int(NUMW.get(m[1], m[1]) if not m[1].isdigit() else m[1]); u = m[2]
-        s = T.sub_months(end, n) if u == "month" else T.sub_months(end, 12 * n) if u == "year" else TODAY - dt.timedelta(days=n * (7 if u == "week" else 1))
+        s = T.sub_months(end, n) if u == "month" else T.sub_months(end, 12 * n) if u == "year" else T.sub_days(TODAY, n * (7 if u == "week" else 1))
         return s, end, f"last {n} {u}s ({fmt(s)} to {fmt(end)})"
     if re.search(r"\blast year\b", ql): y = TODAY.year - 1; return dt.date(y, 1, 1), dt.date(y, 12, 31), str(y)
     if re.search(r"(?:last|past) (year|12 months)", ql): s = T.sub_months(end, 12); return s, end, f"last 12 months ({fmt(s)} to {fmt(end)})"

@@ -80,6 +80,11 @@ def test_windows_survive_inverted_and_impossible_dates():
     assert Q.parse_window("since 31 February 2026") is None
     huge = Q.parse_window("last 100000 months")
     assert huge and huge[0] <= huge[1] and huge[0].year >= 1
+    for q in ("last 1000000 days", "last 1000000 weeks"):
+        w = Q.parse_window(q)
+        assert w and w[0] == dt.date.min and w[1] == dt.date(2026, 10, 16), q
+    assert T.window(days=10**9)[0] == dt.date.min
+    assert Q.parse_window("last 7 days")[:2] == (dt.date(2026, 10, 10), dt.date(2026, 10, 16))
     assert Q.parse_window("last 4 months")[:2] == (dt.date(2026, 6, 16), dt.date(2026, 10, 16))
     assert agent.parse_date("31 February 2026") is None
     assert agent.parse_date("15 Oct 2026") == dt.date(2026, 10, 15)
@@ -172,6 +177,11 @@ def test_keyword_lookups_are_answered_not_stored_as_facts(fresh):
     assert c.execute("SELECT count(*) c FROM memory_well_facts").fetchone()["c"] == 0
     r = cp.ask("WELL-0151 has been shut in since 10 Oct for a workover.", "U-201", "edge")
     assert "Noted for everyone" in r["text"]
+
+
+def test_huge_day_window_question_answers(fresh):
+    r = agent.Copilot().ask("How many spills in the last 1000000 days?", "U-201", "edge")
+    assert r["text"]
 
 
 def test_open_repair_without_completion_date(fresh):
