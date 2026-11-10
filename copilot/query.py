@@ -229,6 +229,11 @@ def parse_window(q):
     if re.search(r"\bthis week\b", ql) or re.search(r"\bweek[\s\u2010-\u2015\-]+to[\s\u2010-\u2015\-]+date\b", ql) or re.search(r"\bwtd\b", ql):
         start = TODAY - dt.timedelta(days=TODAY.weekday())
         return start, end if start <= end else start, f"this week ({fmt(start)} to {fmt(end if start <= end else start)})"
+    # "before this month" must not be swallowed by the "this month" / MTD clause.
+    if re.search(r"\bbefore this month\b", ql):
+        e = TODAY.replace(day=1) - dt.timedelta(days=1)
+        s = dt.date(e.year, 1, 1)
+        return s, e, f"before this month ({fmt(s)} to {fmt(e)})"
     if "this month" in ql or re.search(r"\bmonth[\s\u2010-\u2015\-]+to[\s\u2010-\u2015\-]+date\b", ql) or re.search(r"\bmtd\b", ql):
         return TODAY.replace(day=1), end, "this month"
     mon3 = "|".join(k for k in MONTHS if len(k) == 3 or k == "sept")
