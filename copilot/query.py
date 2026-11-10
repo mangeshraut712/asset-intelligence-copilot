@@ -121,6 +121,12 @@ def _closed_range(left, right):
     return None
 
 
+
+def _cap_end(s, e, end):
+    """Cap at yesterday only when the window has already started; otherwise min() inverts it."""
+    return e if s > end else min(e, end)
+
+
 def parse_window(q):
     """Return (start, end, label) or None. 'last N' windows end yesterday (the last full day before today)."""
     ql = q.lower()
@@ -197,7 +203,8 @@ def parse_window(q):
         rng = {"summer": ((6, 1), (8, 31)), "spring": ((3, 1), (5, 31)), "autumn": ((9, 1), (11, 30)), "fall": ((9, 1), (11, 30))}.get(m[1])
         if m[1] == "winter": s, e = dt.date(y - 1, 12, 1), dt.date(y, 2, calendar.monthrange(y, 2)[1])
         else: s, e = dt.date(y, *rng[0]), dt.date(y, *rng[1])
-        return s, min(e, end), f"{m[1]} {y} ({fmt(s)} to {fmt(min(e, end))})"
+        e = _cap_end(s, e, end)
+        return s, e, f"{m[1]} {y} ({fmt(s)} to {fmt(e)})"
     mon = "|".join(k for k in MONTHS if len(k) > 3 or k in ("may", "jun", "jul", "aug", "sep", "oct", "nov", "dec", "jan", "feb", "mar", "apr"))
     # "Oct 1st-15th" / "October 1 - 15 2026" is a day range in that month.
     m = re.search(
@@ -234,19 +241,20 @@ def parse_window(q):
             s, e = dt.date(y, mo, 1), dt.date(y, mo, 15)
         else:
             s, e = dt.date(y, mo, 16), dt.date(y, mo, last)
-        return s, min(e, end), f"{fmt(s)} to {fmt(min(e, end))}"
+        e = _cap_end(s, e, end)
+        return s, e, f"{fmt(s)} to {fmt(e)}"
     m = re.search(rf"\b(?:in|during|for|of)\s+({mon})\b(?:\s+(\d{{4}}))?", ql)
     if m:
         mo = MONTHS[m[1]]; y = int(m[2]) if m[2] else (TODAY.year if mo <= TODAY.month else TODAY.year - 1)
-        s, e = dt.date(y, mo, 1), dt.date(y, mo, calendar.monthrange(y, mo)[1]); return s, min(e, end), f"{calendar.month_name[mo]} {y}"
+        s, e = dt.date(y, mo, 1), dt.date(y, mo, calendar.monthrange(y, mo)[1]); e = _cap_end(s, e, end); return s, e, f"{calendar.month_name[mo]} {y}"
     m = re.search(r"\b(first|second) half(?: of)?(?: (\d{4}))?|\bh([12])(?: (\d{4}))?", ql)
     if m:
         h = 1 if (m[1] == "first" or m[3] == "1") else 2; y = int(m[2] or m[4] or TODAY.year)
-        s, e = (dt.date(y, 1, 1), dt.date(y, 6, 30)) if h == 1 else (dt.date(y, 7, 1), dt.date(y, 12, 31)); return s, min(e, end), f"H{h} {y} ({fmt(s)} to {fmt(min(e, end))})"
+        s, e = (dt.date(y, 1, 1), dt.date(y, 6, 30)) if h == 1 else (dt.date(y, 7, 1), dt.date(y, 12, 31)); e = _cap_end(s, e, end); return s, e, f"H{h} {y} ({fmt(s)} to {fmt(e)})"
     m = re.search(r"\bq([1-4])(?: (\d{4}))?|\b(first|second|third|fourth) quarter(?: of)?(?: (\d{4}))?", ql)
     if m:
         k = int(m[1]) if m[1] else ["first", "second", "third", "fourth"].index(m[3]) + 1; y = int(m[2] or m[4] or TODAY.year)
-        s = dt.date(y, 3 * k - 2, 1); e = dt.date(y, 3 * k, calendar.monthrange(y, 3 * k)[1]); return s, min(e, end), f"Q{k} {y} ({fmt(s)} to {fmt(min(e, end))})"
+        s = dt.date(y, 3 * k - 2, 1); e = dt.date(y, 3 * k, calendar.monthrange(y, 3 * k)[1]); e = _cap_end(s, e, end); return s, e, f"Q{k} {y} ({fmt(s)} to {fmt(e)})"
     # "this quarter" / "quarter-to-date" / "qtd", and the previous calendar quarter.
     if re.search(r"\bthis quarter\b|\bquarter[\s\u2010-\u2015\-]+to[\s\u2010-\u2015\-]+date\b|\bqtd\b", ql):
         k = (TODAY.month - 1) // 3 + 1
@@ -259,7 +267,8 @@ def parse_window(q):
             k, y = 4, y - 1
         s = dt.date(y, 3 * k - 2, 1)
         e = dt.date(y, 3 * k, calendar.monthrange(y, 3 * k)[1])
-        return s, min(e, end), f"Q{k} {y} ({fmt(s)} to {fmt(min(e, end))})"
+        e = _cap_end(s, e, end)
+        return s, e, f"Q{k} {y} ({fmt(s)} to {fmt(e)})"
     # Accept "year-to-date" / "year—to—date" as well as the spaced and "ytd" forms.
     if "this year" in ql or re.search(r"\byear[\s\u2010-\u2015\-]+to[\s\u2010-\u2015\-]+date\b", ql) or re.search(r"\bytd\b", ql):
         return dt.date(TODAY.year, 1, 1), end, f"{TODAY.year} to date"
@@ -300,7 +309,8 @@ def parse_window(q):
         y, mo = int(m[1]), int(m[2])
         if 1 <= mo <= 12:
             s, e = dt.date(y, mo, 1), dt.date(y, mo, calendar.monthrange(y, mo)[1])
-            return s, min(e, end), f"{calendar.month_name[mo]} {y}"
+            e = _cap_end(s, e, end)
+            return s, e, f"{calendar.month_name[mo]} {y}"
     m = re.search(r"\b(20\d\d)\b", ql)
     if m:
         # A year that is only there as part of a more specific date must not become a year-long window.
@@ -313,7 +323,7 @@ def parse_window(q):
                     return a, min(e, end) if a <= end else e, f"{calendar.month_name[a.month]} {a.year}"
                 return a, a, fmt(a)
             return None
-        y = int(m[1]); return dt.date(y, 1, 1), min(dt.date(y, 12, 31), end), str(y)
+        y = int(m[1]); s, e = dt.date(y, 1, 1), dt.date(y, 12, 31); return s, _cap_end(s, e, end), str(y)
     if re.search(r"all time|ever|in total|overall|whole history|4 years", ql): return dt.date(1900, 1, 1), end, "all records"
     return None
 
