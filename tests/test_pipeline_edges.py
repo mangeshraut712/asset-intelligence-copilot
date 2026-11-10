@@ -160,3 +160,22 @@ def test_api_blank_question(fresh):
     r = client.post("/api/ask", json={"question": "   ", "user": "U-201", "chat": "edge"}).json()
     assert "Ask about" in r["text"] and r["confidence"] == "low" and r["visual"] is None
     assert "assumptions" in r and r["trace"]["assumptions"] == []
+
+
+def test_open_repair_without_completion_date(fresh):
+    """A repair with no completed_at yet (still in progress) must not crash well_status."""
+    c = T.db()
+    last = {}
+    for r in T.effective_inspections(c):
+        last[r["asset_id"]] = r
+    well, ins = next((a, r) for a, r in last.items() if not r["producing"])
+    c.execute("INSERT INTO maintenance(maintenance_id, asset_id, started_at, completed_at, maintenance_type, issue) "
+              "VALUES('MNT-9999-999', ?, ?, NULL, 'corrective', 'open repair')", (well, ins["date"]))
+    c.commit()
+    try:
+        s = T.well_status(well)
+        assert any("MNT-9999-999" in x and "still open" in x for x in s["reasons"])
+        assert "MNT-9999-999" in s["citations"]
+    finally:
+        c.execute("DELETE FROM maintenance WHERE maintenance_id='MNT-9999-999'")
+        c.commit()
