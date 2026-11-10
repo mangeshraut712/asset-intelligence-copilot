@@ -47,6 +47,20 @@ def _num(pattern, text, default=None):
     m = re.search(pattern, text, re.I | re.S)
     return float(m.group(1)) if m else default
 
+_NUMBER_WORDS = {w: i for i, w in enumerate(
+    "zero one two three four five six seven eight nine ten eleven twelve".split())}
+
+def _word_number(token):
+    """'3' or 'Three' -> 3.0; anything else -> None (never raises)."""
+    t = token.strip().lower()
+    if re.fullmatch(r"\d+(?:\.\d+)?", t):
+        return float(t)
+    return float(_NUMBER_WORDS[t]) if t in _NUMBER_WORDS else None
+
+def _count(pattern, text):
+    m = re.search(pattern, text, re.I | re.S)
+    return _word_number(m.group(1)) if m else None
+
 def parse_rules(fleet):
     """Extract thresholds/deadlines from manuals and SOPs (not hard-coded)."""
     rules = []
@@ -55,8 +69,10 @@ def parse_rules(fleet):
         txt = open(p).read()
         thr = _num(r"producing \(active\)\*\*.*?at least \*\*([\d.]+)\s*°C above", txt)
         rules.append((f"{t}.producing_delta_c", thr, f"{t} manual (production temperature rule)"))
-        rca = _num(r"(\w+) or more \*\*corrective\*\*", txt.replace("Three", "3"))
-        if rca is None and re.search(r"after three corrective", txt, re.I): rca = 3
+        rca = _count(r"(\w+) or more \*\*corrective\*\*", txt)
+        if rca is None:
+            m = re.search(r"after (\w+) corrective", txt, re.I)
+            rca = _word_number(m.group(1)) if m else None
         rules.append((f"{t}.rca_repairs", rca or 3, f"{t} manual (maintenance escalation, RCA)"))
     s = open(os.path.join(fleet, "sops", "spill-response-sop.md")).read()
     rules += [
