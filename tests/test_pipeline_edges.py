@@ -170,7 +170,10 @@ def test_api_blank_question(fresh):
 def test_keyword_lookups_are_answered_not_stored_as_facts(fresh):
     cp = agent.Copilot()
     for q in ("repairs on WELL-0151 in the last 12 months", "WELL-0151 downtime last 3 months",
-              "spills at WELL-0151 this year", "repair history for WELL-0151"):
+              "spills at WELL-0151 this year", "repair history for WELL-0151",
+              "fines on WELL-0151 last 12 months", "notes on WELL-0151 last month",
+              "regulatory events on WELL-0151", "open fines on WELL-0151",
+              "WELL-0151 fines 2026"):
         r = cp.ask(q, "U-201", "edge")
         assert "Noted for everyone" not in r["text"], q
     c = T.db()
