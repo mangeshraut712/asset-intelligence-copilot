@@ -13,8 +13,10 @@ _ZW_RE = re.compile(r"[\u200b\u200c\u200d\ufeff\x00]")
 BLANK_TEXT = "Ask about a well, an area, spills, downtime, repairs, or a rule from the manuals. For example: \"Is WELL-0001 producing oil right now?\""
 
 def now():
-    t = dt.datetime.now()
-    if SIM_DAY is not None: t = dt.datetime.combine(TODAY + dt.timedelta(days=SIM_DAY), t.time())
+    # Follow the dataset clock (AIC_TODAY), not the wall clock. SIM_DAY shifts
+    # that clock for evaluation; unset or 0 means "today" in the sample data.
+    day = TODAY + dt.timedelta(days=SIM_DAY or 0)
+    t = dt.datetime.combine(day, dt.datetime.now().time())
     return t.isoformat(timespec="seconds")
 
 def normalize_question(q):
