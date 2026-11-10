@@ -224,8 +224,8 @@ def parse_window(q):
                 return a, min(e, end) if a.year == TODAY.year else e, f"{calendar.month_name[a.month]} {a.year}"
             return a, a, fmt(a)
         if re.search(r"\d", m[1]): return None
-    # "in 2026-10" is that month, not the whole of 2026.
-    m = re.search(r"\bin (\d{4})[-/](\d{1,2})\b", ql)
+    # "in 2026-10" / "during 2026-10" is that month, not the whole of 2026.
+    m = re.search(r"\b(?:in|during|for|of) (\d{4})[-/](\d{1,2})\b", ql)
     if m:
         y, mo = int(m[1]), int(m[2])
         if 1 <= mo <= 12:
