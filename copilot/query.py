@@ -183,16 +183,22 @@ def parse_window(q):
     if "this month" in ql or re.search(r"\bmonth[\s\u2010-\u2015\-]+to[\s\u2010-\u2015\-]+date\b", ql):
         return TODAY.replace(day=1), end, "this month"
     mon3 = "|".join(k for k in MONTHS if len(k) == 3 or k == "sept")
+    # Month + 4-digit year must be tried before Month + 1-2 day digits, otherwise
+    # "December 2026" is consumed as "December 20".
     date_token = (
         rf"(?:\d{{4}}[-/.]\d{{1,2}}[-/.]\d{{1,2}}|\d{{1,2}}[-/.]\d{{1,2}}[-/.]\d{{4}}|"
         rf"\d{{1,2}}(?:st|nd|rd|th)? (?:{mon3})[a-z]*(?: \d{{4}})?|"
-        rf"(?:{mon3})[a-z]* \d{{1,2}}(?:st|nd|rd|th)?(?:,)?(?: \d{{4}})?)"
+        rf"(?:{mon3})[a-z]* (?:\d{{4}}|\d{{1,2}}(?:st|nd|rd|th)?(?:,)?(?: \d{{4}})?))"
     )
     # "on 15 Oct 2026" / "on 2026-10-15" is that day, not the whole year the digits mention.
     m = re.search(rf"\b(?:on|dated)\s+({date_token})", ql)
     if m:
         a = _date(m[1])
-        if a: return a, a, fmt(a)
+        if a:
+            if _is_month_year(m[1]):
+                e = _month_end(a)
+                return a, min(e, end) if a.year == TODAY.year else e, f"{calendar.month_name[a.month]} {a.year}"
+            return a, a, fmt(a)
         if re.search(r"\d", m[1]): return None
     # "in 2026-10" is that month, not the whole of 2026.
     m = re.search(r"\bin (\d{4})[-/](\d{1,2})\b", ql)
@@ -205,8 +211,13 @@ def parse_window(q):
     if m:
         # A year that is only there as part of a more specific date must not become a year-long window.
         if re.search(rf"{date_token}|\d{{4}}[-/]\d{{1,2}}\b", ql):
-            a = _date(re.search(date_token, ql).group(0)) if re.search(date_token, ql) else None
-            if a: return a, a, fmt(a)
+            tok = re.search(date_token, ql)
+            a = _date(tok.group(0)) if tok else None
+            if a:
+                if _is_month_year(tok.group(0)):
+                    e = _month_end(a)
+                    return a, min(e, end) if a <= end else e, f"{calendar.month_name[a.month]} {a.year}"
+                return a, a, fmt(a)
             return None
         y = int(m[1]); return dt.date(y, 1, 1), min(dt.date(y, 12, 31), end), str(y)
     if re.search(r"all time|ever|in total|overall|whole history|4 years", ql): return dt.date(1900, 1, 1), end, "all records"
