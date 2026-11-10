@@ -303,6 +303,16 @@ def parse_window(q):
         e = TODAY.replace(day=1) - dt.timedelta(days=1)
         s = dt.date(e.year, 1, 1)
         return s, e, f"before this month ({fmt(s)} to {fmt(e)})"
+    # "after this month" is the rest of the year, not month-to-date.
+    if re.search(r"\bafter this month\b", ql):
+        s = TODAY.replace(day=1)
+        # first day of next month
+        if s.month == 12:
+            s = dt.date(s.year + 1, 1, 1)
+        else:
+            s = dt.date(s.year, s.month + 1, 1)
+        e = dt.date(s.year, 12, 31)
+        return s, e, f"after this month ({fmt(s)} to {fmt(e)})"
     if "this month" in ql or re.search(r"\bmonth[\s\u2010-\u2015\-]+to[\s\u2010-\u2015\-]+date\b", ql) or re.search(r"\bmtd\b", ql):
         return TODAY.replace(day=1), end, "this month"
     mon3 = "|".join(k for k in MONTHS if len(k) == 3 or k == "sept")
