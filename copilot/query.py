@@ -52,6 +52,18 @@ def _date(s, default_year=None):
     if m and m[1] in MONTHS: return _safe_date(m[3] or default_year or TODAY.year, MONTHS[m[1]], m[2])
     return None
 
+def _is_month_year(s):
+    """True when the token names a month, not a specific day (October 2026, 2026-10)."""
+    s = s.strip().lower().replace(",", "")
+    m = re.match(r"^(\d{4})[-/](\d{1,2})$", s)
+    if m:
+        return 1 <= int(m[2]) <= 12
+    m = re.match(r"^([a-z]+) (\d{4})$", s)
+    return bool(m and m[1] in MONTHS)
+
+def _month_end(d):
+    return dt.date(d.year, d.month, calendar.monthrange(d.year, d.month)[1])
+
 def parse_window(q):
     """Return (start, end, label) or None. 'last N' windows end yesterday (the last full day before today)."""
     ql = q.lower(); end = TODAY - dt.timedelta(days=1)
@@ -60,6 +72,11 @@ def parse_window(q):
     if m:
         a, b = _date(m[1]), _date(m[2])
         if a and b:
+            # A month-year at either end includes that whole month, not just the 1st.
+            if _is_month_year(m[1]):
+                a = dt.date(a.year, a.month, 1)
+            if _is_month_year(m[2]):
+                b = _month_end(b)
             if a > b: a, b = b, a
             return a, b, f"{fmt(a)} to {fmt(b)}"
         if re.search(r"\d", m[1] + m[2]): return None  # a dated "between" that is not a real range
