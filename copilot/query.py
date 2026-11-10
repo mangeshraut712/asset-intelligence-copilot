@@ -64,6 +64,10 @@ def _is_month_year(s):
 def _month_end(d):
     return dt.date(d.year, d.month, calendar.monthrange(d.year, d.month)[1])
 
+def _month_only(s):
+    """A bare month name such as 'October' or 'Oct', with no day or year."""
+    return MONTHS.get(s.strip().lower().replace(",", ""))
+
 def parse_window(q):
     """Return (start, end, label) or None. 'last N' windows end yesterday (the last full day before today)."""
     ql = q.lower(); end = TODAY - dt.timedelta(days=1)
@@ -78,6 +82,13 @@ def parse_window(q):
             if _is_month_year(m[2]):
                 b = _month_end(b)
             if a > b: a, b = b, a
+            return a, b, f"{fmt(a)} to {fmt(b)}"
+        ma, mb = _month_only(m[1]), _month_only(m[2])
+        if ma and mb:
+            y = TODAY.year
+            a = dt.date(y, ma, 1)
+            end_year = y + 1 if mb < ma else y
+            b = _month_end(dt.date(end_year, mb, 1))
             return a, b, f"{fmt(a)} to {fmt(b)}"
         if re.search(r"\d", m[1] + m[2]): return None  # a dated "between" that is not a real range
     m = re.search(r"(?:from|since) (\d{4}[-/.]\d{1,2}[-/.]\d{1,2}|\d{1,2}[-/.]\d{1,2}[-/.]\d{4}|\d{1,2} [a-z]+(?: \d{4})?|[a-z]+ \d{4}|[a-z]+ \d{1,2}(?:st|nd|rd|th)?(?: \d{4})?|\d{4}[-/.]\d{1,2})", ql)
