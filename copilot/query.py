@@ -158,6 +158,10 @@ def parse_window(q):
     if re.search(r"\b(?:last|previous|prior) year\b", ql): y = TODAY.year - 1; return dt.date(y, 1, 1), dt.date(y, 12, 31), str(y)
     if re.search(r"(?:last|past) (year|12 months)", ql): s = T.sub_months(end, 12); return s, end, f"last 12 months ({fmt(s)} to {fmt(end)})"
     if re.search(r"(?:last|past|previous|prior) (month)\b", ql): s = T.sub_months(end, 1); return s, end, f"last month ({fmt(s)} to {fmt(end)})"
+    # "last fortnight" is the same 14-day window as "last two weeks", ending yesterday.
+    if re.search(r"\b(?:last|past|previous|prior) fortnight\b", ql):
+        s = T.sub_days(TODAY, 14)
+        return s, end, f"last 2 weeks ({fmt(s)} to {fmt(end)})"
     # "last week" (no count) is the same 7-day window as "last 1 week", ending yesterday.
     if re.search(r"\b(?:last|past|previous|prior) week\b", ql):
         s = T.sub_days(TODAY, 7)
