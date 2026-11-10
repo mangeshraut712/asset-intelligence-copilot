@@ -279,7 +279,7 @@ def parse_window(q):
         k = int(m[1]) if m[1] else ["first", "second", "third", "fourth"].index(m[3]) + 1; y = int(m[2] or m[4] or TODAY.year)
         s = dt.date(y, 3 * k - 2, 1); e = dt.date(y, 3 * k, calendar.monthrange(y, 3 * k)[1]); e = _cap_end(s, e, end); return s, e, f"Q{k} {y} ({fmt(s)} to {fmt(e)})"
     # "this quarter" / "quarter-to-date" / "qtd", and the previous calendar quarter.
-    if re.search(r"\bthis quarter\b|\bquarter[\s\u2010-\u2015\-]+to[\s\u2010-\u2015\-]+date\b|\bqtd\b", ql):
+    if re.search(r"\b(?:this|current) quarter\b|\bquarter[\s\u2010-\u2015\-]+to[\s\u2010-\u2015\-]+date\b|\bqtd\b", ql):
         k = (TODAY.month - 1) // 3 + 1
         s = dt.date(TODAY.year, 3 * k - 2, 1)
         return s, end, f"Q{k} {TODAY.year} to date"
