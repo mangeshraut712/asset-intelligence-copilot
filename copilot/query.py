@@ -69,7 +69,9 @@ def parse_window(q):
     if m:
         k = int(m[1]) if m[1] else ["first", "second", "third", "fourth"].index(m[3]) + 1; y = int(m[2] or m[4] or TODAY.year)
         s = dt.date(y, 3 * k - 2, 1); e = dt.date(y, 3 * k, calendar.monthrange(y, 3 * k)[1]); return s, min(e, end), f"Q{k} {y} ({fmt(s)} to {fmt(min(e, end))})"
-    if "this year" in ql or "year to date" in ql or "ytd" in ql: return dt.date(TODAY.year, 1, 1), end, f"{TODAY.year} to date"
+    # Accept "year-to-date" / "year—to—date" as well as the spaced and "ytd" forms.
+    if "this year" in ql or re.search(r"\byear[\s\u2010-\u2015\-]+to[\s\u2010-\u2015\-]+date\b", ql) or re.search(r"\bytd\b", ql):
+        return dt.date(TODAY.year, 1, 1), end, f"{TODAY.year} to date"
     if "last year" in ql: y = TODAY.year - 1; return dt.date(y, 1, 1), dt.date(y, 12, 31), str(y)
     if "this month" in ql: return TODAY.replace(day=1), end, "this month"
     m = re.search(r"\b(20\d\d)\b", ql)
