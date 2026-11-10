@@ -94,3 +94,32 @@ def test_emissions_vibration_corrosion_and_flow_lookups_are_not_stored_as_facts(
     assert c.execute("SELECT count(*) c FROM memory_well_facts").fetchone()["c"] == 0
     r = cp.ask("WELL-0001 is shut in", "U-1", "edge")
     assert "Noted for everyone" in r["text"]
+
+
+def test_looks_like_lookup_covers_incidents_tickets_permits_and_audits():
+    wells = ["WELL-0001"]
+    for q in (
+        "incidents on WELL-0001",
+        "tickets on WELL-0001",
+        "permits on WELL-0001",
+        "audits on WELL-0001",
+        "open tickets on WELL-0001",
+    ):
+        assert agent.looks_like_lookup(q, wells), q
+    assert not agent.looks_like_lookup("WELL-0001 is shut in", wells)
+
+
+def test_incidents_tickets_permits_and_audits_lookups_are_not_stored_as_facts(fresh):
+    cp = agent.Copilot()
+    for q in (
+        "incidents on WELL-0001",
+        "tickets on WELL-0001",
+        "permits on WELL-0001",
+        "audits on WELL-0001",
+    ):
+        r = cp.ask(q, "U-1", "edge")
+        assert "Noted for everyone" not in r["text"], q
+    c = T.db()
+    assert c.execute("SELECT count(*) c FROM memory_well_facts").fetchone()["c"] == 0
+    r = cp.ask("WELL-0001 is shut in", "U-1", "edge")
+    assert "Noted for everyone" in r["text"]
