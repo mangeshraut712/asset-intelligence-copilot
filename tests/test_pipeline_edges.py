@@ -90,6 +90,11 @@ def test_windows_survive_inverted_and_impossible_dates():
     assert agent.parse_date("15 Oct 2026") == dt.date(2026, 10, 15)
     assert agent.invalid_date_phrase("on 31 February please") == "31 February"
     assert agent.invalid_date_phrase("15 Oct 2026") is None
+    assert agent.parse_date("2026-10-15") == dt.date(2026, 10, 15)
+    assert agent.parse_date("on 2026-10-15 show spills") == dt.date(2026, 10, 15)
+    assert agent.parse_date("2026-02-31") is None
+    assert agent.invalid_date_phrase("2026-02-31") == "2026-02-31"
+    assert agent.invalid_date_phrase("2026-10-15") is None
 
 
 def test_validate_rejects_malformed_plans():
