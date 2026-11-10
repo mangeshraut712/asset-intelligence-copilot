@@ -9,6 +9,7 @@ from .tools import db
 app = FastAPI(title="Asset Intelligence Copilot")
 cp = Copilot()
 WEB = os.path.join(os.path.dirname(__file__), "..", "web")
+MAX_IMAGE_BYTES = 6_000_000
 
 class Ask(BaseModel):
     question: str
@@ -51,8 +52,9 @@ def api_phrase(p: Phrase):
 @app.post("/api/vision")
 async def api_vision(file: UploadFile = File(...), well: str = Form(""), user: str = Form("U-201")):
     from .gemma import describe_image
-    data = await file.read()
-    if len(data) > 6_000_000: return {"ok": False, "reason": "image too large (max 6 MB)"}
+    # Read at most one byte past the cap so an oversized upload is never held in memory whole.
+    data = await file.read(MAX_IMAGE_BYTES + 1)
+    if len(data) > MAX_IMAGE_BYTES: return {"ok": False, "reason": "image too large (max 6 MB)"}
     ctx = ""
     if well:
         from .tools import well_status
