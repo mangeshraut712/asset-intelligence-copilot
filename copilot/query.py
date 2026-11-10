@@ -266,6 +266,15 @@ def parse_window(q):
             s, e = dt.date(y, mo, 16), dt.date(y, mo, last)
         e = _cap_end(s, e, end)
         return s, e, f"{fmt(s)} to {fmt(e)}"
+    # "15th of October 2026" / "on the 15th of October" is that day, not the whole month.
+    m = re.search(rf"\b(?:on\s+)?(?:the\s+)?(\d{{1,2}})(?:st|nd|rd|th)? of ({mon})(?:\s+(\d{{4}}))?", ql)
+    if m:
+        y = int(m[3]) if m[3] else TODAY.year
+        a = _safe_date(y, MONTHS[m[2]], m[1])
+        if a:
+            return a, a, fmt(a)
+        if m[3]:
+            return None
     m = re.search(rf"\b(?:in|during|for|of)\s+({mon})\b(?:\s+(\d{{4}}))?", ql)
     if m:
         mo = MONTHS[m[1]]; y = int(m[2]) if m[2] else (TODAY.year if mo <= TODAY.month else TODAY.year - 1)
