@@ -34,6 +34,8 @@ def _date(s, default_year=None):
     s = s.strip().lower().replace(",", "")
     num = _numeric_date(s)
     if num: return num
+    s = re.sub(rf"\b({'|'.join(re.escape(m) for m in MONTHS)})\.", r"\1 ", s)
+    s = re.sub(r"\s+", " ", s).strip()
     m = re.match(r"(\d{4})-(\d{2})-(\d{2})", s)
     if m: return _safe_date(m[1], m[2], m[3])
     # "2026-10" / "2026/10" is the first day of that month, not an incomplete date.
@@ -107,7 +109,11 @@ def _closed_range(left, right):
 
 def parse_window(q):
     """Return (start, end, label) or None. 'last N' windows end yesterday (the last full day before today)."""
-    ql = q.lower(); end = TODAY - dt.timedelta(days=1)
+    ql = q.lower()
+    # "Oct. 15, 2026" / "Sept. 2026": a period after a month abbreviation is punctuation, not part of the name.
+    ql = re.sub(rf"\b({'|'.join(re.escape(m) for m in MONTHS)})\.", r"\1 ", ql)
+    ql = re.sub(r"\s+", " ", ql).strip()
+    end = TODAY - dt.timedelta(days=1)
     if re.search(r"right now|currently|at the moment|latest inspection", ql): return None
     m = re.search(r"between (.+?) and (.+?)(?:[?.,]|$| show| as | in a| on a)", ql)
     if m:
