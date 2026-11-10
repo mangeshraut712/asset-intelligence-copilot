@@ -8,7 +8,7 @@ END = dt.date(2026, 10, 16)  # yesterday relative to TODAY
 def test_month_year_is_not_day_twenty_of_that_month():
     assert Q.parse_window("until December 2026")[:2] == (dt.date(2026, 12, 1), dt.date(2026, 12, 31))
     assert Q.parse_window("through December 2026")[:2] == (dt.date(2026, 12, 1), dt.date(2026, 12, 31))
-    assert Q.parse_window("October–December 2026")[:2] == (dt.date(2026, 12, 1), dt.date(2026, 12, 31))
+    assert Q.parse_window("October–December 2026")[:2] == (dt.date(2026, 10, 1), dt.date(2026, 12, 31))
     assert Q.parse_window("in early October 2026")[:2] == (dt.date(2026, 10, 1), END)
     assert Q.parse_window("in late October 2026")[:2] == (dt.date(2026, 10, 1), END)
     assert Q.parse_window("mid-October 2026")[:2] == (dt.date(2026, 10, 1), END)
