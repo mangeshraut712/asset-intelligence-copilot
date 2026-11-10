@@ -206,6 +206,20 @@ def parse_window(q):
         e = _cap_end(s, e, end)
         return s, e, f"{m[1]} {y} ({fmt(s)} to {fmt(e)})"
     mon = "|".join(k for k in MONTHS if len(k) > 3 or k in ("may", "jun", "jul", "aug", "sep", "oct", "nov", "dec", "jan", "feb", "mar", "apr"))
+    # "October 1 through 15, 2026" names the month first, with through/to rather than a dash.
+    m = re.search(
+        rf"\b({mon})\s+(\d{{1,2}})(?:st|nd|rd|th)?\s+(?:to|through|until|till)\s+(\d{{1,2}})(?:st|nd|rd|th)?(?:\s*,)?(?:\s+(\d{{4}}))?",
+        ql,
+    )
+    if m:
+        y = int(m[4]) if m[4] else TODAY.year
+        a, b = _safe_date(y, MONTHS[m[1]], m[2]), _safe_date(y, MONTHS[m[1]], m[3])
+        if a and b:
+            if a > b:
+                a, b = b, a
+            return a, b, f"{fmt(a)} to {fmt(b)}"
+        if m[4]:
+            return None
     # "Oct 1st-15th" / "October 1 - 15 2026" is a day range in that month.
     m = re.search(
         rf"\b({mon})\s+(\d{{1,2}})(?:st|nd|rd|th)?\s*[\u2010-\u2015\-]+\s*(\d{{1,2}})(?:st|nd|rd|th)?(?:\s+(\d{{4}}))?",
