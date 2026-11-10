@@ -160,3 +160,15 @@ def test_api_blank_question(fresh):
     r = client.post("/api/ask", json={"question": "   ", "user": "U-201", "chat": "edge"}).json()
     assert "Ask about" in r["text"] and r["confidence"] == "low" and r["visual"] is None
     assert "assumptions" in r and r["trace"]["assumptions"] == []
+
+
+def test_keyword_lookups_are_answered_not_stored_as_facts(fresh):
+    cp = agent.Copilot()
+    for q in ("repairs on WELL-0151 in the last 12 months", "WELL-0151 downtime last 3 months",
+              "spills at WELL-0151 this year", "repair history for WELL-0151"):
+        r = cp.ask(q, "U-201", "edge")
+        assert "Noted for everyone" not in r["text"], q
+    c = T.db()
+    assert c.execute("SELECT count(*) c FROM memory_well_facts").fetchone()["c"] == 0
+    r = cp.ask("WELL-0151 has been shut in since 10 Oct for a workover.", "U-201", "edge")
+    assert "Noted for everyone" in r["text"]
