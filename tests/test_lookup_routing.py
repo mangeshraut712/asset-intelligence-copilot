@@ -36,3 +36,32 @@ def test_fines_and_notes_lookups_are_not_stored_as_facts(fresh):
     assert c.execute("SELECT count(*) c FROM memory_well_facts").fetchone()["c"] == 0
     r = cp.ask("WELL-0001 is shut in", "U-1", "edge")
     assert "Noted for everyone" in r["text"]
+
+
+def test_looks_like_lookup_covers_alerts_production_work_orders_and_pressure():
+    wells = ["WELL-0001"]
+    for q in (
+        "alerts on WELL-0001 last 12 months",
+        "production on WELL-0001 last month",
+        "work orders on WELL-0001",
+        "pressure on WELL-0001",
+        "open work orders on WELL-0001",
+    ):
+        assert agent.looks_like_lookup(q, wells), q
+    assert not agent.looks_like_lookup("WELL-0001 is shut in", wells)
+
+
+def test_alerts_production_and_work_order_lookups_are_not_stored_as_facts(fresh):
+    cp = agent.Copilot()
+    for q in (
+        "alerts on WELL-0001 last 12 months",
+        "production on WELL-0001 last month",
+        "work orders on WELL-0001",
+        "pressure on WELL-0001",
+    ):
+        r = cp.ask(q, "U-1", "edge")
+        assert "Noted for everyone" not in r["text"], q
+    c = T.db()
+    assert c.execute("SELECT count(*) c FROM memory_well_facts").fetchone()["c"] == 0
+    r = cp.ask("WELL-0001 is shut in", "U-1", "edge")
+    assert "Noted for everyone" in r["text"]
