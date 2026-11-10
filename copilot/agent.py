@@ -9,6 +9,7 @@ VISUALS = [("heatmap", "heatmap"), ("map", "map"), ("bar chart", "bar"), ("bar",
 
 SIM_DAY = None  # evaluation can simulate "day N" so that "yesterday" works in one run
 _DATE_RE = re.compile(r"(\d{1,2})\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*(?:\s+(\d{4}))?", re.I)
+_ISO_RE = re.compile(r"\b(\d{4})-(\d{2})-(\d{2})\b")
 _ZW_RE = re.compile(r"[\u200b\u200c\u200d\ufeff\x00]")
 BLANK_TEXT = "Ask about a well, an area, spills, downtime, repairs, or a rule from the manuals. For example: \"Is WELL-0001 producing oil right now?\""
 
@@ -33,16 +34,24 @@ def question_is_blank(q):
 def parse_date(text):
     """A calendar date from the question, or None when none was given or the date cannot exist."""
     m = _DATE_RE.search(text or "")
+    if m:
+        y = int(m.group(3)) if m.group(3) else TODAY.year
+        try: x = dt.date(y, MONTHS[m.group(2).lower()[:3]], int(m.group(1)))
+        except ValueError: return None
+        if not m.group(3) and x > TODAY + dt.timedelta(days=60): x = x.replace(year=y - 1)
+        return x
+    # LLM tool schemas describe start/end as YYYY-MM-DD, and --today uses that form too.
+    m = _ISO_RE.search(text or "")
     if not m: return None
-    y = int(m.group(3)) if m.group(3) else TODAY.year
-    try: x = dt.date(y, MONTHS[m.group(2).lower()[:3]], int(m.group(1)))
+    try: return dt.date(int(m.group(1)), int(m.group(2)), int(m.group(3)))
     except ValueError: return None
-    if not m.group(3) and x > TODAY + dt.timedelta(days=60): x = x.replace(year=y - 1)
-    return x
 
 def invalid_date_phrase(text):
     """The date words the user wrote, when they do not fall on a real calendar day."""
     m = _DATE_RE.search(text or "")
+    if m:
+        return None if parse_date(text) is not None else m.group(0)
+    m = _ISO_RE.search(text or "")
     if not m or parse_date(text) is not None: return None
     return m.group(0)
 
