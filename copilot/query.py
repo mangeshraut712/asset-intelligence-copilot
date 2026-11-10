@@ -174,6 +174,21 @@ def parse_window(q):
         else: s, e = dt.date(y, *rng[0]), dt.date(y, *rng[1])
         return s, min(e, end), f"{m[1]} {y} ({fmt(s)} to {fmt(min(e, end))})"
     mon = "|".join(k for k in MONTHS if len(k) > 3 or k in ("may", "jun", "jul", "aug", "sep", "oct", "nov", "dec", "jan", "feb", "mar", "apr"))
+    # "Oct 1st-15th" / "October 1 - 15 2026" is a day range in that month.
+    m = re.search(
+        rf"\b({mon})\s+(\d{{1,2}})(?:st|nd|rd|th)?\s*[\u2010-\u2015\-]+\s*(\d{{1,2}})(?:st|nd|rd|th)?(?:\s+(\d{{4}}))?",
+        ql,
+    )
+    if m:
+        mo = MONTHS[m[1]]
+        y = int(m[4]) if m[4] else TODAY.year
+        a, b = _safe_date(y, mo, m[2]), _safe_date(y, mo, m[3])
+        if a and b:
+            if a > b:
+                a, b = b, a
+            return a, b, f"{fmt(a)} to {fmt(b)}"
+        if m[4]:
+            return None
     # "October–December 2026" / "Oct-Dec 2026" is a month range, not only the end month.
     m = re.search(rf"\b({mon})[\s\u2010-\u2015\-]+({mon})(?:\s+(\d{{4}}))?", ql)
     if m:
