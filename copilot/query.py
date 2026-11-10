@@ -18,17 +18,25 @@ def _safe_date(y, m, d):
 
 def _numeric_date(s):
     """Slash, dot or hyphen numeric dates. Day-month-year matches the product's '15 Oct 2026' form;
-    month-day-year is used only when the first number cannot be a day-major month (e.g. 10/15/2026)."""
+    month-day-year is used only when the first number cannot be a day-major month (e.g. 10/15/2026).
+    Yearless day/month pairs such as 01/10 use the current year with the same preference."""
     s = s.strip()
     m = re.match(r"^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$", s)
     if m: return _safe_date(m[1], m[2], m[3])
     m = re.match(r"^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})$", s)
+    if m:
+        a, b, y = int(m[1]), int(m[2]), int(m[3])
+        dmy, mdy = _safe_date(y, b, a), _safe_date(y, a, b)
+        if a > 12: return dmy
+        if b > 12: return mdy
+        return dmy  # both <= 12: prefer day-month-year
+    m = re.match(r"^(\d{1,2})[-/.](\d{1,2})$", s)
     if not m: return None
-    a, b, y = int(m[1]), int(m[2]), int(m[3])
+    a, b, y = int(m[1]), int(m[2]), TODAY.year
     dmy, mdy = _safe_date(y, b, a), _safe_date(y, a, b)
     if a > 12: return dmy
     if b > 12: return mdy
-    return dmy  # both <= 12: prefer day-month-year
+    return dmy
 
 def _date(s, default_year=None):
     s = s.strip().lower().replace(",", "")
