@@ -65,6 +65,10 @@ def parse_window(q):
     if re.search(r"\blast year\b", ql): y = TODAY.year - 1; return dt.date(y, 1, 1), dt.date(y, 12, 31), str(y)
     if re.search(r"(?:last|past) (year|12 months)", ql): s = T.sub_months(end, 12); return s, end, f"last 12 months ({fmt(s)} to {fmt(end)})"
     if re.search(r"(?:last|past) (month)\b", ql): s = T.sub_months(end, 1); return s, end, f"last month ({fmt(s)} to {fmt(end)})"
+    # "last week" (no count) is the same 7-day window as "last 1 week", ending yesterday.
+    if re.search(r"\b(?:last|past|previous) week\b", ql):
+        s = T.sub_days(TODAY, 7)
+        return s, end, f"last week ({fmt(s)} to {fmt(end)})"
     m = re.search(r"(summer|winter|spring|autumn|fall)(?: (?:of )?(\d{4}))?", ql)
     if m and ("this " + m[1] in ql or m[2] or "last " + m[1] in ql):
         y = int(m[2]) if m[2] else TODAY.year - (1 if "last " + m[1] in ql else 0)
@@ -85,6 +89,19 @@ def parse_window(q):
     if m:
         k = int(m[1]) if m[1] else ["first", "second", "third", "fourth"].index(m[3]) + 1; y = int(m[2] or m[4] or TODAY.year)
         s = dt.date(y, 3 * k - 2, 1); e = dt.date(y, 3 * k, calendar.monthrange(y, 3 * k)[1]); return s, min(e, end), f"Q{k} {y} ({fmt(s)} to {fmt(min(e, end))})"
+    # "this quarter" / "quarter-to-date" / "qtd", and the previous calendar quarter.
+    if re.search(r"\bthis quarter\b|\bquarter[\s\u2010-\u2015\-]+to[\s\u2010-\u2015\-]+date\b|\bqtd\b", ql):
+        k = (TODAY.month - 1) // 3 + 1
+        s = dt.date(TODAY.year, 3 * k - 2, 1)
+        return s, end, f"Q{k} {TODAY.year} to date"
+    if re.search(r"\b(?:last|past|previous) quarter\b", ql):
+        k = (TODAY.month - 1) // 3
+        y = TODAY.year
+        if k == 0:
+            k, y = 4, y - 1
+        s = dt.date(y, 3 * k - 2, 1)
+        e = dt.date(y, 3 * k, calendar.monthrange(y, 3 * k)[1])
+        return s, min(e, end), f"Q{k} {y} ({fmt(s)} to {fmt(min(e, end))})"
     # Accept "year-to-date" / "year—to—date" as well as the spaced and "ytd" forms.
     if "this year" in ql or re.search(r"\byear[\s\u2010-\u2015\-]+to[\s\u2010-\u2015\-]+date\b", ql) or re.search(r"\bytd\b", ql):
         return dt.date(TODAY.year, 1, 1), end, f"{TODAY.year} to date"
