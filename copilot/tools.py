@@ -116,7 +116,7 @@ def well_status(asset_id):
     if not last["producing"]:
         for m in c.execute("SELECT * FROM maintenance WHERE asset_id=? AND date(started_at)<=? AND (completed_at IS NULL OR date(completed_at)>=?) ORDER BY started_at",
                            (asset_id, last["date"], last["date"])):
-            reasons.append(f"Repair {m['maintenance_id']}: {m['issue']} (started {fmt(m['started_at'])}, " + ("still open" if d(m["completed_at"]) >= TODAY else f"done {fmt(m['completed_at'])}") + ")")
+            reasons.append(f"Repair {m['maintenance_id']}: {m['issue']} (started {fmt(m['started_at'])}, " + ("still open" if not m["completed_at"] or d(m["completed_at"]) >= TODAY else f"done {fmt(m['completed_at'])}") + ")")
             cites.append(m["maintenance_id"])
     for n in c.execute("SELECT * FROM notes WHERE asset_id=? AND note_type!='correction' AND (valid_to IS NULL OR valid_to>=?) AND valid_from<=? ORDER BY created_at",
                        (asset_id, last["date"], str(TODAY))):
