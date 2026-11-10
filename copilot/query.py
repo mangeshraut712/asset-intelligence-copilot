@@ -68,43 +68,59 @@ def _month_only(s):
     """A bare month name such as 'October' or 'Oct', with no day or year."""
     return MONTHS.get(s.strip().lower().replace(",", ""))
 
+
+def _closed_range(left, right):
+    """Inclusive start/end from two date phrases, including whole months when given as month-year."""
+    a, b = _date(left), _date(right)
+    if a and b:
+        if _is_month_year(left):
+            a = dt.date(a.year, a.month, 1)
+        if _is_month_year(right):
+            b = _month_end(b)
+        if a > b:
+            a, b = b, a
+        return a, b, f"{fmt(a)} to {fmt(b)}"
+    ma, mb = _month_only(left), _month_only(right)
+    if ma and mb:
+        y = TODAY.year
+        a = dt.date(y, ma, 1)
+        end_year = y + 1 if mb < ma else y
+        b = _month_end(dt.date(end_year, mb, 1))
+        return a, b, f"{fmt(a)} to {fmt(b)}"
+    if a and mb:
+        if _is_month_year(left):
+            a = dt.date(a.year, a.month, 1)
+        b = _month_end(dt.date(a.year, mb, 1))
+        if a > b:
+            a, b = b, a
+        return a, b, f"{fmt(a)} to {fmt(b)}"
+    if b and ma:
+        if _is_month_year(right):
+            b = _month_end(b)
+        a = dt.date(b.year, ma, 1)
+        if a > b:
+            a, b = b, a
+        return a, b, f"{fmt(a)} to {fmt(b)}"
+    return None
+
+
 def parse_window(q):
     """Return (start, end, label) or None. 'last N' windows end yesterday (the last full day before today)."""
     ql = q.lower(); end = TODAY - dt.timedelta(days=1)
     if re.search(r"right now|currently|at the moment|latest inspection", ql): return None
     m = re.search(r"between (.+?) and (.+?)(?:[?.,]|$| show| as | in a| on a)", ql)
     if m:
-        a, b = _date(m[1]), _date(m[2])
-        if a and b:
-            # A month-year at either end includes that whole month, not just the 1st.
-            if _is_month_year(m[1]):
-                a = dt.date(a.year, a.month, 1)
-            if _is_month_year(m[2]):
-                b = _month_end(b)
-            if a > b: a, b = b, a
-            return a, b, f"{fmt(a)} to {fmt(b)}"
-        ma, mb = _month_only(m[1]), _month_only(m[2])
-        if ma and mb:
-            y = TODAY.year
-            a = dt.date(y, ma, 1)
-            end_year = y + 1 if mb < ma else y
-            b = _month_end(dt.date(end_year, mb, 1))
-            return a, b, f"{fmt(a)} to {fmt(b)}"
-        # One bare month should inherit the year from the other end
-        # ("between October and December 2026").
-        if a and mb:
-            if _is_month_year(m[1]):
-                a = dt.date(a.year, a.month, 1)
-            b = _month_end(dt.date(a.year, mb, 1))
-            if a > b: a, b = b, a
-            return a, b, f"{fmt(a)} to {fmt(b)}"
-        if b and ma:
-            if _is_month_year(m[2]):
-                b = _month_end(b)
-            a = dt.date(b.year, ma, 1)
-            if a > b: a, b = b, a
-            return a, b, f"{fmt(a)} to {fmt(b)}"
+        rng = _closed_range(m[1], m[2])
+        if rng:
+            return rng
         if re.search(r"\d", m[1] + m[2]): return None  # a dated "between" that is not a real range
+    # "from START to/through END" is a closed range, not "from START until yesterday".
+    m = re.search(r"(?:from|since) (.+?) (?:to|through|until|till) (.+?)(?:[?.,]|$| show| as | in a| on a)", ql)
+    if m:
+        rng = _closed_range(m[1], m[2])
+        if rng:
+            return rng
+        if re.search(r"\d", m[1] + m[2]): return None
     m = re.search(r"(?:from|since) (\d{4}[-/.]\d{1,2}[-/.]\d{1,2}|\d{1,2}[-/.]\d{1,2}[-/.]\d{4}|\d{1,2} [a-z]+(?: \d{4})?|[a-z]+ \d{4}|[a-z]+ \d{1,2}(?:st|nd|rd|th)?(?: \d{4})?|\d{4}[-/.]\d{1,2})", ql)
     if m:
         a = _date(m[1])
