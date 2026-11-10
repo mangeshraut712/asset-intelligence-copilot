@@ -307,6 +307,12 @@ def parse_window(q):
         rf"\d{{1,2}}(?:st|nd|rd|th)? (?:{mon3})[a-z]*(?: \d{{4}})?|"
         rf"(?:{mon3})[a-z]* (?:\d{{4}}|\d{{1,2}}(?:st|nd|rd|th)?(?:,)?(?: \d{{4}})?))"
     )
+    # "15 Oct through 20 Oct 2026" is a closed range even without from/since.
+    m = re.search(rf"({date_token})\s+(?:to|through|until|till)\s+({date_token})", ql)
+    if m:
+        rng = _closed_range(m[1], m[2])
+        if rng:
+            return rng
     # "on 15 Oct 2026" / "on 2026-10-15" is that day, not the whole year the digits mention.
     m = re.search(rf"\b(?:on|dated)\s+({date_token})", ql)
     if m:
