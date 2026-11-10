@@ -109,7 +109,7 @@ def pytest_collection_modifyitems(config, items):
     skip = pytest.mark.skip(
         reason="requires FlytBase sample dataset; set AIC_DATA or clone sibling ../dataset/sample-data"
     )
-    pure_files = {"test_final_logic.py", "test_gemma_guard.py", "test_rules_parse.py", "test_lookup_routing.py", "test_now.py", "test_parse_date.py", "test_year_to_date.py", "test_on_date_window.py", "test_relative_windows.py", "test_week_quarter_windows.py", "test_from_month_year.py", "test_between_month_year.py", "test_between_bare_months.py", "test_between_mixed_month_year.py", "test_from_to_range.py", "test_month_year_not_day.py", "test_sept_abbreviation.py", "test_month_abbreviation_period.py", "test_between_year_crossing.py", "test_between_days_of_month.py", "test_during_year_month.py"}
+    pure_files = {"test_final_logic.py", "test_gemma_guard.py", "test_rules_parse.py", "test_lookup_routing.py", "test_now.py", "test_parse_date.py", "test_year_to_date.py", "test_on_date_window.py", "test_relative_windows.py", "test_week_quarter_windows.py", "test_from_month_year.py", "test_between_month_year.py", "test_between_bare_months.py", "test_between_mixed_month_year.py", "test_from_to_range.py", "test_month_year_not_day.py", "test_sept_abbreviation.py", "test_month_abbreviation_period.py", "test_between_year_crossing.py", "test_between_days_of_month.py", "test_during_year_month.py", "test_previous_prior_windows.py"}
     for item in items:
         if item.path.name in pure_files:
             continue

@@ -155,11 +155,11 @@ def parse_window(q):
         n = int(NUMW.get(m[1], m[1]) if not m[1].isdigit() else m[1]); u = m[2]
         s = T.sub_months(end, n) if u == "month" else T.sub_months(end, 12 * n) if u == "year" else T.sub_days(TODAY, n * (7 if u == "week" else 1))
         return s, end, f"last {n} {u}s ({fmt(s)} to {fmt(end)})"
-    if re.search(r"\blast year\b", ql): y = TODAY.year - 1; return dt.date(y, 1, 1), dt.date(y, 12, 31), str(y)
+    if re.search(r"\b(?:last|previous|prior) year\b", ql): y = TODAY.year - 1; return dt.date(y, 1, 1), dt.date(y, 12, 31), str(y)
     if re.search(r"(?:last|past) (year|12 months)", ql): s = T.sub_months(end, 12); return s, end, f"last 12 months ({fmt(s)} to {fmt(end)})"
-    if re.search(r"(?:last|past) (month)\b", ql): s = T.sub_months(end, 1); return s, end, f"last month ({fmt(s)} to {fmt(end)})"
+    if re.search(r"(?:last|past|previous|prior) (month)\b", ql): s = T.sub_months(end, 1); return s, end, f"last month ({fmt(s)} to {fmt(end)})"
     # "last week" (no count) is the same 7-day window as "last 1 week", ending yesterday.
-    if re.search(r"\b(?:last|past|previous) week\b", ql):
+    if re.search(r"\b(?:last|past|previous|prior) week\b", ql):
         s = T.sub_days(TODAY, 7)
         return s, end, f"last week ({fmt(s)} to {fmt(end)})"
     m = re.search(r"(summer|winter|spring|autumn|fall)(?: (?:of )?(\d{4}))?", ql)
@@ -187,7 +187,7 @@ def parse_window(q):
         k = (TODAY.month - 1) // 3 + 1
         s = dt.date(TODAY.year, 3 * k - 2, 1)
         return s, end, f"Q{k} {TODAY.year} to date"
-    if re.search(r"\b(?:last|past|previous) quarter\b", ql):
+    if re.search(r"\b(?:last|past|previous|prior) quarter\b", ql):
         k = (TODAY.month - 1) // 3
         y = TODAY.year
         if k == 0:
@@ -198,7 +198,7 @@ def parse_window(q):
     # Accept "year-to-date" / "year—to—date" as well as the spaced and "ytd" forms.
     if "this year" in ql or re.search(r"\byear[\s\u2010-\u2015\-]+to[\s\u2010-\u2015\-]+date\b", ql) or re.search(r"\bytd\b", ql):
         return dt.date(TODAY.year, 1, 1), end, f"{TODAY.year} to date"
-    if "last year" in ql: y = TODAY.year - 1; return dt.date(y, 1, 1), dt.date(y, 12, 31), str(y)
+    if re.search(r"\b(?:last|previous|prior) year\b", ql): y = TODAY.year - 1; return dt.date(y, 1, 1), dt.date(y, 12, 31), str(y)
     if re.search(r"\btoday\b", ql): return TODAY, TODAY, "today"
     if re.search(r"\byesterday\b", ql): return end, end, "yesterday"
     if re.search(r"\bthis week\b", ql) or re.search(r"\bweek[\s\u2010-\u2015\-]+to[\s\u2010-\u2015\-]+date\b", ql):
