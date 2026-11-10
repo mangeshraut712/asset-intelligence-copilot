@@ -239,3 +239,32 @@ def test_comments_attachments_photos_and_drawings_lookups_are_not_stored_as_fact
     assert c.execute("SELECT count(*) c FROM memory_well_facts").fetchone()["c"] == 0
     r = cp.ask("WELL-0001 is shut in", "U-1", "edge")
     assert "Noted for everyone" in r["text"]
+
+
+def test_looks_like_lookup_covers_schematics_specifications_history_and_events():
+    wells = ["WELL-0001"]
+    for q in (
+        "schematics on WELL-0001",
+        "specifications on WELL-0001",
+        "history on WELL-0001",
+        "events on WELL-0001",
+        "open events on WELL-0001",
+    ):
+        assert agent.looks_like_lookup(q, wells), q
+    assert not agent.looks_like_lookup("WELL-0001 is shut in", wells)
+
+
+def test_schematics_specifications_history_and_events_lookups_are_not_stored_as_facts(fresh):
+    cp = agent.Copilot()
+    for q in (
+        "schematics on WELL-0001",
+        "specifications on WELL-0001",
+        "history on WELL-0001",
+        "events on WELL-0001",
+    ):
+        r = cp.ask(q, "U-1", "edge")
+        assert "Noted for everyone" not in r["text"], q
+    c = T.db()
+    assert c.execute("SELECT count(*) c FROM memory_well_facts").fetchone()["c"] == 0
+    r = cp.ask("WELL-0001 is shut in", "U-1", "edge")
+    assert "Noted for everyone" in r["text"]

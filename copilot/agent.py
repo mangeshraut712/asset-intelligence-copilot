@@ -59,7 +59,7 @@ def looks_like_lookup(q, wells):
     if wells and len(ql.split()) <= 10 and "." not in ql.replace("°", "") and re.search(
             r"\b(repairs?|repair history|maintenance history|downtime|spills?|temperatures?|temps?|trend|readings?|inspections?|costs?|"
             r"fines?|penalt(?:y|ies)|notes?|(?:regulatory|reg) events?|violations?|"
-            r"alerts?|production|work orders?|pressures?|emissions?|vibrations?|corrosions?|flow(?: rates?)?|incidents?|tickets?|permits?|audits?|inventory|telemetry|certificates?|licenses?|uptime|throughput|shipments?|documents?|logs?|capacity|volume|runtime|comments?|attachments?|photos?|drawings?)\b", ql) and not re.search(
+            r"alerts?|production|work orders?|pressures?|emissions?|vibrations?|corrosions?|flow(?: rates?)?|incidents?|tickets?|permits?|audits?|inventory|telemetry|certificates?|licenses?|uptime|throughput|shipments?|documents?|logs?|capacity|volume|runtime|comments?|attachments?|photos?|drawings?|schematics?|specifications?|history|events?)\b", ql) and not re.search(
             r"\b(is|are|was|were|has|have|had|will|been|be|being|shut|wrong|faulty|re-?measured|measured|estimated|correct(?:ed)?|"
             r"note|noted|recorded|reported|found|running|offline|workover|planned|needs?|should|must|got|went|stopped|started|"
             r"restarted|leaking|leaks|leaked|failed|broke|fixed|replaced|repaired|cleaned)\b", ql):
