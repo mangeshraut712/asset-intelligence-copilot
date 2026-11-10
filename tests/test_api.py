@@ -19,3 +19,9 @@ def test_vision_rejects_oversized_upload_before_calling_the_model(monkeypatch):
     assert called == []
     ok = c.post("/api/vision", files={"file": ("small.jpg", b"\xff\xd8\xff", "image/jpeg")}).json()
     assert ok["ok"] is True and len(called) == 1
+
+
+def test_missing_sample_is_404_not_500():
+    r = TestClient(app, raise_server_exceptions=False).get("/samples/does-not-exist.jpg")
+    assert r.status_code == 404
+    assert c.get("/samples/inspection-WELL-0151.jpg").status_code == 200

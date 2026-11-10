@@ -1,6 +1,6 @@
 """FastAPI server: chat API + static UI."""
 import os, json
-from fastapi import FastAPI, UploadFile, File, Form
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from .agent import Copilot, llm_available, llm_config
@@ -22,6 +22,8 @@ def index(): return FileResponse(os.path.join(WEB, "index.html"))
 @app.get("/samples/{name}")
 def sample(name: str):
     p = os.path.join(WEB, "samples", os.path.basename(name))
+    if not os.path.isfile(p):
+        raise HTTPException(status_code=404, detail="sample not found")
     return FileResponse(p)
 
 @app.get("/api/users")
