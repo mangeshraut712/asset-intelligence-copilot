@@ -17,12 +17,17 @@ def sub_months(x, n):
     if y > 9999: return dt.date(9999, 12, 31)
     return dt.date(y, m, min(x.day, calendar.monthrange(y, m)[1]))
 
+def sub_days(x, n):
+    """Shift a date back by n days, clamping at date.min instead of raising OverflowError."""
+    if n >= (x - dt.date.min).days: return dt.date.min
+    return x - dt.timedelta(days=n)
+
 def window(months=None, days=None, year=None):
     """'last N months/days' -> inclusive [start, end] ending yesterday (the last full day before 'today')."""
     end = TODAY - dt.timedelta(days=1)
     if year: return dt.date(year, 1, 1), min(dt.date(year, 12, 31), end)
     if months: return sub_months(end, months), end
-    if days: return TODAY - dt.timedelta(days=days), end
+    if days: return sub_days(TODAY, days), end
     return dt.date(1900, 1, 1), end
 
 def rule(c, key, default=None):

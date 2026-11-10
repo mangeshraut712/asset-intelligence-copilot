@@ -80,6 +80,11 @@ def test_windows_survive_inverted_and_impossible_dates():
     assert Q.parse_window("since 31 February 2026") is None
     huge = Q.parse_window("last 100000 months")
     assert huge and huge[0] <= huge[1] and huge[0].year >= 1
+    for q in ("last 1000000 days", "last 1000000 weeks"):
+        w = Q.parse_window(q)
+        assert w and w[0] == dt.date.min and w[1] == dt.date(2026, 10, 16), q
+    assert T.window(days=10**9)[0] == dt.date.min
+    assert Q.parse_window("last 7 days")[:2] == (dt.date(2026, 10, 10), dt.date(2026, 10, 16))
     assert Q.parse_window("last 4 months")[:2] == (dt.date(2026, 6, 16), dt.date(2026, 10, 16))
     assert agent.parse_date("31 February 2026") is None
     assert agent.parse_date("15 Oct 2026") == dt.date(2026, 10, 15)
@@ -160,3 +165,8 @@ def test_api_blank_question(fresh):
     r = client.post("/api/ask", json={"question": "   ", "user": "U-201", "chat": "edge"}).json()
     assert "Ask about" in r["text"] and r["confidence"] == "low" and r["visual"] is None
     assert "assumptions" in r and r["trace"]["assumptions"] == []
+
+
+def test_huge_day_window_question_answers(fresh):
+    r = agent.Copilot().ask("How many spills in the last 1000000 days?", "U-201", "edge")
+    assert r["text"]
