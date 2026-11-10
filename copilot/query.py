@@ -121,6 +121,17 @@ def parse_window(q):
     ql = re.sub(r"\s+", " ", ql).strip()
     end = TODAY - dt.timedelta(days=1)
     if re.search(r"right now|currently|at the moment|latest inspection", ql): return None
+    # "1st to 15th October 2026" names the month only once, without "between" or "from".
+    m = re.search(r"\b(\d{1,2})(?:st|nd|rd|th)?\s+(?:to|through|until|till)\s+(\d{1,2})(?:st|nd|rd|th)?\s+([a-z]+)(?:\s+(\d{4}))?", ql)
+    if m and m[3] in MONTHS:
+        y = int(m[4]) if m[4] else TODAY.year
+        a, b = _safe_date(y, MONTHS[m[3]], m[1]), _safe_date(y, MONTHS[m[3]], m[2])
+        if a and b:
+            if a > b:
+                a, b = b, a
+            return a, b, f"{fmt(a)} to {fmt(b)}"
+        if m[4]:
+            return None
     # "between 15 and 20 October 2026" names the month only once.
     m = re.search(r"between (\d{1,2})(?:st|nd|rd|th)? and (\d{1,2})(?:st|nd|rd|th)? ([a-z]+)(?: (\d{4}))?(?:[?.,]|$| show| as | in a| on a)", ql)
     if m and m[3] in MONTHS:
