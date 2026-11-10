@@ -109,7 +109,7 @@ def pytest_collection_modifyitems(config, items):
     skip = pytest.mark.skip(
         reason="requires FlytBase sample dataset; set AIC_DATA or clone sibling ../dataset/sample-data"
     )
-    pure_files = {"test_final_logic.py", "test_gemma_guard.py", "test_rules_parse.py", "test_lookup_routing.py", "test_now.py", "test_parse_date.py", "test_year_to_date.py"}
+    pure_files = {"test_final_logic.py", "test_gemma_guard.py", "test_rules_parse.py", "test_lookup_routing.py", "test_now.py", "test_parse_date.py", "test_year_to_date.py", "test_on_date_window.py"}
     for item in items:
         if item.path.name in pure_files:
             continue
