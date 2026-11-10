@@ -35,6 +35,17 @@ def _date(s, default_year=None):
     if num: return num
     m = re.match(r"(\d{4})-(\d{2})-(\d{2})", s)
     if m: return _safe_date(m[1], m[2], m[3])
+    # "2026-10" / "2026/10" is the first day of that month, not an incomplete date.
+    m = re.match(r"^(\d{4})[-/](\d{1,2})$", s)
+    if m:
+        y, mo = int(m[1]), int(m[2])
+        if 1 <= mo <= 12:
+            return dt.date(y, mo, 1)
+    # Month + year must be tried before month + day, otherwise "October 2026"
+    # is read as October 20 because the year matches \d{1,2} plus leftover digits.
+    m = re.match(r"([a-z]+) (\d{4})$", s)
+    if m and m[1] in MONTHS:
+        return dt.date(int(m[2]), MONTHS[m[1]], 1)
     m = re.match(r"(\d{1,2})(?:st|nd|rd|th)? ([a-z]+)(?: (\d{4}))?", s) or None
     if m and m[2] in MONTHS: return _safe_date(m[3] or default_year or TODAY.year, MONTHS[m[2]], m[1])
     m = re.match(r"([a-z]+) (\d{1,2})(?:st|nd|rd|th)?(?: (\d{4}))?", s)
@@ -52,7 +63,7 @@ def parse_window(q):
             if a > b: a, b = b, a
             return a, b, f"{fmt(a)} to {fmt(b)}"
         if re.search(r"\d", m[1] + m[2]): return None  # a dated "between" that is not a real range
-    m = re.search(r"(?:from|since) (\d{1,2} [a-z]+(?: \d{4})?|[a-z]+ \d{1,2}(?: \d{4})?|\d{4}[-/.]\d{1,2}[-/.]\d{1,2}|\d{1,2}[-/.]\d{1,2}[-/.]\d{4})", ql)
+    m = re.search(r"(?:from|since) (\d{4}[-/.]\d{1,2}[-/.]\d{1,2}|\d{1,2}[-/.]\d{1,2}[-/.]\d{4}|\d{1,2} [a-z]+(?: \d{4})?|[a-z]+ \d{4}|[a-z]+ \d{1,2}(?:st|nd|rd|th)?(?: \d{4})?|\d{4}[-/.]\d{1,2})", ql)
     if m:
         a = _date(m[1])
         if a: return a, end, f"{fmt(a)} to {fmt(end)}"
