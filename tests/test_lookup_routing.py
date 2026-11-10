@@ -152,3 +152,32 @@ def test_inventory_telemetry_certificates_and_licenses_lookups_are_not_stored_as
     assert c.execute("SELECT count(*) c FROM memory_well_facts").fetchone()["c"] == 0
     r = cp.ask("WELL-0001 is shut in", "U-1", "edge")
     assert "Noted for everyone" in r["text"]
+
+
+def test_looks_like_lookup_covers_uptime_throughput_shipments_and_documents():
+    wells = ["WELL-0001"]
+    for q in (
+        "uptime on WELL-0001",
+        "throughput on WELL-0001",
+        "shipments on WELL-0001",
+        "documents on WELL-0001",
+        "open shipments on WELL-0001",
+    ):
+        assert agent.looks_like_lookup(q, wells), q
+    assert not agent.looks_like_lookup("WELL-0001 is shut in", wells)
+
+
+def test_uptime_throughput_shipments_and_documents_lookups_are_not_stored_as_facts(fresh):
+    cp = agent.Copilot()
+    for q in (
+        "uptime on WELL-0001",
+        "throughput on WELL-0001",
+        "shipments on WELL-0001",
+        "documents on WELL-0001",
+    ):
+        r = cp.ask(q, "U-1", "edge")
+        assert "Noted for everyone" not in r["text"], q
+    c = T.db()
+    assert c.execute("SELECT count(*) c FROM memory_well_facts").fetchone()["c"] == 0
+    r = cp.ask("WELL-0001 is shut in", "U-1", "edge")
+    assert "Noted for everyone" in r["text"]
