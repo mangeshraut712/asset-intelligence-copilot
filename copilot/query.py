@@ -183,6 +183,9 @@ def parse_window(q):
             return s, end, f"last {n} quarters ({fmt(s)} to {fmt(end)})"
         s = T.sub_months(end, n) if u == "month" else T.sub_months(end, 12 * n) if u == "year" else T.sub_days(TODAY, n * (7 if u == "week" else 1))
         return s, end, f"last {n} {u}s ({fmt(s)} to {fmt(end)})"
+    # "after last year" is this year to date, not the previous calendar year.
+    if re.search(r"\bafter last year\b", ql):
+        return dt.date(TODAY.year, 1, 1), end, f"{TODAY.year} to date"
     if re.search(r"\b(?:last|previous|prior) year\b", ql): y = TODAY.year - 1; return dt.date(y, 1, 1), dt.date(y, 12, 31), str(y)
     if re.search(r"(?:last|past) (year|12 months)", ql): s = T.sub_months(end, 12); return s, end, f"last 12 months ({fmt(s)} to {fmt(end)})"
     # "after last month" is this month, not the rolling last-month window.
