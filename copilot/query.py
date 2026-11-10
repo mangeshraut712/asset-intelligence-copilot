@@ -90,6 +90,20 @@ def parse_window(q):
             end_year = y + 1 if mb < ma else y
             b = _month_end(dt.date(end_year, mb, 1))
             return a, b, f"{fmt(a)} to {fmt(b)}"
+        # One bare month should inherit the year from the other end
+        # ("between October and December 2026").
+        if a and mb:
+            if _is_month_year(m[1]):
+                a = dt.date(a.year, a.month, 1)
+            b = _month_end(dt.date(a.year, mb, 1))
+            if a > b: a, b = b, a
+            return a, b, f"{fmt(a)} to {fmt(b)}"
+        if b and ma:
+            if _is_month_year(m[2]):
+                b = _month_end(b)
+            a = dt.date(b.year, ma, 1)
+            if a > b: a, b = b, a
+            return a, b, f"{fmt(a)} to {fmt(b)}"
         if re.search(r"\d", m[1] + m[2]): return None  # a dated "between" that is not a real range
     m = re.search(r"(?:from|since) (\d{4}[-/.]\d{1,2}[-/.]\d{1,2}|\d{1,2}[-/.]\d{1,2}[-/.]\d{4}|\d{1,2} [a-z]+(?: \d{4})?|[a-z]+ \d{4}|[a-z]+ \d{1,2}(?:st|nd|rd|th)?(?: \d{4})?|\d{4}[-/.]\d{1,2})", ql)
     if m:
