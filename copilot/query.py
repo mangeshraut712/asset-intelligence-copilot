@@ -353,7 +353,7 @@ def parse_window(q):
         if a:
             if _is_month_year(m[1]):
                 e = _month_end(a)
-                return a, min(e, end) if a.year == TODAY.year else e, f"{calendar.month_name[a.month]} {a.year}"
+                return a, min(e, end) if a <= end else e, f"{calendar.month_name[a.month]} {a.year}"
             return a, a, fmt(a)
         if re.search(r"\d", m[1]): return None
     # "in 2026-10" / "during 2026-10" is that month, not the whole of 2026.

@@ -10,6 +10,8 @@ def test_in_and_during_december_2026_are_the_whole_month():
     assert Q.parse_window("downtime in December 2026")[:2] == expected
     assert Q.parse_window("downtime during December 2026")[:2] == expected
     assert Q.parse_window("downtime ending in December 2026")[:2] == expected
+    assert Q.parse_window("spills on December 2026")[:2] == expected
+    assert Q.parse_window("spills dated December 2026")[:2] == expected
 
 
 def test_future_quarter_and_half_month_are_not_inverted():
@@ -25,3 +27,4 @@ def test_current_and_past_windows_are_still_capped_at_yesterday():
     assert Q.parse_window("downtime Q4 2026")[:2] == (dt.date(2026, 10, 1), END)
     assert Q.parse_window("downtime second half of 2026")[:2] == (dt.date(2026, 7, 1), END)
     assert Q.parse_window("spills in 2026")[:2] == (dt.date(2026, 1, 1), END)
+    assert Q.parse_window("spills on October 2026")[:2] == (dt.date(2026, 10, 1), END)
