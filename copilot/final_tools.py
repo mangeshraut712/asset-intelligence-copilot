@@ -489,6 +489,8 @@ def delays(cp, q):
         if not s: continue
         why = next((k for k, p in REASONS if re.search(p, s.group(2), re.I)), "other")
         agg[an[wl[m["asset_id"]]["area_id"]]][why].append(float(s.group(1))); cites.append(m["maintenance_id"])
+    if not cites:
+        return res(f"No maintenance job started in {y} has a report saying the well stayed shut in longer than the repair, so there are no shut-in delays to break down.", None, [], []) | {"table": []}
     rows = []; keys = [k for k, _ in REASONS] + ["other"]
     for a in sorted(agg):
         tot = sum(len(v) for v in agg[a].values()); row = {"Area": a, "Jobs": tot}

@@ -141,6 +141,13 @@ def test_delays_reports_no_standout_when_mix_is_even(cp):
     assert "40 jobs started in 2026" in r["text"] and "Not clearly" in r["text"] and "chi-square" in r["text"]
     assert r["table"][0]["Delayed share of jobs"] == "100%"
 
+def test_delays_with_no_delayed_jobs_says_so(cp):
+    c = cp.c; well(c, "WELL-0001")
+    mnt(c, "WELL-0001", "M1", "2026-03-10T08:00:00Z", "2026-03-11T08:00:00Z", "Prime mover failure", report="Replaced the belt.")
+    c.commit()
+    r = F.delays(cp, "jobs started in 2026")
+    assert "No maintenance job started in 2026" in r["text"] and r["table"] == [] and r["citations"] == []
+
 # ---------- which well first ----------
 def test_deal_first_puts_unanswered_gas_report_first_and_explains(cp):
     c = cp.c
