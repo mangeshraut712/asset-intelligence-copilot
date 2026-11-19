@@ -217,7 +217,11 @@ def spill_compliance(c, r):
         rep = [e for e in evs if e["event_type"] == "spill_report_filed"]
         if rep:
             h = rep[0]["hours_to_report"]
-            (out["breaches"] if h > limit else out["met"]).append({"rule": "SR-01", "detail": f"written notice after {h:g} h vs {limit:g} h limit ({rep[0]['event_id']})"})
+            if h is None:
+                # reg_events.hours_to_report is nullable; without it the filing time cannot be judged.
+                out["open"].append({"rule": "SR-01", "detail": f"written notice filed ({rep[0]['event_id']}) but hours to report not recorded vs {limit:g} h limit"})
+            else:
+                (out["breaches"] if h > limit else out["met"]).append({"rule": "SR-01", "detail": f"written notice after {h:g} h vs {limit:g} h limit ({rep[0]['event_id']})"})
         else:
             due = disc + dt.timedelta(hours=limit)
             out["breaches" if due.date() < TODAY else "open"].append({"rule": "SR-01", "detail": f"no written notice on record; was due by {due.strftime('%d %b %Y %H:%M')} UTC, {limit:g} h after discovery at the {disc.strftime('%d %b %Y %H:%M')} inspection"})
@@ -230,7 +234,9 @@ def spill_compliance(c, r):
     for nov in [e for e in evs if e["event_type"] == "notice_of_violation"]:
         due = d(nov["date"]) + dt.timedelta(days=rc04)
         resp = [e for e in evs if e["event_type"] == "nov_response_filed"]
-        if nov["status"] == "open": out["open"].append({"rule": nov["protocol_id"], "detail": f"notice of violation {nov['event_id']}, fine USD {nov['fine_usd']:,.0f}, still open", "fine": nov["fine_usd"]})
+        if nov["status"] == "open":
+            fine = f"fine USD {nov['fine_usd']:,.0f}" if nov["fine_usd"] is not None else "fine not recorded"
+            out["open"].append({"rule": nov["protocol_id"], "detail": f"notice of violation {nov['event_id']}, {fine}, still open", "fine": nov["fine_usd"]})
         if not resp and due < TODAY: out["breaches"].append({"rule": "RC-04", "detail": f"response to {nov['event_id']} was due by {fmt(due)}; none recorded"})
     m = c.execute("SELECT * FROM maintenance WHERE triggered_by_inspection_id=? AND contained_hours IS NOT NULL", (r["inspection_id"],)).fetchone()
     if m:
