@@ -8,7 +8,7 @@ A chat copilot for oil-field operators. It answers plain-English questions about
 |---|---|
 | 18 example scenarios (27 checks) | **27/27** (`results/examples_rules.md`) |
 | 46 unseen questions, expected answers computed independently from raw files (`eval/gen_unseen.py`) | **46/46** (`results/unseen_rules.md`) |
-| pytest | **135 passed** (101 at submission, 121 on the previous tip of this branch, 14 new pipeline edge tests) |
+| pytest | **143 passed** (101 at submission, 135 on the previous documented tip of this branch) |
 | Final questions (organizers' test data) | submitted: 16 correct, 2 mostly correct, 3 judgement calls; **post-submission branch: 21/21** by hand check (see `docs/results.md`) |
 | Final-hour command on a synthetic 400-well set (sample + test data) | **~2 s** end to end, 7/7 checks |
 
@@ -140,7 +140,7 @@ pip install -r requirements.txt
 cp .env.example .env   # optional: add OPENROUTER_API_KEY, then `set -a; . ./.env; set +a`
 python -m copilot.loader ../dataset/sample-data           # builds data/copilot.db
 python3 -m uvicorn copilot.server:app --port 8000         # open http://localhost:8000
-python -m pytest -q tests                                  # 135 tests
+python -m pytest -q tests                                  # 143 tests
 python -m eval.run_questions eval/examples.json --fresh    # 18 examples (27 checks) → results/examples.{md,json} + score
 python -m eval.run_questions eval/unseen.json --fresh      # 46 unseen questions
 ```
@@ -151,7 +151,7 @@ LLM (Gemma 4 by default; numbers always come from the tools): set `GEMINI_API_KE
 
 ```bash
 pip install -r requirements-dev.txt
-AIC_DATA=/path/to/sample-data python -m pytest -q tests   # 135 tests: tools, raw-data recomputation, memory scopes, corrections, 18 examples, 46 unseen, SR-02 regression, Gemma 4 guard, API, pipeline edge cases
+AIC_DATA=/path/to/sample-data python -m pytest -q tests   # 143 tests: tools, raw-data recomputation, memory scopes, corrections, 18 examples, 46 unseen, SR-02 regression, Gemma 4 guard, API, pipeline edge cases
 ```
 `tests/test_raw_recompute.py` recomputes key expected answers straight from the raw JSON (no copilot code), so the example checker is not just matching strings. Tests use a temporary DB and never touch the running server's memory.
 
