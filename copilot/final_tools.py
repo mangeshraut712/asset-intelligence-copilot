@@ -155,10 +155,14 @@ def unavailable(cp, q, what):
 
 # ---------- OPS-1 gas odor ----------
 GAS = re.compile(r"smell(ed)? gas|rotten.egg|gas odou?r|h2s monitor alarm", re.I)
+def gas_start(q, start=None):
+    """A "since <d Mon yyyy>" date in the question, else the given start, else 1 Nov 2026."""
+    m = re.search(r"since (\d{1,2} \w+ \d{4})", q, re.I)
+    return (pdate(m.group(1)) if m else None) or start or T.d("2026-11-01")
+
 def gas(cp, q, start=None, wells_only=None):
     c = cp.c; an = anames(c); wl = wells(c)
-    start = start or (T.d("2026-11-01") if not re.search(r"since", q, re.I) else None)
-    m = re.search(r"since (\d{1,2} \w+ \d{4})", q, re.I); start = pdate(m.group(1)) if m else start
+    start = gas_start(q, start)
     rows, cites = [], []
     for n in c.execute("SELECT * FROM notes WHERE note_type='operator_note' AND created_at>=? ORDER BY created_at", (str(start),)):
         if not GAS.search(n["text"]): continue
@@ -176,9 +180,10 @@ def gas(cp, q, start=None, wells_only=None):
     return rows, cites
 
 def gas_report(cp, q):
-    rows, cites = gas(cp, q)
+    start = gas_start(q)
+    rows, cites = gas(cp, q, start=start)
     miss = [r for r in rows if r["Met / Missed"] == "Missed"]
-    txt = [f"**{len(rows)} gas-odor reports** in operator notes since 1 Nov 2026 (OPS-1: smelled gas, rotten-egg smell, gas odor or H2S monitor alarm). **{len(rows) - len(miss)} met** the deadline and **{len(miss)} missed** it.",
+    txt = [f"**{len(rows)} gas-odor reports** in operator notes since {fmt(start)} (OPS-1: smelled gas, rotten-egg smell, gas odor or H2S monitor alarm). **{len(rows) - len(miss)} met** the deadline and **{len(miss)} missed** it.",
            "Rule (Operations SOP rev 2, OPS-1): a field response is a maintenance job (started_at) or a **manual** inspection (drone doesn't count) on that well, starting after the note, within 24 h for notes before 1 Jan 2027 and 12 h from 1 Jan 2027. Times are UTC as recorded."]
     if miss: txt.append("Missed: " + "; ".join(f"{r['Well']} ({r['Reported at']}, " + (f"responded after {r['Hours to response']} h > {r['Deadline']}" if r["_resp"] else "no response at all") + ")" for r in miss) + ".")
     for r in rows: r.pop("_resp")

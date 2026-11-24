@@ -148,6 +148,22 @@ def test_delays_with_no_delayed_jobs_says_so(cp):
     r = F.delays(cp, "jobs started in 2026")
     assert "No maintenance job started in 2026" in r["text"] and r["table"] == [] and r["citations"] == []
 
+# ---------- OPS-1 gas-odor window ----------
+def test_gas_report_states_the_window_it_used(cp):
+    c = cp.c; well(c, "WELL-0001")
+    note(c, "WELL-0001", "G1", "2026-11-05T12:00:00Z", "Smelled gas near the wellhead.")
+    note(c, "WELL-0001", "G2", "2026-12-03T12:00:00Z", "Gas odor reported by the pumper.")
+    c.commit()
+    r = F.gas_report(cp, "gas odor reports since 1 Dec 2026, were they answered in time?")
+    assert r["text"].startswith("**1 gas-odor reports** in operator notes since 1 Dec 2026")
+
+def test_gas_report_with_an_unparsed_since_uses_the_default_window(cp):
+    c = cp.c; well(c, "WELL-0001")
+    note(c, "WELL-0001", "G1", "2026-11-05T12:00:00Z", "Smelled gas near the wellhead.")
+    c.commit()
+    r = F.gas_report(cp, "gas odor reports since last week, were they answered in time?")
+    assert r["text"].startswith("**1 gas-odor reports** in operator notes since 1 Nov 2026")
+
 # ---------- which well first ----------
 def test_deal_first_puts_unanswered_gas_report_first_and_explains(cp):
     c = cp.c
