@@ -30,7 +30,7 @@ def phrase(question, answer_text):
         {"role": "system", "content": "Summarise the copilot answer for a field operator in at most 2 sentences. Use ONLY facts and numbers that appear in the answer. Keep well IDs and record IDs exact. No new numbers."},
         {"role": "user", "content": f"Question: {question}\n\nCopilot answer (computed by deterministic tools):\n{answer_text[:3500]}"}])
     s = (r.choices[0].message.content or "").strip()
-    src = set(n.replace(",", "") for n in NUM.findall(answer_text)) | set(NUM.findall(question))
+    src = set(n.replace(",", "") for n in NUM.findall(answer_text)) | set(n.replace(",", "") for n in NUM.findall(question))
     bad = [n for n in NUM.findall(s) if n.replace(",", "") not in src]
     return {"ok": not bad, "summary": s if not bad else None, "rejected_numbers": bad, "model": model}
 

@@ -214,3 +214,12 @@ def test_open_repair_without_completion_date(fresh):
     finally:
         c.execute("DELETE FROM maintenance WHERE maintenance_id='MNT-9999-999'")
         c.commit()
+
+
+def test_reportable_heading_names_the_requested_window(fresh):
+    cp = agent.Copilot()
+    areas = [r["area_id"] for r in T.db().execute("SELECT area_id FROM areas")]
+    heads = [cp.reportable("reportable spills in the last 3650 days", a)["text"].splitlines()[0] for a in areas]
+    heads = [h for h in heads if h.startswith("**")]
+    assert heads, "expected at least one area with a reportable spill"
+    assert all("last 3650 days" in h and "last 90 days" not in h for h in heads)

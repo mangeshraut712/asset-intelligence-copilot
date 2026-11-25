@@ -474,13 +474,13 @@ class Copilot:
         return {"text": txt, "visual": {"type": "table", "columns": list(rows[0].keys()) if rows else [], "rows": rows}, "citations": r["citations"], "wells": [x["Well"] for x in rows]}
 
     def reportable(self, q, area):
-        p = re.search(r"last (\d+) days", q.lower()); r = T.reportable_spills(area, int(p.group(1)) if p else 90); rows = []; txt = []
+        p = re.search(r"last (\d+) days", q.lower()); days = int(p.group(1)) if p else 90; r = T.reportable_spills(area, days); rows = []; txt = []
         for x in r["rows"]:
             corr = [cr for cr in x["corrections"] if cr.get("original")]
             br = [b for b in x["compliance"]["breaches"] + x["compliance"]["open"] if b["rule"] in ("SR-01", "SR-03")]
             txt.append(f"- {x['asset_id']}: {x['volume_bbl']} bbl on {fmt(x['date'])} ({x['inspection_id']})" + (f", volume corrected by {corr[0]['by']} from {corr[0]['original']}" if corr else "") + ". " + " ".join(f"{b['rule']}: {b['detail']}." for b in br))
             rows.append({"Well": x["asset_id"], "Date": fmt(x["date"]), "Barrels": x["volume_bbl"], "Status": "; ".join(f"{b['rule']}: {b['detail']}" for b in br)})
-        head = f"**{len(rows)} spill(s) in {r['area']} in the last 90 days reached the {r['threshold']:g} bbl reporting threshold (Spill Response SOP SR-01):**" if rows else f"No spill in {r['area']} reached {r['threshold']:g} bbl."
+        head = f"**{len(rows)} spill(s) in {r['area']} in the last {days} days reached the {r['threshold']:g} bbl reporting threshold (Spill Response SOP SR-01):**" if rows else f"No spill in {r['area']} reached {r['threshold']:g} bbl."
         return {"text": head + "\n" + "\n".join(txt) + ("\nNo other spill in that period reached the threshold." if rows else ""), "visual": {"type": "table", "columns": list(rows[0].keys()) if rows else [], "rows": rows},
                 "citations": r["citations"] + [i for x in r["rows"] for i in x["compliance"]["citations"]], "wells": [x["Well"] for x in rows]}
 
