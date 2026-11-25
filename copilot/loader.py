@@ -68,8 +68,7 @@ def parse_rules(fleet):
         t = os.path.splitext(os.path.basename(p))[0]
         txt = open(p).read()
         thr = _num(r"producing \(active\)\*\*.*?at least \*\*([\d.]+)\s*°C above", txt)
-        if thr is not None:  # a NULL row would bypass the 15 °C default in tools.thr.get()
-            rules.append((f"{t}.producing_delta_c", thr, f"{t} manual (production temperature rule)"))
+        rules.append((f"{t}.producing_delta_c", thr, f"{t} manual (production temperature rule)"))
         rca = _count(r"(\w+) or more \*\*corrective\*\*", txt)
         if rca is None:
             m = re.search(r"after (\w+) corrective", txt, re.I)

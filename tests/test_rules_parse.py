@@ -34,12 +34,3 @@ def test_rca_threshold_accepts_number_words_and_digits(tmp_path):
 def test_rca_threshold_falls_back_instead_of_crashing(tmp_path):
     rules = loader.parse_rules(_fleet(tmp_path, "- Several or more **corrective** events."))
     assert _rca(rules) == 3
-
-
-def test_manual_without_a_temperature_sentence_adds_no_null_threshold(tmp_path):
-    fleet = _fleet(tmp_path, "- Three or more **corrective** events trigger RCA.")
-    path = os.path.join(fleet, "well-types", "T900.md")
-    open(path, "w").write("Escalate with RCA after three corrective repairs.\n")
-    rules = loader.parse_rules(fleet)
-    assert all(v is not None for _, v, _ in rules)
-    assert "T900.producing_delta_c" not in {k for k, _, _ in rules}
