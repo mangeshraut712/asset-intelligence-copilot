@@ -157,14 +157,14 @@ def parse_window(q):
             return a, b, f"{fmt(a)} to {fmt(b)}"
         if m[4]:
             return None
-    m = re.search(r"between (.+?) and (.+?)(?:[?.,]|$| show| as | in a| on a)", ql)
+    m = re.search(r"between (.+?) and (.+?)(?:[?.,]|$| show| as | in [a-z]| on a)", ql)
     if m:
         rng = _closed_range(m[1], m[2])
         if rng:
             return rng
         if re.search(r"\d", m[1] + m[2]): return None  # a dated "between" that is not a real range
     # "from START to/through END" is a closed range, not "from START until yesterday".
-    m = re.search(r"(?:from|since) (.+?) (?:to|through|until|till) (.+?)(?:[?.,]|$| show| as | in a| on a)", ql)
+    m = re.search(r"(?:from|since) (.+?) (?:to|through|until|till) (.+?)(?:[?.,]|$| show| as | in [a-z]| on a)", ql)
     if m:
         rng = _closed_range(m[1], m[2])
         if rng:

@@ -29,3 +29,11 @@ def test_between_month_years_and_explicit_days_still_work():
     expected = (dt.date(2026, 10, 1), dt.date(2026, 12, 31))
     assert Q.parse_window("downtime between October 2026 and December 2026")[:2] == expected
     assert Q.parse_window("downtime between 1 Oct 2026 and 31 Dec 2026")[:2] == expected
+
+
+def test_between_bare_months_followed_by_an_area_keeps_the_window():
+    # The end month used to swallow "in Southwest Block 24", and the window was dropped.
+    assert Q.parse_window("Show downtime between June and August in Southwest Block 24.")[:2] == (
+        dt.date(2026, 6, 1),
+        dt.date(2026, 8, 31),
+    )
