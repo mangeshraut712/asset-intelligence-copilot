@@ -38,3 +38,9 @@ def test_year_first_leap_day_uses_the_written_year():
     assert parse_date("spills on 2024 Feb 29") == dt.date(2024, 2, 29)
     assert invalid_date_phrase("spills on 2024 Feb 29") is None
     assert invalid_date_phrase("spills on 2025 Feb 29") == "2025 Feb 29"
+
+
+def test_well_id_before_month_day_is_not_a_year():
+    # "WELL-0001 Oct 15" must stay a month-first date, not year 1.
+    d = parse_date("WELL-0001 Oct 15 reading was wrong")
+    assert d is not None and (d.month, d.day) == (10, 15) and d.year >= 2000
