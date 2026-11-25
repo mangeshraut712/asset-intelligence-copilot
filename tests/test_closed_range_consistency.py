@@ -28,3 +28,14 @@ def test_yearless_end_takes_its_year_from_the_other_end():
 
 def test_reversed_days_in_one_month_are_still_swapped():
     assert Q.parse_window("downtime from 5 Oct to 1 Oct")[:2] == (dt.date(2026, 10, 1), dt.date(2026, 10, 5))
+
+
+def test_yearless_numeric_end_takes_the_dated_year():
+    assert Q.parse_window("downtime from 20/10/2025 to 25/10")[:2] == (dt.date(2025, 10, 20), dt.date(2025, 10, 25))
+
+
+def test_mixed_year_same_month_does_not_roll_a_year():
+    oct_1_5 = (dt.date(2026, 10, 1), dt.date(2026, 10, 5))
+    assert Q.parse_window("downtime between 5 Oct and 1 Oct 2026")[:2] == oct_1_5
+    assert Q.parse_window("downtime between 5 Oct 2026 and 1 Oct")[:2] == oct_1_5
+    assert Q.parse_window("downtime between 15 Oct and October 2026")[:2] == (dt.date(2026, 10, 15), dt.date(2026, 10, 31))

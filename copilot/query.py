@@ -16,7 +16,7 @@ def _safe_date(y, m, d):
     try: return dt.date(int(y), int(m), int(d))
     except (TypeError, ValueError, OverflowError): return None
 
-def _numeric_date(s, prefer="dmy"):
+def _numeric_date(s, prefer="dmy", default_year=None):
     """Slash, dot or hyphen numeric dates. Day-month-year matches the product's '15 Oct 2026' form;
     month-day-year is used only when the first number cannot be a day-major month (e.g. 10/15/2026),
     or when prefer="mdy" because the other end of a range is unambiguously month-day-year.
@@ -26,7 +26,7 @@ def _numeric_date(s, prefer="dmy"):
     if m: return _safe_date(m[1], m[2], m[3])
     m = re.match(r"^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})$", s) or re.match(r"^(\d{1,2})[-/.](\d{1,2})()$", s)
     if not m: return None
-    a, b, y = int(m[1]), int(m[2]), int(m[3]) if m[3] else TODAY.year
+    a, b, y = int(m[1]), int(m[2]), int(m[3]) if m[3] else (default_year or TODAY.year)
     dmy, mdy = _safe_date(y, b, a), _safe_date(y, a, b)
     if a > 12: return dmy
     if b > 12: return mdy
@@ -46,7 +46,7 @@ def _has_year(s):
 
 def _date(s, default_year=None, prefer="dmy"):
     s = s.strip().lower().replace(",", "")
-    num = _numeric_date(s, prefer)
+    num = _numeric_date(s, prefer, default_year)
     if num: return num
     s = re.sub(rf"\b({'|'.join(re.escape(m) for m in MONTHS)})\.", r"\1 ", s)
     s = re.sub(r"\s+", " ", s).strip()
@@ -96,14 +96,15 @@ def _closed_range(left, right):
         # like bare months do, instead of being swapped into an almost-full-year window.
         b = _safe_date(b.year + 1, b.month, b.day) or b
     elif a and b and _has_year(left) != _has_year(right):
-        # A yearless end takes its year from the other end ("30 Dec 2025 to 2 Jan").
+        # A yearless end takes its year from the other end ("30 Dec 2025 to 2 Jan"),
+        # rolling over only when the months wrap; same-month reversals are swapped below.
         if _has_year(left):
             b2 = _date(right, default_year=a.year, prefer=prefer)
-            if b2 and b2 < a: b2 = _safe_date(b2.year + 1, b2.month, b2.day)
+            if b2 and b2.month < a.month: b2 = _safe_date(b2.year + 1, b2.month, b2.day)
             b = b2 or b
         else:
             a2 = _date(left, default_year=b.year, prefer=prefer)
-            if a2 and a2 > b: a2 = _safe_date(a2.year - 1, a2.month, a2.day)
+            if a2 and a2.month > b.month: a2 = _safe_date(a2.year - 1, a2.month, a2.day)
             a = a2 or a
     if a and b:
         if _is_month_year(left):
