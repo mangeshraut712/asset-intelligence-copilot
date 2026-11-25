@@ -43,3 +43,10 @@ def test_gemma4_is_default_and_has_open_weight_fallback(monkeypatch):
 def test_no_key_means_no_llm_call(monkeypatch):
     monkeypatch.setattr(gemma, "_client", lambda: (None, None))
     assert gemma.phrase("q", ANSWER) == {"ok": False, "reason": "no LLM key"}
+
+
+def test_number_with_thousands_separator_in_the_question_is_accepted(monkeypatch):
+    fake = _Fake("WELL-0001 is over the 1,200 bbl you asked about; one spill took about 7 h to contain.")
+    monkeypatch.setattr(gemma, "_client", lambda: (fake, "gemma-4-31b-it"))
+    r = gemma.phrase("Is WELL-0001 over 1,200 bbl?", ANSWER)
+    assert r["ok"] and r["rejected_numbers"] == []
