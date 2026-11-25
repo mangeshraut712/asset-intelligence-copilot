@@ -5,14 +5,13 @@ Questions file: list of {id, q, user?, chat?, day?, expect?[], reject?[], visual
 import json, os, sys, sqlite3
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from copilot import agent
-from copilot.loader import DB_PATH
+from copilot.loader import DB_PATH, reset_memory
 
 def main():
     args = sys.argv[1:]; path = args[0]; out = args[args.index("--out") + 1] if "--out" in args else "results/" + os.path.splitext(os.path.basename(path))[0]
     if "--fresh" in args:
         c = sqlite3.connect(DB_PATH)
-        for t in ["memory_conversations", "memory_well_facts", "memory_corrections", "memory_type_rules"]: c.execute(f"DELETE FROM {t}")
-        c.commit(); c.close()
+        reset_memory(c); c.close()
     qs = json.load(open(path)) if path.endswith(".json") else [{"id": f"Q{i+1}", "q": l.strip()} for i, l in enumerate(open(path)) if l.strip()]
     cp = agent.Copilot(); res = []; passed = scored = 0
     for x in qs:
