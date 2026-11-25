@@ -8,7 +8,9 @@ MONTHS = {m: i for i, m in enumerate(["jan", "feb", "mar", "apr", "may", "jun", 
 VISUALS = [("heatmap", "heatmap"), ("map", "map"), ("bar chart", "bar"), ("bar", "bar"), ("line chart", "line"), ("line", "line"), ("table", "table"), ("card", "card"), ("list", "table")]
 
 SIM_DAY = None  # evaluation can simulate "day N" so that "yesterday" works in one run
-_DATE_RE = re.compile(r"(\d{1,2})\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*(?:\s+(\d{4}))?", re.I)
+_DATE_RE = re.compile(r"(?<!\d)(\d{1,2})\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*(?:\s+(\d{4}))?", re.I)
+# "2025 Oct 1" — year first. Checked before the other forms so the written year is kept.
+_YMD_RE = re.compile(r"(?<![\w-])((?:19|20)\d{2})\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\s+(\d{1,2})(?!\d)", re.I)
 _ISO_RE = re.compile(r"\b(\d{4})-(\d{2})-(\d{2})\b")
 _MDY_RE = re.compile(r"\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\s+(\d{1,2})(?:,)?(?:\s+(\d{4}))?", re.I)
 _ZW_RE = re.compile(r"[\u200b\u200c\u200d\ufeff\x00]")
@@ -36,6 +38,10 @@ _NUM_RE = re.compile(r"\b(\d{4}[-/.]\d{1,2}[-/.]\d{1,2}|\d{1,2}[-/.]\d{1,2}[-/.]
 
 def parse_date(text):
     """A calendar date from the question, or None when none was given or the date cannot exist."""
+    m = _YMD_RE.search(text or "")
+    if m:
+        try: return dt.date(int(m.group(1)), MONTHS[m.group(2).lower()[:3]], int(m.group(3)))
+        except ValueError: return None
     m = _DATE_RE.search(text or "")
     if m:
         y = int(m.group(3)) if m.group(3) else TODAY.year
@@ -64,6 +70,9 @@ def parse_date(text):
 
 def invalid_date_phrase(text):
     """The date words the user wrote, when they do not fall on a real calendar day."""
+    m = _YMD_RE.search(text or "")
+    if m:
+        return None if parse_date(text) is not None else m.group(0)
     m = _DATE_RE.search(text or "")
     if m:
         return None if parse_date(text) is not None else m.group(0)
