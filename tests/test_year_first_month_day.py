@@ -21,8 +21,20 @@ def test_year_before_bare_month_is_not_a_day():
 
 def test_impossible_day_after_year_first_is_flagged():
     # Used to parse as a valid 26 Feb, hiding the impossible date the user wrote.
-    assert invalid_date_phrase("leak started 2026 Feb 30") == "Feb 30"
+    assert invalid_date_phrase("leak started 2026 Feb 30") == "2026 Feb 30"
 
 
 def test_day_first_with_explicit_year_unchanged():
     assert parse_date("between 15 Oct 2026 and 31 Dec 2026") == dt.date(2026, 10, 15)
+
+
+def test_year_first_keeps_the_written_year():
+    # Used to drop "2025" and resolve against the dataset clock, so a correction
+    # for "2025 Oct 1" was saved against the 2026 inspection.
+    assert parse_date("The 2025 Oct 1 reading for WELL-0001 is wrong") == dt.date(2025, 10, 1)
+
+
+def test_year_first_leap_day_uses_the_written_year():
+    assert parse_date("spills on 2024 Feb 29") == dt.date(2024, 2, 29)
+    assert invalid_date_phrase("spills on 2024 Feb 29") is None
+    assert invalid_date_phrase("spills on 2025 Feb 29") == "2025 Feb 29"
