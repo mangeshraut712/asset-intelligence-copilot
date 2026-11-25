@@ -10,7 +10,7 @@ VISUALS = [("heatmap", "heatmap"), ("map", "map"), ("bar chart", "bar"), ("bar",
 SIM_DAY = None  # evaluation can simulate "day N" so that "yesterday" works in one run
 _DATE_RE = re.compile(r"(\d{1,2})\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*(?:\s+(\d{4}))?", re.I)
 _ISO_RE = re.compile(r"\b(\d{4})-(\d{2})-(\d{2})\b")
-_MDY_RE = re.compile(r"\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\s+(\d{1,2})(?:,)?(?:\s+(\d{4}))?", re.I)
+_MDY_RE = re.compile(r"\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\s+(\d{1,2})(?!\d)(?:,)?(?:\s+(\d{4}))?", re.I)
 _ZW_RE = re.compile(r"[\u200b\u200c\u200d\ufeff\x00]")
 BLANK_TEXT = "Ask about a well, an area, spills, downtime, repairs, or a rule from the manuals. For example: \"Is WELL-0001 producing oil right now?\""
 
