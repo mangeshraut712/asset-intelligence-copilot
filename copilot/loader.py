@@ -99,6 +99,14 @@ def parse_contained_hours(text):
     v = float(m.group(1))
     return round(v / 60, 2) if m.group(2).lower().startswith("m") else v
 
+def reset_memory(con, drop=False):
+    """Clear (or drop) every runtime memory table, including lazily created ones like memory_prefs."""
+    sql = "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'memory\\_%' ESCAPE '\\'"
+    names = [r[0] for r in con.execute(sql)]
+    for t in names:
+        con.execute(f"DROP TABLE IF EXISTS {t}" if drop else f"DELETE FROM {t}")
+    con.commit()
+
 def load(data_dirs, db_path=DB_PATH):
     os.makedirs(os.path.dirname(os.path.abspath(db_path)), exist_ok=True)
     con = sqlite3.connect(db_path)
@@ -160,7 +168,5 @@ if __name__ == "__main__":
     args = [a for a in sys.argv[1:] if a != "--reset-memory"]
     if "--reset-memory" in sys.argv and os.path.exists(DB_PATH):
         c = sqlite3.connect(DB_PATH)
-        for t in ["memory_conversations", "memory_well_facts", "memory_corrections", "memory_type_rules"]:
-            c.execute(f"DROP TABLE IF EXISTS {t}")
-        c.commit(); c.close()
+        reset_memory(c, drop=True); c.close()
     print(load(args or [os.path.join(os.path.dirname(__file__), "..", "..", "dataset", "sample-data")]))
