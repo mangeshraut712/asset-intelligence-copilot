@@ -16,31 +16,37 @@ def _safe_date(y, m, d):
     try: return dt.date(int(y), int(m), int(d))
     except (TypeError, ValueError, OverflowError): return None
 
-def _numeric_date(s):
+def _numeric_date(s, prefer="dmy"):
     """Slash, dot or hyphen numeric dates. Day-month-year matches the product's '15 Oct 2026' form;
-    month-day-year is used only when the first number cannot be a day-major month (e.g. 10/15/2026).
+    month-day-year is used only when the first number cannot be a day-major month (e.g. 10/15/2026),
+    or when prefer="mdy" because the other end of a range is unambiguously month-day-year.
     Yearless day/month pairs such as 01/10 use the current year with the same preference."""
     s = s.strip()
     m = re.match(r"^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$", s)
     if m: return _safe_date(m[1], m[2], m[3])
-    m = re.match(r"^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})$", s)
-    if m:
-        a, b, y = int(m[1]), int(m[2]), int(m[3])
-        dmy, mdy = _safe_date(y, b, a), _safe_date(y, a, b)
-        if a > 12: return dmy
-        if b > 12: return mdy
-        return dmy  # both <= 12: prefer day-month-year
-    m = re.match(r"^(\d{1,2})[-/.](\d{1,2})$", s)
+    m = re.match(r"^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})$", s) or re.match(r"^(\d{1,2})[-/.](\d{1,2})()$", s)
     if not m: return None
-    a, b, y = int(m[1]), int(m[2]), TODAY.year
+    a, b, y = int(m[1]), int(m[2]), int(m[3]) if m[3] else TODAY.year
     dmy, mdy = _safe_date(y, b, a), _safe_date(y, a, b)
     if a > 12: return dmy
     if b > 12: return mdy
-    return dmy
+    return mdy if prefer == "mdy" else dmy  # both <= 12: day-month-year unless told otherwise
 
-def _date(s, default_year=None):
+def _numeric_order(s):
+    """'mdy' or 'dmy' when a numeric date can only be read one way (12/31/2025, 31/12/2025)."""
+    m = re.match(r"^(\d{1,2})[-/.](\d{1,2})(?:[-/.]\d{4})?$", s.strip())
+    if not m: return None
+    a, b = int(m[1]), int(m[2])
+    if a <= 12 < b: return "mdy"
+    if b <= 12 < a: return "dmy"
+    return None
+
+def _has_year(s):
+    return bool(re.search(r"(?<!\d)\d{4}(?!\d)", s))
+
+def _date(s, default_year=None, prefer="dmy"):
     s = s.strip().lower().replace(",", "")
-    num = _numeric_date(s)
+    num = _numeric_date(s, prefer)
     if num: return num
     s = re.sub(rf"\b({'|'.join(re.escape(m) for m in MONTHS)})\.", r"\1 ", s)
     s = re.sub(r"\s+", " ", s).strip()
@@ -82,7 +88,23 @@ def _month_only(s):
 
 def _closed_range(left, right):
     """Inclusive start/end from two date phrases, including whole months when given as month-year."""
-    a, b = _date(left), _date(right)
+    # One unambiguous numeric end (12/31/2025) fixes the order for the other (1/2/2026).
+    prefer = _numeric_order(left) or _numeric_order(right) or "dmy"
+    a, b = _date(left, prefer=prefer), _date(right, prefer=prefer)
+    if a and b and a.month > b.month and not _has_year(left) and not _has_year(right):
+        # Yearless days that wrap ("Dec 30 to Jan 2") run forward into the next year,
+        # like bare months do, instead of being swapped into an almost-full-year window.
+        b = _safe_date(b.year + 1, b.month, b.day) or b
+    elif a and b and _has_year(left) != _has_year(right):
+        # A yearless end takes its year from the other end ("30 Dec 2025 to 2 Jan").
+        if _has_year(left):
+            b2 = _date(right, default_year=a.year, prefer=prefer)
+            if b2 and b2 < a: b2 = _safe_date(b2.year + 1, b2.month, b2.day)
+            b = b2 or b
+        else:
+            a2 = _date(left, default_year=b.year, prefer=prefer)
+            if a2 and a2 > b: a2 = _safe_date(a2.year - 1, a2.month, a2.day)
+            a = a2 or a
     if a and b:
         if _is_month_year(left):
             a = dt.date(a.year, a.month, 1)

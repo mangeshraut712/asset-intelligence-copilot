@@ -11,9 +11,10 @@ def test_from_yearless_slash_to_yearless_slash():
 
 
 def test_yearless_mdy_when_the_second_number_cannot_be_a_month():
-    # 10/15 cannot be day-month, so it is October 15.
+    # 10/15 cannot be day-month, so the whole range is month/day: October 1 to 15,
+    # not a mixed reading of 10 January to 15 October.
     assert Q.parse_window("downtime from 10/01 to 10/15")[:2] == (
-        dt.date(2026, 1, 10),
+        dt.date(2026, 10, 1),
         dt.date(2026, 10, 15),
     )
 
