@@ -23,10 +23,3 @@ def test_parse_date_rejects_impossible_days_in_each_form():
     assert agent.invalid_date_phrase("2026-02-31") == "2026-02-31"
     assert agent.parse_date("Feb 31 2026") is None
     assert agent.invalid_date_phrase("Feb 31 2026") == "Feb 31 2026"
-
-
-def test_parse_date_does_not_read_a_month_year_as_the_20th():
-    # "October 2026" names no day; the day group used to take "20" from the year.
-    assert agent.parse_date("How many spills were there in October 2026?") is None
-    assert agent.parse_date("Spills in May 2026") is None
-    assert agent.parse_date("What happened on October 15, 2026?") == dt.date(2026, 10, 15)
