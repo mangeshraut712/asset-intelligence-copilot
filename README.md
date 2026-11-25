@@ -23,7 +23,7 @@ Runs locally (no hosted deployment). Open source under the [MIT License](LICENSE
 ## Gemma 4 (open-weight) in the LLM layer
 * **Default model:** Gemma 4 31B (`gemma-4-31b-it`), with Gemma 4 26B as fallback. Provider order: **Gemini API** (`GEMINI_API_KEY`), then OpenRouter (`OPENROUTER_API_KEY`, `google/gemma-4-31b-it:free`), then local Ollama (`AIC_LLM_BASE=http://localhost:11434/v1`, `gemma4:*`).
 * **Planner:** when the rule router isn't confident, Gemma 4 fills a structured query (metric × scope × window × group-by) through function calling, with a JSON fallback for endpoints without tools. Arguments are validated; an empty or invalid result triggers one retry via the rule router. The rule router stays authoritative when it's confident.
-* **Answer phrasing:** Gemma 4 writes a short plain-language summary under each answer. It's rejected automatically if it contains any number not present in the tool output.
+* **Answer phrasing:** Gemma 4 writes a short plain-language summary under each answer. It's rejected automatically if it contains any number not present in the tool output or the question.
 * **Multimodal:** upload an inspection photo (📷) and Gemma 4 describes the equipment, any staining and the % of pad, alongside the well's records. This is advisory only and never overrides data. A sample photo is included.
 * Numbers never come from the model. Every LLM failure falls back to the deterministic router, and planner picks are cached, so rate limits can't block a run.
 
