@@ -104,7 +104,8 @@ def reset_memory(con, drop=False):
     sql = "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'memory\\_%' ESCAPE '\\'"
     names = [r[0] for r in con.execute(sql)]
     for t in names:
-        con.execute(f"DROP TABLE IF EXISTS {t}" if drop else f"DELETE FROM {t}")
+        q = '"' + t.replace('"', '""') + '"'  # quote identifier
+        con.execute(f"DROP TABLE IF EXISTS {q}" if drop else f"DELETE FROM {q}")
     con.commit()
 
 def load(data_dirs, db_path=DB_PATH):
